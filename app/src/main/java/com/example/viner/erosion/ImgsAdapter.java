@@ -13,6 +13,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.Image;
 import android.media.ThumbnailUtils;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -31,6 +32,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.example.viner.erosion.R;
 import com.squareup.picasso.Picasso;
 
@@ -57,6 +60,7 @@ public class ImgsAdapter extends
     private int mStatusBarHeight;
     private int mWidthPixels;
     private int mHeightPixels;
+
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -224,6 +228,41 @@ public class ImgsAdapter extends
                     }
                 }
             });
+
+            if (mContext instanceof EffectsActivity){
+                img.setOnLongClickListener(new View.OnLongClickListener(){
+
+                    @Override
+                    public boolean onLongClick(final View v) {
+                        v.setVisibility(View.GONE);
+                        File file = new File((String)v.getTag());
+                        file.delete();
+
+//                        new MaterialDialog.Builder(mContext)
+//
+//                                .title(R.string.title)
+//                                .content(R.string.content)
+//                                .positiveText(R.string.agree)
+//                                .negativeText(R.string.disagree)
+//                                .onPositive(new MaterialDialog.SingleButtonCallback() {
+//                                    @Override
+//                                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+////                                        Log.v("Dialog", "Was positive");
+//                                        img.setVisibility(View.GONE);
+//                                        File file = new File((String)img.getTag());
+//                                        file.delete();
+//                                        notifyDataSetChanged();
+//                                    }
+//                                })
+//                                .show();
+
+                        return true;
+                    }
+                });
+
+
+
+            }
         }
     }
 

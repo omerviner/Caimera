@@ -2,4 +2,8 @@
     <string name="app_name">Caimera</string>
     <string name="name">#PRISM</string>
     <string name="title_activity_main2">Main2Activity</string>
+    <string name="title">Delete</string>
+    <string name="content">Delete style?</string>
+    <string name="agree">Yes</string>
+    <string name="disagree">No</string>
 </resources>

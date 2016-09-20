@@ -137,4 +137,5 @@ public class EffectsActivity extends AppCompatActivity{
         }
     }//onActivityResult
 
+
 }
