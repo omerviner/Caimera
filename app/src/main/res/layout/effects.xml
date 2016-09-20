@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.viner.erosion.EffectsActivity">
+
+    <android.support.percent.PercentRelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_widthPercent="100%"
+            app:layout_aspectRatio="100%"
+            android:scaleType="centerCrop"
+            android:background="@color/purple"
+            android:id="@+id/main_image"
+            />
+
+    </android.support.percent.PercentRelativeLayout>
+
+
+    <RelativeLayout
+        android:id="@+id/effectsRelativeLayout"
+        android:layout_width="fill_parent"
+        android:layout_height="300dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/light_yellow"
+        >
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/effects"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+            android:layout_centerVertical="true"
+            />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/btnsRelativeLayout"
+        android:layout_width="fill_parent"
+        android:layout_height="300dp"
+        android:layout_alignParentBottom="true"
+
+        >
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:layout_margin="20dp"
+            >
+
+            <ImageButton
+                android:layout_width="@dimen/button_size"
+                android:layout_height="@dimen/button_size"
+                android:src="@drawable/next3"
+                android:background="@color/transparent"
+                android:id="@+id/next"
+                android:adjustViewBounds="true"
+                android:scaleType="centerInside"
+                android:onClick="onClickImageIsChosen"
+                android:visibility="invisible"
+                />
+        </LinearLayout>
+
+        <ImageButton
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_margin="20dp"
+            android:layout_width="@dimen/button_size"
+            android:layout_height="@dimen/button_size"
+            android:src="@drawable/add_style"
+            android:background="@color/transparent"
+            android:id="@+id/add_style"
+            android:adjustViewBounds="true"
+            android:scaleType="centerInside"
+            android:onClick="onClickChooseEffect"
+            />
+    </RelativeLayout>
+</RelativeLayout>
