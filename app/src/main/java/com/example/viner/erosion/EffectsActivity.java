@@ -40,11 +40,17 @@ public class EffectsActivity extends AppCompatActivity{
     static final int CHOOSE_IMAGE_REQUEST = 1;
     ArrayList<File> mImgs;
     ImgsAdapter mAdapter;
+    String mChosenImage;
+    String mChosenStyle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.effects);
+
+        Bundle extras = getIntent().getExtras();
+        mChosenImage = extras.getString("image");
+
 
         File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES), "Erosion" + File.separator + "styles");

@@ -385,10 +385,10 @@ public class MainActivity extends AppCompatActivity {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         cropped.compress(Bitmap.CompressFormat.PNG, 100, stream);
         byte[] byteArray = stream.toByteArray();
-//        FileUtils.saveImageToFile(this, byteArray, 0);
+        File file = FileUtils.saveImageToFileReally(this, byteArray, 0);
 
         Intent intent = new Intent(this, EffectsActivity.class);
-//        intent.putExtra("image", byteArray);
+        intent.putExtra("image", file.toString());
         startActivity(intent);
 
     }

@@ -125,7 +125,7 @@ public class FileUtils {
 
     }
 
-    public static byte[] saveImageToFileReally(Context context, byte[] data, int rotation){
+    public static File saveImageToFileReally(Context context, byte[] data, int rotation){
         File pictureFile = getOutputMediaFile(context);
         if (pictureFile == null){
             Toast.makeText(context, "Image retrieval failed.", Toast.LENGTH_SHORT)
@@ -149,7 +149,7 @@ public class FileUtils {
             e.printStackTrace();
         }
 
-        return croppedData;
+        return pictureFile;
 
     }
 

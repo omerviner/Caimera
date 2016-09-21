@@ -206,18 +206,24 @@ public class ImgsAdapter extends
                     } else if (mContext instanceof EffectsActivity){
 //                        Log.v("SRC: ", imgSrc);
 //                        File imgFile = new File(imgSrc);
+                        String imgWithEffect = OMERCOOLFUNCTION(((EffectsActivity) mContext).mChosenImage, imgSrc);
+
                         ImageView mImageView = (ImageView)((EffectsActivity)mContext).findViewById(R.id.main_image);
 
+                        Picasso.with(mContext)
+                                .load(imgWithEffect)
+                                .centerCrop()
+                                .into(mImageView);
+
                         // Set the Drawable displayed
-//                        Drawable bitmap = getResources().getDrawable(R.drawable.wallpaper);
-                        Drawable drawable = new BitmapDrawable(mContext.getResources(), bitmap);
-                        mImageView.setImageDrawable(drawable);
+//                        Drawable drawable = new BitmapDrawable(mContext.getResources(), bitmap);
+//                        mImageView.setImageDrawable(drawable);
 
                         // Attach a PhotoViewAttacher, which takes care of all of the zooming functionality.
                         // (not needed unless you are going to change the drawable later)
-                        PhotoViewAttacher mAttacher = new PhotoViewAttacher(mImageView);
-                        mAttacher.getScale();
-                        mAttacher.getDisplayMatrix(new Matrix());
+//                        PhotoViewAttacher mAttacher = new PhotoViewAttacher(mImageView);
+//                        mAttacher.getScale();
+//                        mAttacher.getDisplayMatrix(new Matrix());
 
                     } else if (mContext instanceof ChooseImageActivity) {
                         Intent returnIntent = new Intent();
