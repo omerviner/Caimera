@@ -44,6 +44,7 @@ dependencies {
 //    compile 'com.commonsware.cwac:cam2:0.6.6'
     compile 'com.google.guava:guava:19.0'
     compile 'com.afollestad.material-dialogs:core:0.9.0.2'
+    compile 'com.squareup.okhttp3:okhttp:3.3.0'
 }
 
 

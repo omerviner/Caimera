@@ -38,6 +38,7 @@ import com.example.viner.erosion.R;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
+import java.io.InputStream;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
@@ -80,7 +81,6 @@ public class ImgsAdapter extends
     public void onBindViewHolder(ViewHolder viewHolder, int position) {
         // Get the data model based on position
         File img = mImgs.get(position);
-
         // Set item views based on your views and data model
         ImageButton curImg = viewHolder.img;
         curImg.setClipToOutline(true);
@@ -206,7 +206,12 @@ public class ImgsAdapter extends
                     } else if (mContext instanceof EffectsActivity){
 //                        Log.v("SRC: ", imgSrc);
 //                        File imgFile = new File(imgSrc);
-                        String imgWithEffect = OMERCOOLFUNCTION(((EffectsActivity) mContext).mChosenImage, imgSrc);
+                        String imgWithEffect = null;
+                        try {
+                            NetInterface.process(new NetCallback(), ((EffectsActivity) mContext).mChosenImage, imgSrc);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
 
                         ImageView mImageView = (ImageView)((EffectsActivity)mContext).findViewById(R.id.main_image);
 
@@ -300,7 +305,17 @@ public class ImgsAdapter extends
 
         return cropped;
     }
+
+    private class NetCallback implements CallBack{
+
+        //TODO:put anything that needs to happen after receiving the image here
+        @Override
+        public int call(InputStream image) {
+            return 0;
+        }
+    }
 }
+
 
 
 
