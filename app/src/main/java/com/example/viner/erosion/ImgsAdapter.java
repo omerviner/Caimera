@@ -308,9 +308,13 @@ public class ImgsAdapter extends
 
     private class NetCallback implements CallBack{
 
-        //TODO:put anything that needs to happen after receiving the image here
         @Override
-        public int call(InputStream image) {
+        public int call(InputStream result) {
+            if(result == null){
+                //op failed
+                //TODO:fill with error handling
+            }
+            //TODO:put anything that needs to happen after receiving the image here
             return 0;
         }
     }

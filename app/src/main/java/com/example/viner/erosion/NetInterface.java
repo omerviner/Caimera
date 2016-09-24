@@ -21,10 +21,11 @@ public class NetInterface {
     private static final int STYLE_PATH = 2;
     private static final int CONTENT_PATH = 1;
     private static final int BASE_ARG_NUM = 3;
-    private final OkHttpClient client = new OkHttpClient();
+
 
 
     public static void process(final Object... args) throws Exception {
+        final OkHttpClient client = new OkHttpClient();
         String contentPath = (String)args[CONTENT_PATH];
         String uploadUrl = BASE_URL + newExtension;
         RequestBody requestBody = null;
@@ -45,19 +46,22 @@ public class NetInterface {
                 .build();
 
         client.newCall(request).enqueue(new Callback() {
+            CallBack callback = (CallBack)args[0];
             @Override
             public void onFailure(Call call, IOException e) {
                 Log.d(TAG, e.getMessage());
+                callback.call(null);
+
             }
 
             @SuppressWarnings("unchecked")
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 try {
-                    CallBack callback = (CallBack)args[0];
                     callback.call(response.body().byteStream());
                 } catch (Exception e) {
                     e.printStackTrace();
+                    callback.call(null);
                 }
             }
         });
