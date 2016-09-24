@@ -310,10 +310,15 @@ public class ImgsAdapter extends
 
         @Override
         public int call(InputStream result) {
+            Log.v("NetCallback", "in call function");
             if(result == null){
                 //op failed
                 //TODO:fill with error handling
             }
+
+            Bitmap bmp = BitmapFactory.decodeStream(result);
+            ImageView mImageView = (ImageView)((EffectsActivity)mContext).findViewById(R.id.main_image);
+            mImageView.setImageBitmap(bmp);
             //TODO:put anything that needs to happen after receiving the image here
             return 0;
         }
