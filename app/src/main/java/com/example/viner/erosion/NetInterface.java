@@ -13,7 +13,7 @@ import java.io.IOException;
 
 public class NetInterface {
     private static final String TAG = "NetInterface";
-    private static final String BASE_URL = "172.31.10.239:3000/api/";//TODO:this is an ex2 elastic ip, check!
+    private static final String BASE_URL = "http://172.31.10.239:3000/api/";//TODO:this is an ex2 elastic ip, check!
     private static final MediaType MEDIA_TYPE_PNG = MediaType.parse("image/png");
     private static final String presetExtension = "presets/";
     private static final String newExtension = "process/";
@@ -35,7 +35,7 @@ public class NetInterface {
             uploadUrl = BASE_URL + presetExtension;
         }else{
             String stylePath = (String)args[STYLE_PATH];
-            buildBodyBase(contentPath).addFormDataPart("style", "style.png",
+            requestBody = buildBodyBase(contentPath).addFormDataPart("style", "style.png",
                     RequestBody.create(MEDIA_TYPE_PNG, new File(stylePath))).build();
         }
 
