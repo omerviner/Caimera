@@ -62,6 +62,9 @@ public class ImgsAdapter extends
     public void onBindViewHolder(ViewHolder viewHolder, int position) {
         // Get the data model based on position
         File img = mImgs.get(position);
+        if (img.isDirectory()){
+            return;
+        }
         // Set item views based on your views and data model
         ImageButton curImg = viewHolder.img;
         curImg.setClipToOutline(true);
@@ -152,8 +155,6 @@ public class ImgsAdapter extends
                             mAttacher = new PhotoViewAttacher(imgPrev);
                             mAttacher.setScaleType(ImageView.ScaleType.CENTER_CROP);
                             mAttacher.getDisplayMatrix(new Matrix());
-
-
 
 //                        ImageView imgPrev = new ImageView(mContext);
                             RelativeLayout.LayoutParams viewParams = new RelativeLayout.LayoutParams(
@@ -248,9 +249,6 @@ public class ImgsAdapter extends
                         return true;
                     }
                 });
-
-
-
             }
         }
     }

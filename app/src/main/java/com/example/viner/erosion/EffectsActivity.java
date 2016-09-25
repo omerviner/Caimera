@@ -48,12 +48,20 @@ public class EffectsActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.effects);
 
-        Bundle extras = getIntent().getExtras();
-        mChosenImage = extras.getString("image");
+//        Bundle extras = getIntent().getExtras();
+
+        byte[] chosenImage = getIntent().getByteArrayExtra("imageData");
+//        File file = FileUtils.saveImageToFile(this, chosenImage, 0, false);
+//        mChosenImage = extras.getString("image");
+
+//        mChosenImage = file.getAbsolutePath();
+        File mediaTempImgStorageDir = new File(Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES), "Caimera");
+        mChosenImage = mediaTempImgStorageDir.getPath() + File.separator + "caimera_chosen_temp.jpg";
 
 
         File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES), "Erosion" + File.separator + "styles");
+                Environment.DIRECTORY_PICTURES), "Caimera" + File.separator + "styles");
         if (!mediaStorageDir.exists()){
             mediaStorageDir.mkdirs();
         }
@@ -114,8 +122,8 @@ public class EffectsActivity extends AppCompatActivity{
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         cropped.compress(Bitmap.CompressFormat.PNG, 100, stream);
         byte[] byteArray = stream.toByteArray();
-        FileUtils.saveImageToFile(this, byteArray, 0);
 
+        FileUtils.saveImageToFile(this, byteArray, 0, true);
     }
 
     public void onClickChooseEffect(View view){

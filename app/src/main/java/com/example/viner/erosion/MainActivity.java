@@ -81,6 +81,8 @@ public class MainActivity extends AppCompatActivity {
     private Context mContext;
     File[] imgs;
     ArrayList<File> mImgs;
+    String tempImagePath;
+
 
     private static final int REQUEST_CAMERA = 0;
     private static final int REQUEST_CAMERA_PERMISSION = 1;
@@ -101,7 +103,12 @@ public class MainActivity extends AppCompatActivity {
         btn.setVisibility(View.VISIBLE);
 
         File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES), "Erosion");
+                Environment.DIRECTORY_PICTURES), "Caimera");
+
+        tempImagePath = mediaStorageDir.getPath() + File.separator + "caimera_chosen_temp.jpg";
+        File caimera_chosen_temp = new File(tempImagePath);
+        caimera_chosen_temp.delete();
+
         ///////////////////////////////////////
 
 
@@ -293,7 +300,7 @@ public class MainActivity extends AppCompatActivity {
             ImageButton btn = (ImageButton)((MainActivity)mContext).findViewById(R.id.next);
             btn.setVisibility(View.VISIBLE);
 
-            byte[] croppedData = FileUtils.saveImageToFile(mContext, data, mPreview.rotation);
+            byte[] croppedData = FileUtils.getCapturedData(mContext, data, mPreview.rotation);
             Log.v("PictureCallback", "Sending files");
 
             // Close camera
@@ -346,8 +353,6 @@ public class MainActivity extends AppCompatActivity {
 
     public void onClickImageIsChosen(View view){
 
-        ////////
-
 //        ((MainActivity) mContext).releaseCameraAndPreview();
 //        FrameLayout preview = (FrameLayout)((MainActivity)mContext).findViewById(R.id.camera_preview);
 //
@@ -385,10 +390,11 @@ public class MainActivity extends AppCompatActivity {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         cropped.compress(Bitmap.CompressFormat.PNG, 100, stream);
         byte[] byteArray = stream.toByteArray();
-        File file = FileUtils.saveImageToFileReally(this, byteArray, 0);
 
+//        File file = FileUtils.saveImageToFile(this, byteArray, 0, false);
+        new SaveTempImage().execute(byteArray);
         Intent intent = new Intent(this, EffectsActivity.class);
-        intent.putExtra("image", file.toString());
+//        intent.putExtra("imageData", byteArray);
         startActivity(intent);
 
     }

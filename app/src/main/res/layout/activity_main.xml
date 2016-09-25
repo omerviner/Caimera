@@ -133,7 +133,7 @@
             <ImageButton
                 android:layout_width="@dimen/button_size"
                 android:layout_height="@dimen/button_size"
-                android:src="@drawable/next"
+                android:src="@drawable/next3"
                 android:background="@color/transparent"
                 android:id="@+id/next"
                 android:adjustViewBounds="true"
