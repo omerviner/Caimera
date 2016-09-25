@@ -19,11 +19,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
+import android.widget.*;
 
+import com.github.ybq.android.spinkit.style.DoubleBounce;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
@@ -47,7 +45,7 @@ public class ImgsAdapter extends
     private int mStatusBarHeight;
     private int mWidthPixels;
     private int mHeightPixels;
-
+    private ProgressBar loadingIcon;
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -235,7 +233,12 @@ public class ImgsAdapter extends
 
                         String imgWithEffect = null;
                         try {
+                            loadingIcon = (ProgressBar)((EffectsActivity)mContext).findViewById(R.id.spin_kit);
                             NetInterface.process(new NetCallback(), ((EffectsActivity) mContext).mChosenImage, imgSrc);
+
+                            DoubleBounce doubleBounce = new DoubleBounce();
+                            loadingIcon.setIndeterminateDrawable(doubleBounce);
+                            loadingIcon.setVisibility(View.VISIBLE);
 
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -320,6 +323,7 @@ public class ImgsAdapter extends
         mStatusBarHeight = (int)Math.ceil(25 * displayMetrics.density);
         mWidthPixels = displayMetrics.widthPixels;
         mHeightPixels = displayMetrics.heightPixels;
+
     }
 
     // Easy access to the context object in the recyclerview
@@ -353,6 +357,7 @@ public class ImgsAdapter extends
                 @Override
                 public void run() {
                     mImageView.setImageBitmap(bmp);
+                    loadingIcon.setVisibility(View.GONE);
                     ImageButton btn = (ImageButton)((MainActivity)mContext).findViewById(R.id.share);
                     btn.setVisibility(View.VISIBLE);
                 }

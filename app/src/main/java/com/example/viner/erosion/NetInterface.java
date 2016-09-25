@@ -37,7 +37,7 @@ public class NetInterface {
         RequestBody requestBody;
         final CallBack callback = (CallBack)args[0];
 //        uncomment this to activate only the callback**********************
-        //callback.call(null);
+        callback.call(null);
         if(args.length > BASE_ARG_NUM) {
             String styleNum = (String)args[STYLE_NUM];
             requestBody = buildBodyBase(contentPath).addFormDataPart("style", styleNum).build();
@@ -54,28 +54,28 @@ public class NetInterface {
                 .post(requestBody)
                 .build();
 
-        client.newCall(request).enqueue(new Callback() {
-
-            @Override
-            public void onFailure(Call call, IOException e) {
-                Log.d(TAG, e.getMessage());
-
-                callback.call(null);
-
-            }
-
-            @SuppressWarnings("unchecked")
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                try {
-                    Log.d(TAG, "RESPONSE");
-                    callback.call(response.body().byteStream());
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    callback.call(null);
-                }
-            }
-        });
+//        client.newCall(request).enqueue(new Callback() {
+//
+//            @Override
+//            public void onFailure(Call call, IOException e) {
+//                Log.d(TAG, e.getMessage());
+//
+//                callback.call(null);
+//
+//            }
+//
+//            @SuppressWarnings("unchecked")
+//            @Override
+//            public void onResponse(Call call, Response response) throws IOException {
+//                try {
+//                    Log.d(TAG, "RESPONSE");
+//                    callback.call(response.body().byteStream());
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                    callback.call(null);
+//                }
+//            }
+//        });
     }
 
     public static MultipartBody.Builder buildBodyBase(String contentPath){

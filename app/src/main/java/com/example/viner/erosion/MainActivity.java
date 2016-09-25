@@ -289,6 +289,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
     /**
      * Picture Callback for handling a picture capture and saving it out to a file.
      */
