@@ -100,8 +100,8 @@ public class MainActivity extends AppCompatActivity {
         mCameraView = findViewById(android.R.id.content);
         mContext = this;
 
-        Button btn = (Button)((MainActivity)mContext).findViewById(R.id.button_capture);
-        btn.setVisibility(View.VISIBLE);
+//        Button btn = (Button)((MainActivity)mContext).findViewById(R.id.button_capture);
+//        btn.setVisibility(View.VISIBLE);
 
         File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES), "Caimera");
@@ -234,8 +234,13 @@ public class MainActivity extends AppCompatActivity {
             new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    // get an image from the camera
-                    mCamera.takePicture(null, null, mPicture);
+                    if (mCamera != null){
+                        // get an image from the camera
+                        mCamera.takePicture(null, null, mPicture);
+                    } else {
+                        safeCameraOpenInView();
+                    }
+
 
                 }
             }
@@ -299,8 +304,6 @@ public class MainActivity extends AppCompatActivity {
         public void onPictureTaken(byte[] data, Camera camera) {
             imgData = data;
 
-            Button captureButton = (Button) mCameraView.findViewById(R.id.button_capture);
-            captureButton.setVisibility(View.INVISIBLE);
             ImageButton btn = (ImageButton)((MainActivity)mContext).findViewById(R.id.next);
             btn.setVisibility(View.VISIBLE);
 
