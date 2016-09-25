@@ -5,6 +5,7 @@ import android.util.Log;
 import okhttp3.*;
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -12,8 +13,8 @@ import java.io.IOException;
  */
 
 public class NetInterface {
-    private static final String TAG = "NetInterface";
-    private static final String BASE_URL = "http://172.31.10.239:3000/api/";//TODO:this is an ex2 elastic ip, check!
+    private static final String TAG = "NetInterface-------";
+    private static final String BASE_URL = "http://52.54.68.110:3000/api/";//TODO:this is an ex2 elastic ip, check!
     private static final MediaType MEDIA_TYPE_PNG = MediaType.parse("image/png");
     private static final String presetExtension = "presets/";
     private static final String newExtension = "process/";
@@ -25,7 +26,11 @@ public class NetInterface {
 
 
     public static void process(final Object... args) throws Exception {
-        final OkHttpClient client = new OkHttpClient();
+        final OkHttpClient client = new OkHttpClient.Builder()
+                .connectTimeout(20, TimeUnit.MINUTES)
+                .writeTimeout(20, TimeUnit.MINUTES)
+                .readTimeout(20, TimeUnit.MINUTES)
+                .build();
         String contentPath = (String)args[CONTENT_PATH];
         String uploadUrl = BASE_URL + newExtension;
         RequestBody requestBody = null;
@@ -50,6 +55,7 @@ public class NetInterface {
             @Override
             public void onFailure(Call call, IOException e) {
                 Log.d(TAG, e.getMessage());
+
                 callback.call(null);
 
             }
@@ -58,6 +64,7 @@ public class NetInterface {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 try {
+                    Log.d(TAG, "RESPONSE");
                     callback.call(response.body().byteStream());
                 } catch (Exception e) {
                     e.printStackTrace();
