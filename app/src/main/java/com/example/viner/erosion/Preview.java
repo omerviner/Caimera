@@ -69,7 +69,10 @@ class Preview extends SurfaceView implements SurfaceHolder.Callback {
     public void surfaceCreated(SurfaceHolder holder) {
         // The Surface has been created, now tell the camera where to draw the preview.
         try {
-            mCamera.setPreviewDisplay(holder);
+            if (mCamera != null){
+                mCamera.setPreviewDisplay(holder);
+            }
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -191,7 +194,7 @@ class Preview extends SurfaceView implements SurfaceHolder.Callback {
             int previewWidth = width;
             int previewHeight = height;
 
-            if (mPreviewSize != null){
+            if (mPreviewSize != null && mCamera != null){
                 Display display = ((WindowManager)mContext.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
 
                 switch (display.getRotation())

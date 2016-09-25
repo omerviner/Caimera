@@ -82,6 +82,7 @@ public class MainActivity extends AppCompatActivity {
     File[] imgs;
     ArrayList<File> mImgs;
     String tempImagePath;
+    boolean opened;
 
 
     private static final int REQUEST_CAMERA = 0;
@@ -180,7 +181,9 @@ public class MainActivity extends AppCompatActivity {
 
         mImgs = new ArrayList<File>();
         for (int i = 0; i < imgs.length; i++){
-            mImgs.add(imgs[i]);
+            if (!imgs[i].isDirectory()){
+                mImgs.add(imgs[i]);
+            }
         }
 //        mImgs = Lists.newArrayList(imgs);
         // Create adapter passing in the sample user data
@@ -218,7 +221,7 @@ public class MainActivity extends AppCompatActivity {
         imgsRelLayout.setLayoutParams(relParams);
         btnsRelLayout.setLayoutParams(relParams);
 
-        boolean opened = safeCameraOpenInView();
+        opened = safeCameraOpenInView();
 
         if(opened == false){
             Log.d("CameraGuide","Error, Camera failed to open");
@@ -399,6 +402,22 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        releaseCameraAndPreview();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (opened == true){
+            safeCameraOpenInView();
+        }
+
+    }
 
 
 
