@@ -230,7 +230,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // Trap the capture button.
-        Button captureButton = (Button) mCameraView.findViewById(R.id.button_capture);
+        final Button captureButton = (Button) mCameraView.findViewById(R.id.button_capture);
         captureButton.setOnClickListener(
             new View.OnClickListener() {
                 @Override
@@ -240,6 +240,8 @@ public class MainActivity extends AppCompatActivity {
                         mCamera.takePicture(null, null, mPicture);
                     } else {
                         safeCameraOpenInView();
+                        captureButton.bringToFront();
+                        rvImgs.bringToFront();
                     }
 
 
