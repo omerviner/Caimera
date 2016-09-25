@@ -33,7 +33,13 @@ public class NetInterface {
                 .build();
         String contentPath = (String)args[CONTENT_PATH];
         String uploadUrl = BASE_URL + newExtension;
-        RequestBody requestBody = null;
+        RequestBody requestBody;
+        final CallBack callback = (CallBack)args[0];
+
+        //uncomment this to activate only the callback**********************
+        //callback.call(null);
+        //return
+
         if(args.length > BASE_ARG_NUM) {
             String styleNum = (String)args[STYLE_NUM];
             requestBody = buildBodyBase(contentPath).addFormDataPart("style", styleNum).build();
@@ -51,7 +57,7 @@ public class NetInterface {
                 .build();
 
         client.newCall(request).enqueue(new Callback() {
-            CallBack callback = (CallBack)args[0];
+
             @Override
             public void onFailure(Call call, IOException e) {
                 Log.d(TAG, e.getMessage());
