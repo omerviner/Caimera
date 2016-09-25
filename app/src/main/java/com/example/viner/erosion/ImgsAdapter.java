@@ -171,6 +171,8 @@ public class ImgsAdapter extends
 //                            }
                             Drawable drawable = new BitmapDrawable(mContext.getResources(), bitmap);
                             imgPrev.setImageDrawable(drawable);
+                            mAttacher = new PhotoViewAttacher(imgPrev);
+                            mAttacher.setScaleType(ImageView.ScaleType.CENTER_CROP);
                             mAttacher.setDisplayMatrix(new Matrix());
 
                         } else {
