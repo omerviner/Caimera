@@ -104,6 +104,7 @@ public class EffectsActivity extends AppCompatActivity{
         File[] files = mediaStorageDir.listFiles();
 
         mImgs = new ArrayList<File>();
+
         for (int i = 0; i < files.length; i++){
             mImgs.add(files[i]);
         }
