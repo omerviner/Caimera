@@ -17,7 +17,7 @@
             app:layout_widthPercent="100%"
             app:layout_aspectRatio="100%"
             android:scaleType="centerCrop"
-            android:background="@color/purple"
+            android:background="@drawable/screensaver"
             android:id="@+id/main_image"
             />
 
@@ -68,6 +68,18 @@
                 android:scaleType="centerInside"
                 android:onClick="onClickImageIsChosen"
                 android:visibility="invisible"
+                />
+
+            <ImageButton
+                android:layout_width="@dimen/button_size"
+                android:layout_height="@dimen/button_size"
+                android:src="@drawable/share"
+                android:background="@color/transparent"
+                android:id="@+id/share"
+                android:adjustViewBounds="true"
+                android:scaleType="centerInside"
+                android:onClick="onClickShareButton"
+
                 />
         </LinearLayout>
 

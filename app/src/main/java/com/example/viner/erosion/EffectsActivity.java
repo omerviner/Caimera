@@ -1,9 +1,12 @@
 package com.example.viner.erosion;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
@@ -42,12 +45,13 @@ public class EffectsActivity extends AppCompatActivity{
     ImgsAdapter mAdapter;
     String mChosenImage;
     String mChosenStyle;
+    Context mContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.effects);
-
+        mContext = this;
 //        Bundle extras = getIntent().getExtras();
 
         byte[] chosenImage = getIntent().getByteArrayExtra("imageData");
@@ -151,5 +155,29 @@ public class EffectsActivity extends AppCompatActivity{
         }
     }//onActivityResult
 
+    public void onClickShareButton(View v){
+        try {
+            ImageView mImageView = (ImageView)((EffectsActivity)mContext).findViewById(R.id.main_image);
+            mImageView.buildDrawingCache();
+            Bitmap bmp = mImageView.getDrawingCache();
+
+            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+            String filename = "IMG_" + timeStamp;
+            File file = new File(this.getCacheDir(), filename + ".png");
+            FileOutputStream fOut = new FileOutputStream(file);
+            bmp.compress(Bitmap.CompressFormat.PNG, 100, fOut);
+            fOut.flush();
+            fOut.close();
+            file.setReadable(true, false);
+            final Intent intent = new Intent(     android.content.Intent.ACTION_SEND);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
+            intent.setType("image/png");
+            startActivity(intent);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
 
 }

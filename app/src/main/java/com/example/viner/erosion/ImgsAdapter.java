@@ -297,6 +297,8 @@ public class ImgsAdapter extends
                 @Override
                 public void run() {
                     mImageView.setImageBitmap(bmp);
+                    ImageButton btn = (ImageButton)((MainActivity)mContext).findViewById(R.id.share);
+                    btn.setVisibility(View.VISIBLE);
                 }
             });
 
