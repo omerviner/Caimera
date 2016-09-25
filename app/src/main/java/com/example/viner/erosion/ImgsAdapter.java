@@ -5,45 +5,26 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Matrix;
-import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.media.Image;
-import android.media.ThumbnailUtils;
-import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Choreographer;
-import android.view.GestureDetector;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import com.afollestad.materialdialogs.DialogAction;
-import com.afollestad.materialdialogs.MaterialDialog;
-import com.example.viner.erosion.R;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.io.InputStream;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.List;
 
-import uk.co.senab.photoview.PhotoView;
 import uk.co.senab.photoview.PhotoViewAttacher;
 
 // Create the basic adapter extending from RecyclerView.Adapter
@@ -215,10 +196,7 @@ public class ImgsAdapter extends
 
                         ImageView mImageView = (ImageView)((EffectsActivity)mContext).findViewById(R.id.main_image);
 
-                        Picasso.with(mContext)
-                                .load(imgWithEffect)
-                                .centerCrop()
-                                .into(mImageView);
+
 
                         // Set the Drawable displayed
 //                        Drawable drawable = new BitmapDrawable(mContext.getResources(), bitmap);
@@ -309,16 +287,21 @@ public class ImgsAdapter extends
     private class NetCallback implements CallBack{
 
         @Override
-        public int call(InputStream result) {
+        public int call(final InputStream result) {
             Log.v("NetCallback", "in call function");
             if(result == null){
                 //op failed
                 //TODO:fill with error handling
             }
+            final Bitmap bmp = BitmapFactory.decodeStream(result);
+            final ImageView mImageView = (ImageView)((EffectsActivity)mContext).findViewById(R.id.main_image);
+            ((EffectsActivity)mContext).runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mImageView.setImageBitmap(bmp);
+                }
+            });
 
-            Bitmap bmp = BitmapFactory.decodeStream(result);
-            ImageView mImageView = (ImageView)((EffectsActivity)mContext).findViewById(R.id.main_image);
-            mImageView.setImageBitmap(bmp);
             //TODO:put anything that needs to happen after receiving the image here
             return 0;
         }

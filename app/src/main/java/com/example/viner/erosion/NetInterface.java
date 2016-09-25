@@ -1,6 +1,7 @@
 package com.example.viner.erosion;
 
-import android.graphics.BitmapFactory;
+import android.app.Activity;
+import android.content.Context;
 import android.util.Log;
 import okhttp3.*;
 import java.io.File;
@@ -21,7 +22,7 @@ public class NetInterface {
     private static final int STYLE_NUM = 3;
     private static final int STYLE_PATH = 2;
     private static final int CONTENT_PATH = 1;
-    private static final int BASE_ARG_NUM = 3;
+    private static final int BASE_ARG_NUM = STYLE_NUM;
 
 
 
@@ -35,11 +36,8 @@ public class NetInterface {
         String uploadUrl = BASE_URL + newExtension;
         RequestBody requestBody;
         final CallBack callback = (CallBack)args[0];
-
-        //uncomment this to activate only the callback**********************
+//        uncomment this to activate only the callback**********************
         //callback.call(null);
-        //return
-
         if(args.length > BASE_ARG_NUM) {
             String styleNum = (String)args[STYLE_NUM];
             requestBody = buildBodyBase(contentPath).addFormDataPart("style", styleNum).build();
