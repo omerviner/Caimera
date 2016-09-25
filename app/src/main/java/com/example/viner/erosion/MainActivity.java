@@ -64,6 +64,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.concurrent.locks.Lock;
 
 import uk.co.senab.photoview.PhotoViewAttacher;
@@ -399,7 +400,7 @@ public class MainActivity extends AppCompatActivity {
         byte[] byteArray = stream.toByteArray();
 
 //        File file = FileUtils.saveImageToFile(this, byteArray, 0, false);
-        new SaveTempImage().execute(byteArray);
+        new SaveTempImage(new saveCallback()).execute(byteArray);
         Intent intent = new Intent(this, EffectsActivity.class);
 //        intent.putExtra("imageData", byteArray);
         startActivity(intent);
@@ -422,6 +423,14 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
+    private class saveCallback implements Callable<Integer>{
+
+        @Override
+        public Integer call() throws Exception {
+            return null;
+        }
+    }
+
 
 
 
