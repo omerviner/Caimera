@@ -137,6 +137,17 @@ public class ImgsAdapter extends
                 public void onClick(View v) {
                     ImageView imageView = (ImageView)v;
                     String imgSrc = (String)imageView.getTag();
+
+                    if (imgSrc.length() < 5){
+                        imgSrc = imgSrc.replaceAll("[^\\d.]", "");
+                        try {
+                            NetInterface.process(new NetCallback(), ((EffectsActivity) mContext).mChosenImage, null, imgSrc);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        return;
+//                        ImageView mImageView = (ImageView)((EffectsActivity)mContext).findViewById(R.id.main_image);
+                    }
                     Bitmap bitmap = BitmapFactory.decodeFile(imgSrc);
 //                    Bitmap bitmap = ((BitmapDrawable)imageView.getDrawable()).getBitmap();
 
@@ -223,7 +234,7 @@ public class ImgsAdapter extends
                         String imgWithEffect = null;
                         try {
                             NetInterface.process(new NetCallback(), ((EffectsActivity) mContext).mChosenImage, imgSrc);
-//                            NetInterface.process(new NetCallback(), ((EffectsActivity) mContext).mChosenImage, null, (String)num);
+
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
