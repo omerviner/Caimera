@@ -1,9 +1,12 @@
 package com.example.viner.erosion;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
@@ -42,18 +45,27 @@ public class EffectsActivity extends AppCompatActivity{
     ImgsAdapter mAdapter;
     String mChosenImage;
     String mChosenStyle;
+    Context mContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.effects);
+        mContext = this;
+//        Bundle extras = getIntent().getExtras();
 
-        Bundle extras = getIntent().getExtras();
-        mChosenImage = extras.getString("image");
+        byte[] chosenImage = getIntent().getByteArrayExtra("imageData");
+//        File file = FileUtils.saveImageToFile(this, chosenImage, 0, false);
+//        mChosenImage = extras.getString("image");
+
+//        mChosenImage = file.getAbsolutePath();
+        File mediaTempImgStorageDir = new File(Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES), "Caimera");
+        mChosenImage = mediaTempImgStorageDir.getPath() + File.separator + "caimera_chosen_temp.jpg";
 
 
         File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES), "Erosion" + File.separator + "styles");
+                Environment.DIRECTORY_PICTURES), "Caimera" + File.separator + "styles");
         if (!mediaStorageDir.exists()){
             mediaStorageDir.mkdirs();
         }
@@ -92,6 +104,7 @@ public class EffectsActivity extends AppCompatActivity{
         File[] files = mediaStorageDir.listFiles();
 
         mImgs = new ArrayList<File>();
+
         for (int i = 0; i < files.length; i++){
             mImgs.add(files[i]);
         }
@@ -114,8 +127,8 @@ public class EffectsActivity extends AppCompatActivity{
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         cropped.compress(Bitmap.CompressFormat.PNG, 100, stream);
         byte[] byteArray = stream.toByteArray();
-        FileUtils.saveImageToFile(this, byteArray, 0);
 
+        FileUtils.saveImageToFile(this, byteArray, 0, true);
     }
 
     public void onClickChooseEffect(View view){
@@ -143,5 +156,29 @@ public class EffectsActivity extends AppCompatActivity{
         }
     }//onActivityResult
 
+    public void onClickShareButton(View v){
+        try {
+            ImageView mImageView = (ImageView)((EffectsActivity)mContext).findViewById(R.id.main_image);
+            mImageView.buildDrawingCache();
+            Bitmap bmp = mImageView.getDrawingCache();
+
+            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+            String filename = "IMG_" + timeStamp;
+            File file = new File(this.getCacheDir(), filename + ".png");
+            FileOutputStream fOut = new FileOutputStream(file);
+            bmp.compress(Bitmap.CompressFormat.PNG, 100, fOut);
+            fOut.flush();
+            fOut.close();
+            file.setReadable(true, false);
+            final Intent intent = new Intent(     android.content.Intent.ACTION_SEND);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
+            intent.setType("image/png");
+            startActivity(intent);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
 
 }

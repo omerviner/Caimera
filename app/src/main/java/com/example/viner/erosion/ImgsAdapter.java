@@ -1,13 +1,18 @@
 package com.example.viner.erosion;
 
 import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.support.annotation.AnyRes;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -60,18 +65,49 @@ public class ImgsAdapter extends
     public void onBindViewHolder(ViewHolder viewHolder, int position) {
         // Get the data model based on position
         File img = mImgs.get(position);
+
         // Set item views based on your views and data model
         ImageButton curImg = viewHolder.img;
         curImg.setClipToOutline(true);
         curImg.setTag(img.getAbsolutePath());
 
-        Picasso
-                .with(mContext)
-                .load(mImgs.get(position))
-                .resize(150,150)
-                .centerCrop()
-                .into(curImg);
-    }
+        String imgPath = img.getAbsolutePath();
+        Log.v("imgPath", imgPath);
+        if (imgPath.length() < 4){
+            if (imgPath.equals("/e1")){
+                Picasso.with(mContext).load(R.drawable.e1).into(curImg);
+            } else if (imgPath.equals("/e2")){
+                Picasso.with(mContext).load(R.drawable.e2).into(curImg);
+            } else if (imgPath.equals("/e3")){
+                Picasso.with(mContext).load(R.drawable.e3).into(curImg);
+            } else if (imgPath.equals("/e4")){
+                Picasso.with(mContext).load(R.drawable.e4).into(curImg);
+            } else if (imgPath.equals("/e5")){
+                Picasso.with(mContext).load(R.drawable.e5).into(curImg);
+            } else if (imgPath.equals("/e6")){
+                Picasso.with(mContext).load(R.drawable.e6).into(curImg);
+            } else if (imgPath.equals("/e7")){
+                Picasso.with(mContext).load(R.drawable.e7).into(curImg);
+            } else if (imgPath.equals("/e8")){
+                Picasso.with(mContext).load(R.drawable.e8).into(curImg);
+            }
+
+        } else {
+            if (img.isDirectory()){
+                return;
+            }
+
+
+            Picasso
+                    .with(mContext)
+                    .load(mImgs.get(position))
+                    .resize(150,150)
+                    .centerCrop()
+                    .into(curImg);
+        }
+        }
+
+
 
     @Override
     public int getItemCount() {
@@ -151,8 +187,6 @@ public class ImgsAdapter extends
                             mAttacher.setScaleType(ImageView.ScaleType.CENTER_CROP);
                             mAttacher.getDisplayMatrix(new Matrix());
 
-
-
 //                        ImageView imgPrev = new ImageView(mContext);
                             RelativeLayout.LayoutParams viewParams = new RelativeLayout.LayoutParams(
                                     RelativeLayout.LayoutParams.WRAP_CONTENT,
@@ -183,8 +217,7 @@ public class ImgsAdapter extends
 //                        preview.addView(imgPrev);
 
                     } else if (mContext instanceof EffectsActivity){
-//                        Log.v("SRC: ", imgSrc);
-//                        File imgFile = new File(imgSrc);
+
                         String imgWithEffect = null;
                         try {
                             loadingIcon = (ProgressBar)((EffectsActivity)mContext).findViewById(R.id.spin_kit);
@@ -198,8 +231,6 @@ public class ImgsAdapter extends
                         }
 
                         ImageView mImageView = (ImageView)((EffectsActivity)mContext).findViewById(R.id.main_image);
-
-
 
                         // Set the Drawable displayed
 //                        Drawable drawable = new BitmapDrawable(mContext.getResources(), bitmap);
@@ -216,7 +247,6 @@ public class ImgsAdapter extends
                         returnIntent.putExtra("chosen_image", imgSrc);
                         ((ChooseImageActivity)mContext).setResult(Activity.RESULT_OK, returnIntent);
                         ((ChooseImageActivity)mContext).finish();
-
                     }
                 }
             });
@@ -251,9 +281,6 @@ public class ImgsAdapter extends
                         return true;
                     }
                 });
-
-
-
             }
         }
     }
@@ -262,6 +289,19 @@ public class ImgsAdapter extends
 
     // Pass in the contact array into the constructor
     public ImgsAdapter(Context context, ArrayList<File> imgs) {
+
+        if(context instanceof EffectsActivity){
+
+            imgs.add(0, new File("e1"));
+            imgs.add(1, new File("e2"));
+            imgs.add(2, new File("e3"));
+            imgs.add(3, new File("e4"));
+            imgs.add(4, new File("e5"));
+            imgs.add(5, new File("e6"));
+            imgs.add(6, new File("e7"));
+            imgs.add(7, new File("e8"));
+        }
+
         mImgs = imgs;
         mContext = context;
 
@@ -304,6 +344,8 @@ public class ImgsAdapter extends
                 public void run() {
                     mImageView.setImageBitmap(bmp);
                     loadingIcon.setVisibility(View.GONE);
+                    ImageButton btn = (ImageButton)((MainActivity)mContext).findViewById(R.id.share);
+                    btn.setVisibility(View.VISIBLE);
                 }
             });
 
@@ -311,6 +353,32 @@ public class ImgsAdapter extends
             return 0;
         }
     }
+
+    /**
+     * get uri to any resource type
+     * @param context - context
+     * @param resId - resource id
+     * @throws Resources.NotFoundException if the given ID does not exist.
+     * @return - Uri to resource by given id
+     */
+
+    public static final Uri getUriToResource(@NonNull Context context, @AnyRes int resId) throws Resources.NotFoundException {
+        /** Return a Resources instance for your application's package. */
+        Resources res = context.getResources();
+        /**
+         * Creates a Uri which parses the given encoded URI string.
+         * @param uriString an RFC 2396-compliant, encoded URI
+         * @throws NullPointerException if uriString is null
+         * @return Uri for this given uri string
+         */
+        Uri resUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE +
+                "://" + res.getResourcePackageName(resId)
+                + '/' + res.getResourceTypeName(resId)
+                + '/' + res.getResourceEntryName(resId));
+        /** return uri */
+        return resUri;
+    }
+
 }
 
 

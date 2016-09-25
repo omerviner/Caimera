@@ -28,14 +28,14 @@ public class FileUtils {
      * Used to return the camera File output.
      * @return
      */
-    public static File getOutputMediaFile(Context context){
+    public static File getOutputMediaFile(Context context, boolean saveStyle){
         File mediaStorageDir;
-        if (context instanceof EffectsActivity){
+        if (saveStyle == true){
             mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
-                    Environment.DIRECTORY_PICTURES), "Erosion" + File.separator + "styles");
+                    Environment.DIRECTORY_PICTURES), "Caimera" + File.separator + "styles");
         } else {
             mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
-                    Environment.DIRECTORY_PICTURES), "Erosion");
+                    Environment.DIRECTORY_PICTURES), "Caimera");
         }
 
 
@@ -46,10 +46,15 @@ public class FileUtils {
             }
         }
 
-        // Create a media file name
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-//        File mediaFile;
-        String path = mediaStorageDir.getPath() + File.separator + "IMG_" + timeStamp + ".jpg";
+        String timeStamp;
+        String path;
+        if (saveStyle){
+            timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+            path = mediaStorageDir.getPath() + File.separator + "IMG_" + timeStamp + ".jpg";
+        } else {
+            path = mediaStorageDir.getPath() + File.separator + "caimera_chosen_temp.jpg";
+        }
+
         Log.v("getOutputMediaFile:", path);
         File curImage = new File(path);
 //        try{
@@ -59,18 +64,18 @@ public class FileUtils {
 //        }
 
         //DialogHelper.showDialog( "Success!","Your picture has been saved!",this);
-        Toast.makeText(context, "Your picture has been saved!", Toast.LENGTH_SHORT)
-                .show();
+//        Toast.makeText(context, "Your picture has been saved!", Toast.LENGTH_SHORT)
+//                .show();
         return curImage;
     }
 
-    public static byte[] saveImageToFile(Context context, byte[] data, int rotation){
-        File pictureFile = getOutputMediaFile(context);
-        if (pictureFile == null){
-            Toast.makeText(context, "Image retrieval failed.", Toast.LENGTH_SHORT)
-                    .show();
-            return null;
-        }
+    public static byte[] getCapturedData(Context context, byte[] data, int rotation){
+//        File pictureFile = getOutputMediaFile(context);
+//        if (pictureFile == null){
+//            Toast.makeText(context, "Image retrieval failed.", Toast.LENGTH_SHORT)
+//                    .show();
+//            return null;
+//        }
         byte[] croppedData = cropAndRotateImageBytes(data, rotation);
 
 //        try {
@@ -92,7 +97,7 @@ public class FileUtils {
     }
 
     public static byte[] copyFile(Context context, File file){
-        File pictureFile = getOutputMediaFile(context);
+        File pictureFile = getOutputMediaFile(context, true);
 
         if (pictureFile == null){
             Toast.makeText(context, "Image retrieval failed.", Toast.LENGTH_SHORT)
@@ -125,8 +130,14 @@ public class FileUtils {
 
     }
 
-    public static File saveImageToFileReally(Context context, byte[] data, int rotation){
-        File pictureFile = getOutputMediaFile(context);
+    public static File saveImageToFile(Context context, byte[] data, int rotation, boolean saveStyle){
+        File pictureFile = getOutputMediaFile(context, saveStyle);
+        try{
+            pictureFile.createNewFile();
+        } catch(Exception e){
+
+        }
+
         if (pictureFile == null){
             Toast.makeText(context, "Image retrieval failed.", Toast.LENGTH_SHORT)
                     .show();
@@ -148,7 +159,7 @@ public class FileUtils {
             Log.v("Error saving: ", e.toString());
             e.printStackTrace();
         }
-
+        Log.v("saveFileToImage", pictureFile.getAbsolutePath());
         return pictureFile;
 
     }
