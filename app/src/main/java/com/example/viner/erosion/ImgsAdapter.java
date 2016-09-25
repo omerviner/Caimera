@@ -135,6 +135,17 @@ public class ImgsAdapter extends
                 public void onClick(View v) {
                     ImageView imageView = (ImageView)v;
                     String imgSrc = (String)imageView.getTag();
+
+                    if (imgSrc.length() < 5){
+                        imgSrc = imgSrc.replaceAll("[^\\d.]", "");
+                        try {
+                            NetInterface.process(new NetCallback(), ((EffectsActivity) mContext).mChosenImage, null, imgSrc);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        return;
+//                        ImageView mImageView = (ImageView)((EffectsActivity)mContext).findViewById(R.id.main_image);
+                    }
                     Bitmap bitmap = BitmapFactory.decodeFile(imgSrc);
 //                    Bitmap bitmap = ((BitmapDrawable)imageView.getDrawable()).getBitmap();
 
@@ -222,6 +233,7 @@ public class ImgsAdapter extends
                         try {
                             loadingIcon = (ProgressBar)((EffectsActivity)mContext).findViewById(R.id.spin_kit);
                             NetInterface.process(new NetCallback(), ((EffectsActivity) mContext).mChosenImage, imgSrc);
+
                             DoubleBounce doubleBounce = new DoubleBounce();
                             loadingIcon.setIndeterminateDrawable(doubleBounce);
                             loadingIcon.setVisibility(View.VISIBLE);
