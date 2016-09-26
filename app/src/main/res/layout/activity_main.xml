@@ -36,14 +36,11 @@
                 android:layout_height="@dimen/capture_button_size"
                 android:layout_margin="10dp"
                 android:layout_marginRight="5dp"
-
                 android:layout_gravity="bottom"
                 android:layout_centerHorizontal="true"
                 android:background="@drawable/capture_btn"
-
                 android:adjustViewBounds="true"
                 android:scaleType="centerInside"
-
                 />
 
         </RelativeLayout>

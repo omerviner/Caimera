@@ -190,14 +190,11 @@ public class MainActivity extends AppCompatActivity {
                         // get an image from the camera
                         mCamera.takePicture(null, null, mPicture);
                     } else {
-
                         safeCameraOpenInView();
 //                        setLayout();
 //                        captureButton.bringToFront();
 
                     }
-
-
                 }
             }
         );
