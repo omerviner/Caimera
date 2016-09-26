@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -182,6 +183,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Trap the capture button.
         final Button captureButton = (Button) mCameraView.findViewById(R.id.button_capture);
+        final RecyclerView recyclerView = (RecyclerView) mCameraView.findViewById(R.id.imgs);
         captureButton.setOnClickListener(
             new View.OnClickListener() {
                 @Override
@@ -192,7 +194,8 @@ public class MainActivity extends AppCompatActivity {
                     } else {
                         safeCameraOpenInView();
 //                        setLayout();
-//                        captureButton.bringToFront();
+                        captureButton.bringToFront();
+                        recyclerView.bringToFront();
 
                     }
                 }
@@ -451,11 +454,14 @@ public class MainActivity extends AppCompatActivity {
 
         View rec_filler = findViewById(R.id.rec_filler);
         LinearLayout.LayoutParams params = (LinearLayout.LayoutParams)rec_filler.getLayoutParams();
-
         mStatusBarHeight = getStatusBarHeight();
-
         params.height = displayMetrics.heightPixels - displayMetrics.widthPixels - mStatusBarHeight;
         rec_filler.setLayoutParams(params);
+
+//        View square_filler = findViewById(R.id.square_filler);
+//        RelativeLayout.LayoutParams sq_params = (RelativeLayout.LayoutParams)square_filler.getLayoutParams();
+//        sq_params.height = displayMetrics.heightPixels - params.height;
+//        square_filler.setLayoutParams(sq_params);
 
         RelativeLayout imgsRelLayout = (RelativeLayout)findViewById(R.id.imgsRelativeLayout);
         RelativeLayout btnsRelLayout = (RelativeLayout)findViewById(R.id.btnsRelativeLayout);

@@ -49,7 +49,7 @@ public class ImgsAdapter extends
     // Store the context for easy access
     private Context mContext;
 
-    private PhotoViewAttacher mAttacher;
+//    private PhotoViewAttacher mAttacher;
     private int mStatusBarHeight;
     private int mWidthPixels;
     private int mHeightPixels;
@@ -211,8 +211,8 @@ public class ImgsAdapter extends
                                     .override(1000,1000)
                                     .into(imgPrev);
 
-                            mAttacher = new PhotoViewAttacher(imgPrev);
-                            mAttacher.setScaleType(ImageView.ScaleType.CENTER_CROP);
+//                            mAttacher = new PhotoViewAttacher(imgPrev);
+//                            mAttacher.setScaleType(ImageView.ScaleType.CENTER_CROP);
 //                            mAttacher.setDisplayMatrix(new Matrix());
 
                         } else {
@@ -241,7 +241,7 @@ public class ImgsAdapter extends
 
                             // Attach a PhotoViewAttacher, which takes care of all of the zooming functionality.
                             // (not needed unless you are going to change the drawable later)
-                            mAttacher = new PhotoViewAttacher(imgPrev);
+//                            mAttacher = new PhotoViewAttacher(imgPrev);
 //                            mAttacher.setScaleType(ImageView.ScaleType.CENTER_CROP);
 //                            mAttacher.getDisplayMatrix(new Matrix());
 
@@ -401,9 +401,9 @@ public class ImgsAdapter extends
         return mContext;
     }
 
-    public PhotoViewAttacher getPhotoViewAttacher() {
-        return mAttacher;
-    }
+//    public PhotoViewAttacher getPhotoViewAttacher() {
+//        return mAttacher;
+//    }
 
     public Bitmap getCroppedImage(ImageView photoView){
         photoView.setDrawingCacheEnabled(true);
