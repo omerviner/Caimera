@@ -40,13 +40,13 @@ public class ChooseImageActivity extends AppCompatActivity{
         final RecyclerView rvImgs = (RecyclerView) findViewById(R.id.imgs);
         rvImgs.setHasFixedSize(true);
 
-        // list path files to strings and set imgs
-        File[] imgs = mediaStorageDir.listFiles();
 
+        ArrayList<String> imgsPaths = MainActivity.getAllShownImagesPath(this);
         ArrayList<File> mImgs = new ArrayList<File>();
-        for (int i = 0; i < imgs.length; i++){
-            mImgs.add(imgs[i]);
+        for (int i = 0; i < imgsPaths.size(); i++){
+            mImgs.add(0, new File(imgsPaths.get(i)));
         }
+
 
         // Create adapter passing in the sample user data
         ImgsAdapter adapter = new ImgsAdapter(this, mImgs);

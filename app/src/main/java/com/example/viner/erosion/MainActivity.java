@@ -1,17 +1,21 @@
 package com.example.viner.erosion;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.hardware.Camera;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -180,17 +184,16 @@ public class MainActivity extends AppCompatActivity {
             mediaStorageDir.mkdir();
         }
 
-        // list path files to strings and set imgs
-        imgs = mediaStorageDir.listFiles();
-        final String path = android.os.Environment.DIRECTORY_DCIM;
+        ArrayList<String> imgsPaths = getAllShownImagesPath(this);
 
 
         mImgs = new ArrayList<File>();
-        for (int i = 0; i < imgs.length; i++){
-            if (!imgs[i].isDirectory()){
-                mImgs.add(imgs[i]);
-            }
+
+        for (int i = 0; i < imgsPaths.size(); i++){
+            mImgs.add(0, new File(imgsPaths.get(i)));
         }
+
+
 //        mImgs = Lists.newArrayList(imgs);
         // Create adapter passing in the sample user data
         ImgsAdapter adapter = new ImgsAdapter(this, mImgs);
@@ -450,6 +453,38 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
+    /**
+     * Getting All Images Path
+     *
+     * @param activity
+     * @return ArrayList with images Path
+     */
+    public static ArrayList<String> getAllShownImagesPath(Activity activity) {
+        Uri uri;
+        Cursor cursor;
+        int column_index_data, column_index_folder_name;
+        ArrayList<String> listOfAllImages = new ArrayList<String>();
+        String absolutePathOfImage = null;
+        uri = android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+
+        String[] projection = { MediaStore.MediaColumns.DATA,
+                MediaStore.Images.Media.BUCKET_DISPLAY_NAME };
+
+        cursor = activity.getContentResolver().query(uri, projection, null,
+                null, null);
+
+
+        column_index_data = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
+        column_index_folder_name = cursor
+                .getColumnIndexOrThrow(MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
+        while (cursor.moveToNext()) {
+            absolutePathOfImage = cursor.getString(column_index_data);
+
+            listOfAllImages.add(absolutePathOfImage);
+        }
+        return listOfAllImages;
+    }
 
 
 
