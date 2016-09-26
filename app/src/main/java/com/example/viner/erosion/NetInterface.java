@@ -53,7 +53,7 @@ public class NetInterface {
                 .url(uploadUrl)
                 .post(requestBody)
                 .build();
-
+        Log.d(TAG, "preSend");
         client.newCall(request).enqueue(new Callback() {
 
             @Override

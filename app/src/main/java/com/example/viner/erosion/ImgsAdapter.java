@@ -155,13 +155,15 @@ public class ImgsAdapter extends
                     String imgSrc = (String)imageView.getTag();
 
                     if (imgSrc.length() < 5){
+                        Log.d("CHOSSESTYLE","PRESET : " + ((EffectsActivity) mContext).mProcessingImage);
                         imgSrc = imgSrc.replaceAll("[^\\d.]", "");
                         try {
-                            if (((EffectsActivity) mContext).mProcessingImage = true){
+                            if (((EffectsActivity) mContext).mProcessingImage){
                                 return;
                             } else {
                                 ((EffectsActivity) mContext).mProcessingImage = true;
                             }
+                            Log.d("CHOSSESTYLE","ABOUT TO SEND");
                             loadingIcon = (ProgressBar)((EffectsActivity)mContext).findViewById(R.id.spin_kit);
                             DoubleBounce doubleBounce = new DoubleBounce();
                             loadingIcon.setIndeterminateDrawable(doubleBounce);
