@@ -31,6 +31,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
+
+import com.bumptech.glide.Glide;
 import com.google.common.collect.Lists;
 
 //import com.commonsware.cwac.cam2.CameraActivity;
@@ -42,6 +44,7 @@ import com.google.common.collect.Lists;
 //import com.commonsware.cwac.cam2.util.Size;
 
 import com.google.common.collect.Lists;
+import com.squareup.picasso.Picasso;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -179,6 +182,8 @@ public class MainActivity extends AppCompatActivity {
 
         // list path files to strings and set imgs
         imgs = mediaStorageDir.listFiles();
+        final String path = android.os.Environment.DIRECTORY_DCIM;
+
 
         mImgs = new ArrayList<File>();
         for (int i = 0; i < imgs.length; i++){
@@ -322,9 +327,21 @@ public class MainActivity extends AppCompatActivity {
             ImageView imgPrev = new ImageView(mContext);
             imgPrev.setId(R.id.main_image_frame);
 
-            Bitmap bitmap = BitmapFactory.decodeByteArray(croppedData, 0, croppedData.length);
-            Drawable drawable = new BitmapDrawable(bitmap);
-            imgPrev.setImageDrawable(drawable);
+//            Bitmap bitmap = BitmapFactory.decodeByteArray(croppedData, 0, croppedData.length);
+
+            Glide.with(mContext)
+                    .load(croppedData)
+                    .asBitmap()
+                    .centerCrop()
+                    .into(imgPrev);
+
+            //                                Picasso.with(mContext)
+//                                        .load(new File(imgSrc))
+//                                        .resize(mWidthPixels,0)
+//                                        .centerCrop()
+//                                        .into(imgPrev);
+//            Drawable drawable = new BitmapDrawable(bitmap);
+//            imgPrev.setImageDrawable(drawable);
 
             // Use PhotoView to view / crop / move / etc.
             PhotoViewAttacher mAttacher = new PhotoViewAttacher(imgPrev);
@@ -341,7 +358,7 @@ public class MainActivity extends AppCompatActivity {
 
             viewParams.height = displayMetrics.widthPixels;
 
-            mAttacher.setScale(displayMetrics.widthPixels / bitmap.getWidth());
+//            mAttacher.setScale(displayMetrics.widthPixels / bitmap.getWidth());
 
             imgPrev.setLayoutParams(viewParams);
 

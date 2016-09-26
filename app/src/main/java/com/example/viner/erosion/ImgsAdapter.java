@@ -11,6 +11,8 @@ import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
+import android.provider.ContactsContract;
 import android.support.annotation.AnyRes;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -26,6 +28,7 @@ import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 import uk.co.senab.photoview.PhotoViewAttacher;
@@ -68,8 +71,14 @@ public class ImgsAdapter extends
 
         // Set item views based on your views and data model
         ImageButton curImg = viewHolder.img;
+
+        ImageButton caimeraSign = viewHolder.caimera_sign;
+        caimeraSign.setVisibility(View.GONE);
+        caimeraSign.setClipToOutline(true);
+        caimeraSign.setTag(img.getAbsolutePath());
         curImg.setClipToOutline(true);
         curImg.setTag(img.getAbsolutePath());
+        caimeraSign.setTag(img.getAbsolutePath());
 
         String imgPath = img.getAbsolutePath();
         Log.v("imgPath", imgPath);
@@ -91,7 +100,7 @@ public class ImgsAdapter extends
             } else if (imgPath.equals("/e8")){
                 Picasso.with(mContext).load(R.drawable.e8).into(curImg);
             }
-
+            return;
         } else {
             if (img.isDirectory()){
                 return;
@@ -104,8 +113,13 @@ public class ImgsAdapter extends
                     .resize(150,150)
                     .centerCrop()
                     .into(curImg);
+
+            if (mContext instanceof EffectsActivity){
+                caimeraSign.setVisibility(View.VISIBLE);
+            }
+
         }
-        }
+    }
 
 
 
@@ -121,6 +135,8 @@ public class ImgsAdapter extends
         // for any view that will be set as you render a row
 
         public ImageButton img;
+        public ImageButton caimera_sign;
+
 
         // We also create a constructor that accepts the entire item row
         // and does the view lookups to find each subview
@@ -129,8 +145,10 @@ public class ImgsAdapter extends
             // to access the context from any ViewHolder instance.
             super(itemView);
 
+            caimera_sign = (ImageButton)itemView.findViewById(R.id.caimera_sign);
             img = (ImageButton)itemView.findViewById(R.id.imgBtn);
-            img.setOnClickListener(new View.OnClickListener() {
+
+            View.OnClickListener imgButtonOnClick = new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     ImageView imageView = (ImageView)v;
@@ -139,6 +157,11 @@ public class ImgsAdapter extends
                     if (imgSrc.length() < 5){
                         imgSrc = imgSrc.replaceAll("[^\\d.]", "");
                         try {
+                            if (((EffectsActivity) mContext).mProcessingImage = true){
+                                return;
+                            } else {
+                                ((EffectsActivity) mContext).mProcessingImage = true;
+                            }
                             NetInterface.process(new NetCallback(), ((EffectsActivity) mContext).mChosenImage, null, imgSrc);
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -230,6 +253,11 @@ public class ImgsAdapter extends
 //                        preview.addView(imgPrev);
 
                     } else if (mContext instanceof EffectsActivity){
+                        if (((EffectsActivity) mContext).mProcessingImage = true){
+                            return;
+                        } else {
+                            ((EffectsActivity) mContext).mProcessingImage = true;
+                        }
 
                         String imgWithEffect = null;
                         try {
@@ -263,16 +291,30 @@ public class ImgsAdapter extends
                         ((ChooseImageActivity)mContext).finish();
                     }
                 }
-            });
+            };
+
+            img.setOnClickListener(imgButtonOnClick);
+            caimera_sign.setOnClickListener(imgButtonOnClick);
+
 
             if (mContext instanceof EffectsActivity){
-                img.setOnLongClickListener(new View.OnLongClickListener(){
+
+                View.OnLongClickListener imgButtonOnLongClick = new View.OnLongClickListener(){
 
                     @Override
                     public boolean onLongClick(final View v) {
-                        v.setVisibility(View.GONE);
+                        if (((String)(v.getTag())).length() < 5){
+                            return false;
+                        }
+
+                        RelativeLayout parentView = (RelativeLayout)(v.getParent());
+                        parentView.setVisibility(RelativeLayout.GONE);
+                        parentView.removeAllViews();
+
                         File file = new File((String)v.getTag());
                         file.delete();
+
+
 
 //                        new MaterialDialog.Builder(mContext)
 //
@@ -294,7 +336,10 @@ public class ImgsAdapter extends
 
                         return true;
                     }
-                });
+                };
+
+                img.setOnLongClickListener(imgButtonOnLongClick);
+                caimera_sign.setOnLongClickListener(imgButtonOnLongClick);
             }
         }
     }
@@ -360,6 +405,8 @@ public class ImgsAdapter extends
                     loadingIcon.setVisibility(View.GONE);
                     ImageButton btn = (ImageButton)((MainActivity)mContext).findViewById(R.id.share);
                     btn.setVisibility(View.VISIBLE);
+                    ((EffectsActivity) mContext).mProcessingImage = false;
+
                 }
             });
 
@@ -392,6 +439,8 @@ public class ImgsAdapter extends
         /** return uri */
         return resUri;
     }
+
+
 
 }
 

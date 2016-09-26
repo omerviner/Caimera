@@ -46,6 +46,7 @@ public class EffectsActivity extends AppCompatActivity{
     String mChosenImage;
     String mChosenStyle;
     Context mContext;
+    boolean mProcessingImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
