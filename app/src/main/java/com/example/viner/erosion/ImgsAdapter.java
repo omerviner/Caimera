@@ -194,6 +194,7 @@ public class ImgsAdapter extends
                             Glide.with(mContext)
                                     .load(imgSrc)
                                     .centerCrop()
+                                    .override(1000,1000)
                                     .into(imgPrev);
 
                             mAttacher = new PhotoViewAttacher(imgPrev);
@@ -214,6 +215,7 @@ public class ImgsAdapter extends
                             Glide.with(mContext)
                                     .load(imgSrc)
                                     .centerCrop()
+                                    .override(1000,1000)
                                     .into(imgPrev);
 //                            Drawable drawable = new BitmapDrawable(mContext.getResources(), bitmap);
 //                            imgPrev.setImageDrawable(drawable);

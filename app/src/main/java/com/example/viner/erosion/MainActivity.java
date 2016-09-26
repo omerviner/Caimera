@@ -108,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
         mCameraView = findViewById(android.R.id.content);
         mContext = this;
 
-        this.overridePendingTransition(R.anim.anim_slide_out_right, R.anim.anim_slide_in_left);
+//        this.overridePendingTransition(R.anim.anim_slide_out_right, R.anim.anim_slide_in_left);
 //        Button btn = (Button)((MainActivity)mContext).findViewById(R.id.button_capture);
 //        btn.setVisibility(View.VISIBLE);
 
@@ -187,7 +187,6 @@ public class MainActivity extends AppCompatActivity {
 
         ArrayList<String> imgsPaths = getAllShownImagesPath(this);
 
-
         mImgs = new ArrayList<File>();
 
         for (int i = 0; i < imgsPaths.size(); i++){
@@ -226,6 +225,7 @@ public class MainActivity extends AppCompatActivity {
 
         params.height = displayMetrics.heightPixels - displayMetrics.widthPixels - statusBarHeight;
         rec_filler.setLayoutParams(params);
+//        Params);
 
         RelativeLayout imgsRelLayout = (RelativeLayout)findViewById(R.id.imgsRelativeLayout);
         RelativeLayout btnsRelLayout = (RelativeLayout)findViewById(R.id.btnsRelativeLayout);
@@ -254,6 +254,7 @@ public class MainActivity extends AppCompatActivity {
                         safeCameraOpenInView();
                         captureButton.bringToFront();
                         rvImgs.bringToFront();
+                        rvImgs.invalidate();
                     }
 
 
@@ -277,7 +278,8 @@ public class MainActivity extends AppCompatActivity {
         if(qOpened == true) {
             mPreview = new Preview(this.getApplicationContext(), mCamera, mCameraView);
             FrameLayout preview = (FrameLayout) mCameraView.findViewById(R.id.camera_preview);
-            preview.addView(mPreview);
+
+                    preview.addView(mPreview);
             mPreview.startCameraPreview();
             Log.v("safeCameraOpenInView", "succ");
         }
@@ -339,6 +341,7 @@ public class MainActivity extends AppCompatActivity {
             Glide.with(mContext)
                     .load(croppedData)
                     .asBitmap()
+                    .override(1000, 1000)
                     .centerCrop()
                     .into(imgPrev);
 
@@ -359,7 +362,7 @@ public class MainActivity extends AppCompatActivity {
             RelativeLayout.LayoutParams viewParams = new RelativeLayout.LayoutParams(
                     RelativeLayout.LayoutParams.MATCH_PARENT,
                     RelativeLayout.LayoutParams.WRAP_CONTENT);
-//            viewParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+            viewParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
 
             DisplayMetrics displayMetrics = mContext.getResources().getDisplayMetrics();
 
