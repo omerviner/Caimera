@@ -27,6 +27,7 @@ import android.view.ViewGroup;
 import android.widget.*;
 
 import com.bumptech.glide.Glide;
+import com.github.ybq.android.spinkit.SpinKitView;
 import com.github.ybq.android.spinkit.style.DoubleBounce;
 import com.squareup.picasso.Picasso;
 
@@ -52,7 +53,7 @@ public class ImgsAdapter extends
     private int mStatusBarHeight;
     private int mWidthPixels;
     private int mHeightPixels;
-    private ProgressBar loadingIcon;
+    private SpinKitView loadingIcon;
 
 
     @Override
@@ -168,9 +169,7 @@ public class ImgsAdapter extends
                                 ((EffectsActivity) mContext).mProcessingImage = true;
                             }
                             Log.d("CHOSSESTYLE","ABOUT TO SEND");
-                            loadingIcon = (ProgressBar)((EffectsActivity)mContext).findViewById(R.id.spin_kit);
-                            DoubleBounce doubleBounce = new DoubleBounce();
-                            loadingIcon.setIndeterminateDrawable(doubleBounce);
+                            loadingIcon = (SpinKitView) ((EffectsActivity)mContext).findViewById(R.id.spin_kit);
                             loadingIcon.setVisibility(View.VISIBLE);
                             NetInterface.process(new NetCallback(), ((EffectsActivity) mContext).mChosenImage, null, imgSrc);
                         } catch (Exception e) {
@@ -284,11 +283,8 @@ public class ImgsAdapter extends
 
                         String imgWithEffect = null;
                         try {
-                            loadingIcon = (ProgressBar)((EffectsActivity)mContext).findViewById(R.id.spin_kit);
+                            loadingIcon = (SpinKitView) ((EffectsActivity)mContext).findViewById(R.id.spin_kit);
                             NetInterface.process(new NetCallback(), ((EffectsActivity) mContext).mChosenImage, imgSrc);
-
-                            DoubleBounce doubleBounce = new DoubleBounce();
-                            loadingIcon.setIndeterminateDrawable(doubleBounce);
                             loadingIcon.setVisibility(View.VISIBLE);
 
                         } catch (Exception e) {
@@ -424,8 +420,14 @@ public class ImgsAdapter extends
             Log.v("NetCallback", "in call function");
             if(result == null){
                 //op failed
-                Toast.makeText(mContext, "Connection Error. Try Again", Toast.LENGTH_SHORT)
-                .show();
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(mContext, "Connection Error. Try Again", Toast.LENGTH_SHORT)
+                                .show();
+                    }
+                });
+
                 //TODO:fill with error handling
             }
             final Bitmap bmp = BitmapFactory.decodeStream(result);
