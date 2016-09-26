@@ -159,6 +159,9 @@ public class ImgsAdapter extends
                             } else {
                                 ((EffectsActivity) mContext).mProcessingImage = true;
                             }
+                            loadingIcon = (ProgressBar)((EffectsActivity)mContext).findViewById(R.id.spin_kit);
+                            DoubleBounce doubleBounce = new DoubleBounce();
+                            loadingIcon.setIndeterminateDrawable(doubleBounce);
                             NetInterface.process(new NetCallback(), ((EffectsActivity) mContext).mChosenImage, null, imgSrc);
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -411,9 +414,11 @@ public class ImgsAdapter extends
                 public void run() {
                     mImageView.setImageBitmap(bmp);
                     loadingIcon.setVisibility(View.GONE);
+
                     ImageButton btn = (ImageButton)((MainActivity)mContext).findViewById(R.id.share);
                     btn.setVisibility(View.VISIBLE);
                     ((EffectsActivity) mContext).mProcessingImage = false;
+
 
                 }
             });
