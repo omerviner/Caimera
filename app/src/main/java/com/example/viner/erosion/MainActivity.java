@@ -191,7 +191,10 @@ public class MainActivity extends AppCompatActivity {
         mImgs = new ArrayList<File>();
 
         for (int i = 0; i < imgsPaths.size(); i++){
-            mImgs.add(0, new File(imgsPaths.get(i)));
+            File file = new File(imgsPaths.get(i));
+            if (file.isFile()){
+                mImgs.add(0, file);
+            }
         }
 
 
@@ -356,7 +359,7 @@ public class MainActivity extends AppCompatActivity {
             RelativeLayout.LayoutParams viewParams = new RelativeLayout.LayoutParams(
                     RelativeLayout.LayoutParams.MATCH_PARENT,
                     RelativeLayout.LayoutParams.WRAP_CONTENT);
-            viewParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+//            viewParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
 
             DisplayMetrics displayMetrics = mContext.getResources().getDisplayMetrics();
 
@@ -435,7 +438,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-
         releaseCameraAndPreview();
     }
 

@@ -18,8 +18,8 @@
 
     <LinearLayout
         android:id="@+id/innerRelativeLayout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
         android:layout_alignParentBottom="true"
         android:gravity="bottom"
         android:orientation="vertical"
@@ -35,14 +35,11 @@
                 android:layout_height="@dimen/capture_button_size"
                 android:layout_margin="10dp"
                 android:layout_marginRight="5dp"
-
                 android:layout_gravity="bottom"
                 android:layout_centerHorizontal="true"
                 android:background="@drawable/capture_btn"
-
                 android:adjustViewBounds="true"
                 android:scaleType="centerInside"
-
                 />
 
         </RelativeLayout>

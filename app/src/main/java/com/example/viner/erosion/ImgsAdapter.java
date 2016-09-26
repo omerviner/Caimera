@@ -23,6 +23,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
 
+import com.bumptech.glide.Glide;
 import com.github.ybq.android.spinkit.style.DoubleBounce;
 import com.squareup.picasso.Picasso;
 
@@ -106,7 +107,6 @@ public class ImgsAdapter extends
                 return;
             }
 
-
             Picasso
                     .with(mContext)
                     .load(mImgs.get(position))
@@ -121,8 +121,6 @@ public class ImgsAdapter extends
         }
     }
 
-
-
     @Override
     public int getItemCount() {
         return mImgs.size();
@@ -136,7 +134,6 @@ public class ImgsAdapter extends
 
         public ImageButton img;
         public ImageButton caimera_sign;
-
 
         // We also create a constructor that accepts the entire item row
         // and does the view lookups to find each subview
@@ -169,7 +166,7 @@ public class ImgsAdapter extends
                         return;
 //                        ImageView mImageView = (ImageView)((EffectsActivity)mContext).findViewById(R.id.main_image);
                     }
-                    Bitmap bitmap = BitmapFactory.decodeFile(imgSrc);
+//                    Bitmap bitmap = BitmapFactory.decodeFile(imgSrc);
 //                    Bitmap bitmap = ((BitmapDrawable)imageView.getDrawable()).getBitmap();
 
                     if (mContext instanceof MainActivity) {
@@ -192,8 +189,13 @@ public class ImgsAdapter extends
 //                                        .centerCrop()
 //                                        .into(imgPrev);
 //                            }
-                            Drawable drawable = new BitmapDrawable(mContext.getResources(), bitmap);
-                            imgPrev.setImageDrawable(drawable);
+//                            Drawable drawable = new BitmapDrawable(mContext.getResources(), bitmap);
+//                            imgPrev.setImageDrawable(drawable);
+                            Glide.with(mContext)
+                                    .load(imgSrc)
+                                    .centerCrop()
+                                    .into(imgPrev);
+
                             mAttacher = new PhotoViewAttacher(imgPrev);
                             mAttacher.setScaleType(ImageView.ScaleType.CENTER_CROP);
                             mAttacher.setDisplayMatrix(new Matrix());
@@ -209,8 +211,12 @@ public class ImgsAdapter extends
 //                        Drawable bitmap = getResources().getDrawable(R.drawable.wallpaper);
 
                             //////////////
-                            Drawable drawable = new BitmapDrawable(mContext.getResources(), bitmap);
-                            imgPrev.setImageDrawable(drawable);
+                            Glide.with(mContext)
+                                    .load(imgSrc)
+                                    .centerCrop()
+                                    .into(imgPrev);
+//                            Drawable drawable = new BitmapDrawable(mContext.getResources(), bitmap);
+//                            imgPrev.setImageDrawable(drawable);
                             ///////////////
 //                            Picasso.with(mContext)
 //                                    .load(new File(imgSrc))
@@ -394,6 +400,8 @@ public class ImgsAdapter extends
             Log.v("NetCallback", "in call function");
             if(result == null){
                 //op failed
+                Toast.makeText(mContext, "Connection Error. Try Again", Toast.LENGTH_SHORT)
+                .show();
                 //TODO:fill with error handling
             }
             final Bitmap bmp = BitmapFactory.decodeStream(result);

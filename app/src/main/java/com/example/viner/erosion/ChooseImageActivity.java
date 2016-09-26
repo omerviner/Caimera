@@ -44,7 +44,10 @@ public class ChooseImageActivity extends AppCompatActivity{
         ArrayList<String> imgsPaths = MainActivity.getAllShownImagesPath(this);
         ArrayList<File> mImgs = new ArrayList<File>();
         for (int i = 0; i < imgsPaths.size(); i++){
-            mImgs.add(0, new File(imgsPaths.get(i)));
+            File file = new File(imgsPaths.get(i));
+            if (file.isFile()){
+                mImgs.add(0, file);
+            }
         }
 
 

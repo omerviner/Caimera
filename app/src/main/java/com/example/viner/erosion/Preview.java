@@ -104,6 +104,9 @@ class Preview extends SurfaceView implements SurfaceHolder.Callback {
         // stop preview before making changes
         try {
 
+            if (mCamera == null){
+                return;
+            }
             Camera.Parameters parameters = mCamera.getParameters();
 
 
