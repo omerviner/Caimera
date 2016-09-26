@@ -1,32 +1,21 @@
 package com.example.viner.erosion;
-
-import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.hardware.Camera;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -34,46 +23,11 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
-
 import com.bumptech.glide.Glide;
-import com.google.common.collect.Lists;
-
-//import com.commonsware.cwac.cam2.CameraActivity;
-//import com.commonsware.cwac.cam2.CameraView;
-//import com.commonsware.cwac.cam2.Facing;
-//import com.commonsware.cwac.cam2.FlashMode;
-//import com.commonsware.cwac.cam2.FocusMode;
-//import com.commonsware.cwac.cam2.ZoomStyle;
-//import com.commonsware.cwac.cam2.util.Size;
-
-import com.google.common.collect.Lists;
-import com.squareup.picasso.Picasso;
-
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.lang.reflect.Array;
-import java.net.HttpURLConnection;
-import java.net.ProtocolException;
-import java.net.URL;
-import java.nio.ByteBuffer;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.concurrent.locks.Lock;
-
 import uk.co.senab.photoview.PhotoViewAttacher;
 
 
@@ -195,7 +149,6 @@ public class MainActivity extends AppCompatActivity {
                 mImgs.add(0, file);
             }
         }
-
 
 //        mImgs = Lists.newArrayList(imgs);
         // Create adapter passing in the sample user data
@@ -354,27 +307,33 @@ public class MainActivity extends AppCompatActivity {
 //            imgPrev.setImageDrawable(drawable);
 
             // Use PhotoView to view / crop / move / etc.
-            PhotoViewAttacher mAttacher = new PhotoViewAttacher(imgPrev);
-            mAttacher.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            mAttacher.getDisplayMatrix(new Matrix());
+//            PhotoViewAttacher mAttacher = new PhotoViewAttacher(imgPrev);
+//            mAttacher.setScaleType(ImageView.ScaleType.CENTER_CROP);
+//            mAttacher.getDisplayMatrix(new Matrix());
 
             // PhotoView params
-            RelativeLayout.LayoutParams viewParams = new RelativeLayout.LayoutParams(
-                    RelativeLayout.LayoutParams.MATCH_PARENT,
-                    RelativeLayout.LayoutParams.WRAP_CONTENT);
-            viewParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+//            RelativeLayout.LayoutParams viewParams = new RelativeLayout.LayoutParams(
+//                    RelativeLayout.LayoutParams.MATCH_PARENT,
+//                    RelativeLayout.LayoutParams.WRAP_CONTENT);
+//            viewParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+//
+//            DisplayMetrics displayMetrics = mContext.getResources().getDisplayMetrics();
+//
+//            viewParams.height = displayMetrics.widthPixels;
 
-            DisplayMetrics displayMetrics = mContext.getResources().getDisplayMetrics();
+//            mAttacher.setScale(displayMetrics.widthPixels / imgPrev.getWidth());
 
-            viewParams.height = displayMetrics.widthPixels;
-
-//            mAttacher.setScale(displayMetrics.widthPixels / bitmap.getWidth());
-
-            imgPrev.setLayoutParams(viewParams);
+//            imgPrev.setLayoutParams(viewParams);
 
             // Setting new view
             preview.addView(imgPrev);
 
+//            DisplayMetrics displayMetrics = mContext.getResources().getDisplayMetrics();
+//            int mWidthPixels = displayMetrics.widthPixels;
+//
+//            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)preview.getLayoutParams();
+//            params.height = mWidthPixels;
+//            preview.setLayoutParams(params);
 
 //            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)preview.getLayoutParams();
 ////                        imgPrev.setImageBitmap(bitmap);
