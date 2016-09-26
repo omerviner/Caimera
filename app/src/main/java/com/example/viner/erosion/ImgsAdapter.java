@@ -1,5 +1,6 @@
 package com.example.viner.erosion;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -245,15 +246,15 @@ public class ImgsAdapter extends
                             RelativeLayout.LayoutParams viewParams = new RelativeLayout.LayoutParams(
                                     RelativeLayout.LayoutParams.WRAP_CONTENT,
                                     RelativeLayout.LayoutParams.WRAP_CONTENT);
-                            viewParams.height = mWidthPixels;
+                            viewParams.height = mWidthPixels + mStatusBarHeight;
                             viewParams.width = mWidthPixels;
                             viewParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-//                            imgPrev.setLayoutParams(viewParams);
+                            imgPrev.setLayoutParams(viewParams);
                             preview.addView(imgPrev);
 
                             RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)preview.getLayoutParams();
-                            params.height = mWidthPixels;
-//                            preview.setLayoutParams(params);
+                            params.height = mWidthPixels + mStatusBarHeight;
+                            preview.setLayoutParams(viewParams);
                         }
 
 
@@ -389,9 +390,10 @@ public class ImgsAdapter extends
         mContext = context;
 
         DisplayMetrics displayMetrics = mContext.getResources().getDisplayMetrics();
-        mStatusBarHeight = (int)Math.ceil(25 * displayMetrics.density);
+
+        mStatusBarHeight = getStatusBarHeight();
         mWidthPixels = displayMetrics.widthPixels;
-        mHeightPixels = displayMetrics.heightPixels;
+        mHeightPixels = displayMetrics.widthPixels;
 
     }
 
@@ -468,6 +470,22 @@ public class ImgsAdapter extends
         return resUri;
     }
 
+    @SuppressLint("NewApi")
+    private int getStatusBarHeight() {
+        // getRealMetrics is only available with API 17 and +
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            DisplayMetrics metrics = new DisplayMetrics();
+            ((Activity)mContext).getWindowManager().getDefaultDisplay().getMetrics(metrics);
+            int usableHeight = metrics.heightPixels;
+            ((Activity)mContext).getWindowManager().getDefaultDisplay().getRealMetrics(metrics);
+            int realHeight = metrics.heightPixels;
+            if (realHeight > usableHeight)
+                return realHeight - usableHeight;
+            else
+                return 0;
+        }
+        return 0;
+    }
 
 
 }
