@@ -152,6 +152,7 @@ public class ImgsAdapter extends
                     String imgSrc = (String)imageView.getTag();
 
                     if (imgSrc.length() < 5){
+                        Log.d("CHOSSESTYLE","PRESET");
                         imgSrc = imgSrc.replaceAll("[^\\d.]", "");
                         try {
                             if (((EffectsActivity) mContext).mProcessingImage = true){
