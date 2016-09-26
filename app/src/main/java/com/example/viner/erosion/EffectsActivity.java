@@ -55,6 +55,8 @@ public class EffectsActivity extends AppCompatActivity{
         mContext = this;
 //        Bundle extras = getIntent().getExtras();
 
+        this.overridePendingTransition(R.anim.anim_slide_in_left, R.anim.anim_slide_out_right);
+
         byte[] chosenImage = getIntent().getByteArrayExtra("imageData");
 //        File file = FileUtils.saveImageToFile(this, chosenImage, 0, false);
 //        mChosenImage = extras.getString("image");

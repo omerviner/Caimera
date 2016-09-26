@@ -108,6 +108,7 @@ public class MainActivity extends AppCompatActivity {
         mCameraView = findViewById(android.R.id.content);
         mContext = this;
 
+        this.overridePendingTransition(R.anim.anim_slide_out_right, R.anim.anim_slide_in_left);
 //        Button btn = (Button)((MainActivity)mContext).findViewById(R.id.button_capture);
 //        btn.setVisibility(View.VISIBLE);
 
@@ -425,6 +426,8 @@ public class MainActivity extends AppCompatActivity {
         new SaveTempImage(new saveCallback()).execute(byteArray);
         Intent intent = new Intent(this, EffectsActivity.class);
 //        intent.putExtra("imageData", byteArray);
+
+
         startActivity(intent);
 
     }
