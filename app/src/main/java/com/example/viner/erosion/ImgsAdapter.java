@@ -199,6 +199,8 @@ public class ImgsAdapter extends
 //                            }
 //                            Drawable drawable = new BitmapDrawable(mContext.getResources(), bitmap);
 //                            imgPrev.setImageDrawable(drawable);
+
+
                             Glide.with(mContext)
                                     .load(imgSrc)
                                     .centerCrop()
@@ -207,7 +209,7 @@ public class ImgsAdapter extends
 
                             mAttacher = new PhotoViewAttacher(imgPrev);
                             mAttacher.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                            mAttacher.setDisplayMatrix(new Matrix());
+//                            mAttacher.setDisplayMatrix(new Matrix());
 
                         } else {
                             ((MainActivity) mContext).releaseCameraAndPreview();
@@ -222,8 +224,8 @@ public class ImgsAdapter extends
                             //////////////
                             Glide.with(mContext)
                                     .load(imgSrc)
-                                    .centerCrop()
                                     .override(1000,1000)
+                                    .centerCrop()
                                     .into(imgPrev);
 //                            Drawable drawable = new BitmapDrawable(mContext.getResources(), bitmap);
 //                            imgPrev.setImageDrawable(drawable);
@@ -236,8 +238,8 @@ public class ImgsAdapter extends
                             // Attach a PhotoViewAttacher, which takes care of all of the zooming functionality.
                             // (not needed unless you are going to change the drawable later)
                             mAttacher = new PhotoViewAttacher(imgPrev);
-                            mAttacher.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                            mAttacher.getDisplayMatrix(new Matrix());
+//                            mAttacher.setScaleType(ImageView.ScaleType.CENTER_CROP);
+//                            mAttacher.getDisplayMatrix(new Matrix());
 
 //                        ImageView imgPrev = new ImageView(mContext);
                             RelativeLayout.LayoutParams viewParams = new RelativeLayout.LayoutParams(
@@ -246,12 +248,12 @@ public class ImgsAdapter extends
                             viewParams.height = mWidthPixels;
                             viewParams.width = mWidthPixels;
                             viewParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-                            imgPrev.setLayoutParams(viewParams);
+//                            imgPrev.setLayoutParams(viewParams);
                             preview.addView(imgPrev);
 
                             RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)preview.getLayoutParams();
                             params.height = mWidthPixels;
-                            preview.setLayoutParams(params);
+//                            preview.setLayoutParams(params);
                         }
 
 

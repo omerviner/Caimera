@@ -307,27 +307,33 @@ public class MainActivity extends AppCompatActivity {
 //            imgPrev.setImageDrawable(drawable);
 
             // Use PhotoView to view / crop / move / etc.
-            PhotoViewAttacher mAttacher = new PhotoViewAttacher(imgPrev);
-            mAttacher.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            mAttacher.getDisplayMatrix(new Matrix());
+//            PhotoViewAttacher mAttacher = new PhotoViewAttacher(imgPrev);
+//            mAttacher.setScaleType(ImageView.ScaleType.CENTER_CROP);
+//            mAttacher.getDisplayMatrix(new Matrix());
 
             // PhotoView params
-            RelativeLayout.LayoutParams viewParams = new RelativeLayout.LayoutParams(
-                    RelativeLayout.LayoutParams.MATCH_PARENT,
-                    RelativeLayout.LayoutParams.WRAP_CONTENT);
-            viewParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+//            RelativeLayout.LayoutParams viewParams = new RelativeLayout.LayoutParams(
+//                    RelativeLayout.LayoutParams.MATCH_PARENT,
+//                    RelativeLayout.LayoutParams.WRAP_CONTENT);
+//            viewParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+//
+//            DisplayMetrics displayMetrics = mContext.getResources().getDisplayMetrics();
+//
+//            viewParams.height = displayMetrics.widthPixels;
 
-            DisplayMetrics displayMetrics = mContext.getResources().getDisplayMetrics();
+//            mAttacher.setScale(displayMetrics.widthPixels / imgPrev.getWidth());
 
-            viewParams.height = displayMetrics.widthPixels;
-
-//            mAttacher.setScale(displayMetrics.widthPixels / bitmap.getWidth());
-
-            imgPrev.setLayoutParams(viewParams);
+//            imgPrev.setLayoutParams(viewParams);
 
             // Setting new view
             preview.addView(imgPrev);
 
+//            DisplayMetrics displayMetrics = mContext.getResources().getDisplayMetrics();
+//            int mWidthPixels = displayMetrics.widthPixels;
+//
+//            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)preview.getLayoutParams();
+//            params.height = mWidthPixels;
+//            preview.setLayoutParams(params);
 
 //            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)preview.getLayoutParams();
 ////                        imgPrev.setImageBitmap(bitmap);
