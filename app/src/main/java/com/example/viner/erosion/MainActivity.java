@@ -1,4 +1,5 @@
 package com.example.viner.erosion;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -7,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.hardware.Camera;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
@@ -45,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<File> mImgs;
     String tempImagePath;
     boolean opened;
-
+    int mStatusBarHeight;
 
     private static final int REQUEST_CAMERA = 0;
     private static final int REQUEST_CAMERA_PERMISSION = 1;
@@ -161,7 +163,7 @@ public class MainActivity extends AppCompatActivity {
         // That's all!
 
 //        LayoutInflater factory = getLayoutInflater();
-//
+
 //        View mainView = factory.inflate(R.layout.activity_main, null);
 
 //        View rec_filler = (View)findViewById(R.id.rec_filler);
@@ -169,23 +171,7 @@ public class MainActivity extends AppCompatActivity {
 //        ViewGroup.LayoutParams params = rec_filler.getLayoutParams();
 //        params.height = rec_filler.getMeasuredWidth();
 //        rec_filler.setLayoutParams(params);
-        DisplayMetrics displayMetrics = this.getResources().getDisplayMetrics();
-
-        View rec_filler = findViewById(R.id.rec_filler);
-        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams)rec_filler.getLayoutParams();
-
-        int statusBarHeight = (int)Math.ceil(25 * displayMetrics.density);
-
-        params.height = displayMetrics.heightPixels - displayMetrics.widthPixels - statusBarHeight;
-        rec_filler.setLayoutParams(params);
-//        Params);
-
-        RelativeLayout imgsRelLayout = (RelativeLayout)findViewById(R.id.imgsRelativeLayout);
-        RelativeLayout btnsRelLayout = (RelativeLayout)findViewById(R.id.btnsRelativeLayout);
-        RelativeLayout.LayoutParams relParams = (RelativeLayout.LayoutParams)imgsRelLayout.getLayoutParams();
-        relParams.height = params.height;
-        imgsRelLayout.setLayoutParams(relParams);
-        btnsRelLayout.setLayoutParams(relParams);
+        setLayout();
 
         opened = safeCameraOpenInView();
 
@@ -205,12 +191,10 @@ public class MainActivity extends AppCompatActivity {
                         mCamera.takePicture(null, null, mPicture);
                     } else {
                         safeCameraOpenInView();
-                        captureButton.bringToFront();
-                        rvImgs.bringToFront();
-                        rvImgs.invalidate();
+//                        setLayout();
+//                        captureButton.bringToFront();
+
                     }
-
-
                 }
             }
         );
@@ -236,6 +220,7 @@ public class MainActivity extends AppCompatActivity {
             mPreview.startCameraPreview();
             Log.v("safeCameraOpenInView", "succ");
         }
+
         return qOpened;
     }
 
@@ -298,6 +283,7 @@ public class MainActivity extends AppCompatActivity {
                     .centerCrop()
                     .into(imgPrev);
 
+
             //                                Picasso.with(mContext)
 //                                        .load(new File(imgSrc))
 //                                        .resize(mWidthPixels,0)
@@ -317,13 +303,20 @@ public class MainActivity extends AppCompatActivity {
 //                    RelativeLayout.LayoutParams.WRAP_CONTENT);
 //            viewParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
 //
-//            DisplayMetrics displayMetrics = mContext.getResources().getDisplayMetrics();
+            DisplayMetrics displayMetrics = mContext.getResources().getDisplayMetrics();
 //
 //            viewParams.height = displayMetrics.widthPixels;
 
 //            mAttacher.setScale(displayMetrics.widthPixels / imgPrev.getWidth());
 
 //            imgPrev.setLayoutParams(viewParams);
+            RelativeLayout.LayoutParams viewParams = new RelativeLayout.LayoutParams(
+                    RelativeLayout.LayoutParams.WRAP_CONTENT,
+                    RelativeLayout.LayoutParams.WRAP_CONTENT);
+            viewParams.height = displayMetrics.widthPixels + mStatusBarHeight;
+            viewParams.width = displayMetrics.widthPixels;
+            viewParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+            imgPrev.setLayoutParams(viewParams);
 
             // Setting new view
             preview.addView(imgPrev);
@@ -453,6 +446,41 @@ public class MainActivity extends AppCompatActivity {
         return listOfAllImages;
     }
 
+    private void setLayout(){
+        DisplayMetrics displayMetrics = this.getResources().getDisplayMetrics();
+
+        View rec_filler = findViewById(R.id.rec_filler);
+        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams)rec_filler.getLayoutParams();
+
+        mStatusBarHeight = getStatusBarHeight();
+
+        params.height = displayMetrics.heightPixels - displayMetrics.widthPixels - mStatusBarHeight;
+        rec_filler.setLayoutParams(params);
+
+        RelativeLayout imgsRelLayout = (RelativeLayout)findViewById(R.id.imgsRelativeLayout);
+        RelativeLayout btnsRelLayout = (RelativeLayout)findViewById(R.id.btnsRelativeLayout);
+        RelativeLayout.LayoutParams relParams = (RelativeLayout.LayoutParams)imgsRelLayout.getLayoutParams();
+        relParams.height = params.height;
+        imgsRelLayout.setLayoutParams(relParams);
+        btnsRelLayout.setLayoutParams(relParams);
+    }
+
+    @SuppressLint("NewApi")
+    private int getStatusBarHeight() {
+        // getRealMetrics is only available with API 17 and +
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            DisplayMetrics metrics = new DisplayMetrics();
+            getWindowManager().getDefaultDisplay().getMetrics(metrics);
+            int usableHeight = metrics.heightPixels;
+            getWindowManager().getDefaultDisplay().getRealMetrics(metrics);
+            int realHeight = metrics.heightPixels;
+            if (realHeight > usableHeight)
+                return realHeight - usableHeight;
+            else
+                return 0;
+        }
+        return 0;
+    }
 
 
 }
