@@ -66,9 +66,10 @@ public class ImgsAdapter extends
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder viewHolder, int position) {
+    public void onBindViewHolder(final ViewHolder viewHolder, final int position) {
         // Get the data model based on position
         File img = mImgs.get(position);
+
 
         // Set item views based on your views and data model
         ImageButton curImg = viewHolder.img;
@@ -116,6 +117,8 @@ public class ImgsAdapter extends
 
             if (mContext instanceof EffectsActivity){
                 caimeraSign.setVisibility(View.VISIBLE);
+
+
             }
 
         }
@@ -137,7 +140,7 @@ public class ImgsAdapter extends
 
         // We also create a constructor that accepts the entire item row
         // and does the view lookups to find each subview
-        public ViewHolder(View itemView) {
+        public ViewHolder(final View itemView) {
             // Stores the itemView in a public final member variable that can be used
             // to access the context from any ViewHolder instance.
             super(itemView);
@@ -285,6 +288,51 @@ public class ImgsAdapter extends
 
                         ImageView mImageView = (ImageView)((EffectsActivity)mContext).findViewById(R.id.main_image);
 
+
+                        View.OnLongClickListener imgButtonOnLongClick = new View.OnLongClickListener(){
+
+                            @Override
+                            public boolean onLongClick(final View v) {
+
+                                ImageButton caimeraBtn = (ImageButton)v.findViewById(R.id.caimera_sign);
+                                String src = (String)caimeraBtn.getTag();
+
+                                if (src.length() < 5){
+                                    return false;
+                                }
+
+                                mImgs.remove(getPosition()); // 8 ready-made effects
+
+//                        File file = new File(src);
+//                        file.delete();
+
+
+
+//                        new MaterialDialog.Builder(mContext)
+//
+//                                .title(R.string.title)
+//                                .content(R.string.content)
+//                                .positiveText(R.string.agree)
+//                                .negativeText(R.string.disagree)
+//                                .onPositive(new MaterialDialog.SingleButtonCallback() {
+//                                    @Override
+//                                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+////                                        Log.v("Dialog", "Was positive");
+//                                        img.setVisibility(View.GONE);
+//                                        File file = new File((String)img.getTag());
+//                                        file.delete();
+                                        notifyDataSetChanged();
+//                                    }
+//                                })
+//                                .show();
+
+                                return true;
+                            }
+                        };
+
+                        itemView.setOnLongClickListener(imgButtonOnLongClick);
+
+
                         // Set the Drawable displayed
 //                        Drawable drawable = new BitmapDrawable(mContext.getResources(), bitmap);
 //                        mImageView.setImageDrawable(drawable);
@@ -310,47 +358,8 @@ public class ImgsAdapter extends
 
             if (mContext instanceof EffectsActivity){
 
-                View.OnLongClickListener imgButtonOnLongClick = new View.OnLongClickListener(){
-
-                    @Override
-                    public boolean onLongClick(final View v) {
-                        if (((String)(v.getTag())).length() < 5){
-                            return false;
-                        }
-
-                        RelativeLayout parentView = (RelativeLayout)(v.getParent());
-                        parentView.setVisibility(RelativeLayout.GONE);
-                        parentView.removeAllViews();
-
-                        File file = new File((String)v.getTag());
-                        file.delete();
-
-
-
-//                        new MaterialDialog.Builder(mContext)
-//
-//                                .title(R.string.title)
-//                                .content(R.string.content)
-//                                .positiveText(R.string.agree)
-//                                .negativeText(R.string.disagree)
-//                                .onPositive(new MaterialDialog.SingleButtonCallback() {
-//                                    @Override
-//                                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-////                                        Log.v("Dialog", "Was positive");
-//                                        img.setVisibility(View.GONE);
-//                                        File file = new File((String)img.getTag());
-//                                        file.delete();
-//                                        notifyDataSetChanged();
-//                                    }
-//                                })
-//                                .show();
-
-                        return true;
-                    }
-                };
-
-                img.setOnLongClickListener(imgButtonOnLongClick);
-                caimera_sign.setOnLongClickListener(imgButtonOnLongClick);
+//                img.setOnLongClickListener(imgButtonOnLongClick);
+//                caimera_sign.setOnLongClickListener(imgButtonOnLongClick);
             }
         }
     }
