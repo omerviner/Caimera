@@ -1,6 +1,7 @@
 package com.example.viner.erosion;
 
 import android.app.Activity;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -47,12 +48,15 @@ public class EffectsActivity extends AppCompatActivity{
     String mChosenStyle;
     Context mContext;
     boolean mProcessingImage;
+    public static boolean active;
+    public NotificationManager mNotificationManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.effects);
         mContext = this;
+        mNotificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
 //        Bundle extras = getIntent().getExtras();
 
 //        this.overridePendingTransition(R.anim.anim_slide_in_left, R.anim.anim_slide_out_right);
@@ -163,6 +167,7 @@ public class EffectsActivity extends AppCompatActivity{
         try {
             ImageView mImageView = (ImageView)((EffectsActivity)mContext).findViewById(R.id.main_image);
             mImageView.buildDrawingCache();
+            mImageView.setDrawingCacheEnabled(true);
             Bitmap bmp = mImageView.getDrawingCache();
 
             String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
@@ -172,6 +177,7 @@ public class EffectsActivity extends AppCompatActivity{
             bmp.compress(Bitmap.CompressFormat.PNG, 100, fOut);
             fOut.flush();
             fOut.close();
+            mImageView.setDrawingCacheEnabled(false);
             file.setReadable(true, false);
             final Intent intent = new Intent(     android.content.Intent.ACTION_SEND);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -181,6 +187,32 @@ public class EffectsActivity extends AppCompatActivity{
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        active = true;
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        active = false;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        active = false;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        active = false;
+        mNotificationManager.cancelAll();
 
     }
 

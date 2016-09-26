@@ -40,7 +40,7 @@ public class NetInterface {
 //        callback.call(null);
         if(args.length > BASE_ARG_NUM) {
             String styleNum = (String)args[STYLE_NUM];
-            requestBody = buildBodyBase(contentPath).addFormDataPart("style", styleNum).build();
+            requestBody = buildBodyBase(contentPath).addFormDataPart("model", styleNum).build();
             uploadUrl = BASE_URL + presetExtension;
         }else{
             String stylePath = (String)args[STYLE_PATH];

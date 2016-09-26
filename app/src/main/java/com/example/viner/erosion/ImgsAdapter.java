@@ -1,6 +1,6 @@
 package com.example.viner.erosion;
 
-import android.app.Activity;
+import android.app.*;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -15,6 +15,8 @@ import android.os.Build;
 import android.provider.ContactsContract;
 import android.support.annotation.AnyRes;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.NotificationCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -51,6 +53,7 @@ public class ImgsAdapter extends
     private int mHeightPixels;
     private ProgressBar loadingIcon;
 
+
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         Context context = parent.getContext();
@@ -69,6 +72,7 @@ public class ImgsAdapter extends
     public void onBindViewHolder(ViewHolder viewHolder, int position) {
         // Get the data model based on position
         File img = mImgs.get(position);
+
 
         // Set item views based on your views and data model
         ImageButton curImg = viewHolder.img;
@@ -164,6 +168,7 @@ public class ImgsAdapter extends
                             loadingIcon = (ProgressBar)((EffectsActivity)mContext).findViewById(R.id.spin_kit);
                             DoubleBounce doubleBounce = new DoubleBounce();
                             loadingIcon.setIndeterminateDrawable(doubleBounce);
+                            loadingIcon.setVisibility(View.VISIBLE);
                             NetInterface.process(new NetCallback(), ((EffectsActivity) mContext).mChosenImage, null, imgSrc);
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -266,7 +271,7 @@ public class ImgsAdapter extends
 //                        preview.addView(imgPrev);
 
                     } else if (mContext instanceof EffectsActivity){
-                        if (((EffectsActivity) mContext).mProcessingImage = true){
+                        if (((EffectsActivity) mContext).mProcessingImage == true){
                             return;
                         } else {
                             ((EffectsActivity) mContext).mProcessingImage = true;
@@ -274,6 +279,7 @@ public class ImgsAdapter extends
 
                         String imgWithEffect = null;
                         try {
+                            Log.d("CHOOSECUSTOM", "PRESEND");
                             loadingIcon = (ProgressBar)((EffectsActivity)mContext).findViewById(R.id.spin_kit);
                             NetInterface.process(new NetCallback(), ((EffectsActivity) mContext).mChosenImage, imgSrc);
 
@@ -358,7 +364,6 @@ public class ImgsAdapter extends
     }
 
 
-
     // Pass in the contact array into the constructor
     public ImgsAdapter(Context context, ArrayList<File> imgs) {
 
@@ -404,6 +409,7 @@ public class ImgsAdapter extends
 
         @Override
         public int call(final InputStream result) {
+            final EffectsActivity activity = (EffectsActivity) mContext;
             Log.v("NetCallback", "in call function");
             if(result == null){
                 //op failed
@@ -412,20 +418,37 @@ public class ImgsAdapter extends
                 //TODO:fill with error handling
             }
             final Bitmap bmp = BitmapFactory.decodeStream(result);
-            final ImageView mImageView = (ImageView)((EffectsActivity)mContext).findViewById(R.id.main_image);
-            ((EffectsActivity)mContext).runOnUiThread(new Runnable() {
+            final ImageView mImageView = (ImageView)(activity).findViewById(R.id.main_image);
+            activity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     mImageView.setImageBitmap(bmp);
                     loadingIcon.setVisibility(View.GONE);
 
-                    ImageButton btn = (ImageButton)((MainActivity)mContext).findViewById(R.id.share);
+                    ImageButton btn = (ImageButton)(activity.findViewById(R.id.share));
                     btn.setVisibility(View.VISIBLE);
-                    ((EffectsActivity) mContext).mProcessingImage = false;
-
-
+                    activity.mProcessingImage = false;
                 }
             });
+            if(!activity.active){
+                int color = ContextCompat.getColor(mContext, R.color.light_yellow);
+                android.support.v4.app.NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(mContext)
+                        .setSmallIcon(R.drawable.ic_launcher)
+                        .setContentTitle("Custom Effect Ready!")
+                            .setContentText("Tap to share/try more")
+                        .setColor(color);
+                Intent resultIntent = new Intent(activity, EffectsActivity.class);
+                //Set flags to resume and not create a new instance
+                Notification notification = mBuilder.build();
+                notification.flags = Notification.FLAG_ONGOING_EVENT | Notification.FLAG_NO_CLEAR;
+                resultIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+
+                PendingIntent resultPendingIntent = PendingIntent.getActivity(mContext.getApplicationContext(), (int)System.currentTimeMillis(), resultIntent, 0);
+                mBuilder.setContentIntent(resultPendingIntent);
+
+                // mId allows you to update the notification later on.
+                activity.mNotificationManager.notify(0, mBuilder.build());
+            }
 
             //TODO:put anything that needs to happen after receiving the image here
             return 0;
