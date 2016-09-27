@@ -109,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
 
 //        mImgs = Lists.newArrayList(imgs);
         // Create adapter passing in the sample user data
-        ImgsAdapter adapter = new ImgsAdapter(this, mImgs);
+        ImgsAdapter adapter = new MainAdapter(this, mImgs);
 
         // Attach the adapter to the recyclerview to populate items
         rvImgs.setAdapter(adapter);
