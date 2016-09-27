@@ -19,7 +19,7 @@ public class ChooseAdapter extends ImgsAdapter {
     private ChooseImageActivity mContext;
     public ChooseAdapter(Context context, ArrayList<File> imgs) {
         super(context, imgs);
-
+        mContext = (ChooseImageActivity)context;
     }
 
     @Override

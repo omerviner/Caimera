@@ -52,7 +52,7 @@ public class ChooseImageActivity extends AppCompatActivity{
 
 
         // Create adapter passing in the sample user data
-        ImgsAdapter adapter = new ImgsAdapter(this, mImgs);
+        ImgsAdapter adapter = new ChooseAdapter(this, mImgs);
 
         // Attach the adapter to the recyclerview to populate items
         rvImgs.setAdapter(adapter);
