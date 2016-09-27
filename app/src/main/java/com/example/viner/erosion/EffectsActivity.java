@@ -117,13 +117,14 @@ public class EffectsActivity extends AppCompatActivity{
         }
 
         // Create adapter passing in the sample user data
-        mAdapter = new EffectsAdapter(this, mImgs);
+        mAdapter = new EffectsAdapter(this, mImgs, rvImgs);
 
         // Attach the adapter to the recyclerview to populate items
         rvImgs.setAdapter(mAdapter);
         // Set layout manager to position the items
         rvImgs.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         // That's all!
+        rvImgs.addOnItemTouchListener(mAdapter.getListener());
     }
 
     public void onClickImageIsChosen(View view){

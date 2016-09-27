@@ -52,13 +52,14 @@ public class ChooseImageActivity extends AppCompatActivity{
 
 
         // Create adapter passing in the sample user data
-        ImgsAdapter adapter = new ChooseAdapter(this, mImgs);
+        ImgsAdapter adapter = new ChooseAdapter(this, mImgs, rvImgs);
 
         // Attach the adapter to the recyclerview to populate items
         rvImgs.setAdapter(adapter);
         // Set layout manager to position the items
         rvImgs.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         // That's all!
+        rvImgs.addOnItemTouchListener(adapter.getListener());
     }
 
     public void onClickImageIsChosen(View view){
