@@ -56,17 +56,7 @@ abstract class ImgsAdapter extends
 protected int mStatusBarHeight;
     protected int mWidthPixels;
     private int mHeightPixels;
-    private SpinKitView loadingIcon;
-    private static HashMap<String, Integer> presetMap = new HashMap<>();
-    static{
-        presetMap.put("/e1",R.drawable.e1);
-        presetMap.put("/e2",R.drawable.e2);
-        presetMap.put("/e3",R.drawable.e3);
-        presetMap.put("/e4",R.drawable.e4);
-        presetMap.put("/e5",R.drawable.e5);
-        presetMap.put("/e6",R.drawable.e6);
-        presetMap.put("/e7",R.drawable.e7);
-    }
+
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -83,174 +73,7 @@ protected int mStatusBarHeight;
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder viewHolder, final int position) {
-        // Get the data model based on position
-        File img = mImgs.get(position);
-
-
-        // Set item views based on your views and data model
-        ImageButton curImg = viewHolder.img;
-
-        final ImageButton caimeraSign = viewHolder.caimera_sign;
-        caimeraSign.setVisibility(View.GONE);
-        caimeraSign.setClipToOutline(true);
-        caimeraSign.setTag(img.getAbsolutePath());
-        curImg.setClipToOutline(true);
-        curImg.setTag(img.getAbsolutePath());
-        caimeraSign.setTag(img.getAbsolutePath());
-
-        String imgPath = img.getAbsolutePath();
-        Log.v("imgPath", imgPath);
-
-        if(img.isDirectory()){
-            return;
-        }
-        else if (position < 8  && mContext instanceof EffectsActivity){
-            Picasso.with(mContext).load(presetMap.get(imgPath)).into(curImg);
-        }
-        else {
-            Picasso
-                    .with(mContext)
-                    .load(mImgs.get(position))
-                    .resize(150,150)
-                    .centerCrop()
-                    .into(curImg);
-
-            if (mContext instanceof EffectsActivity){
-                caimeraSign.setVisibility(View.VISIBLE);
-
-                View.OnLongClickListener onLongClick = new View.OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View v) {
-                        String src = (String)caimeraSign.getTag();
-                        Log.d("ImgsAdapter", "LOngClick");
-
-                        if (src.length() < 5){
-                            return false;
-                        }
-                        File img = mImgs.remove(position);
-                        img.delete();
-                        notifyDataSetChanged();
-                        return false;
-                    }
-                };
-                viewHolder.img.setOnLongClickListener(onLongClick);
-                viewHolder.caimera_sign.setOnLongClickListener(onLongClick);
-
-
-            }
-        }
-        View.OnClickListener imgButtonOnClick = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ImageView imageView = (ImageView)v;
-                String imgSrc = (String)imageView.getTag();
-                Log.d("CHANGE", String.valueOf(position));
-
-
-
-                if (mContext instanceof MainActivity) {
-                    mainOnClick(v);
-                }
-                if (mContext instanceof EffectsActivity){
-                    if (position < PRESET_STYLES_NUM){
-                        Log.d("CHOSSESTYLE","PRESET : " + ((EffectsActivity) mContext).mChosenStyle);
-                        try {
-                            if (((EffectsActivity) mContext).mProcessingImage){
-                                return;
-                            } else {
-                                ((EffectsActivity) mContext).mProcessingImage = true;
-                            }
-                            Log.d("CHOSSESTYLE","ABOUT TO SEND");
-                            loadingIcon = (SpinKitView) ((EffectsActivity)mContext).findViewById(R.id.spin_kit);
-                            loadingIcon.setVisibility(View.VISIBLE);
-                            NetInterface.process(new NetCallback(), ((EffectsActivity) mContext).mChosenImage, null, String.valueOf(position));
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                        return;
-                    }
-
-                    if (((EffectsActivity) mContext).mProcessingImage){
-                        return;
-                    } else {
-                        ((EffectsActivity) mContext).mProcessingImage = true;
-                    }
-
-                    String imgWithEffect = null;
-                    try {
-                        loadingIcon = (SpinKitView) ((EffectsActivity)mContext).findViewById(R.id.spin_kit);
-                        NetInterface.process(new NetCallback(), ((EffectsActivity) mContext).mChosenImage, imgSrc, String.valueOf(position));
-                        loadingIcon.setVisibility(View.VISIBLE);
-
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-
-                    ImageView mImageView = (ImageView)((EffectsActivity)mContext).findViewById(R.id.main_image);
-
-
-                } else if (mContext instanceof ChooseImageActivity) {
-                    Intent returnIntent = new Intent();
-                    returnIntent.putExtra("chosen_image", imgSrc);
-                    ((ChooseImageActivity)mContext).setResult(Activity.RESULT_OK, returnIntent);
-                    ((ChooseImageActivity)mContext).finish();
-                }
-            }
-        };
-
-
-//            img.setOnLongClickListener(imgButtonOnLongClick);
-        viewHolder.img.setOnClickListener(imgButtonOnClick);
-        viewHolder.caimera_sign.setOnClickListener(imgButtonOnClick);
-    }
-
-    private void mainOnClick(View v) {
-        ImageView imageView = (ImageView)v;
-        String imgSrc = (String)imageView.getTag();
-
-        ImageButton btn = (ImageButton)((MainActivity)mContext).findViewById(R.id.next);
-        btn.setVisibility(View.VISIBLE);
-
-        ImageView imgPrev = (ImageView)((MainActivity)mContext).findViewById(R.id.main_image_frame);
-        if (imgPrev != null){
-            Glide.with(mContext)
-                    .load(imgSrc)
-                    .centerCrop()
-                    .override(1000,1000)
-                    .into(imgPrev);
-
-
-        } else {
-            ((MainActivity) mContext).releaseCameraAndPreview();
-            FrameLayout preview = (FrameLayout)((MainActivity)mContext).findViewById(R.id.camera_preview);
-            preview.removeAllViews();
-            imgPrev = new ImageView(mContext);
-            imgPrev.setId(R.id.main_image_frame);
-
-            // Set the Drawable displayed
-            //////////////
-            Glide.with(mContext)
-                    .load(imgSrc)
-                    .override(1000,1000)
-                    .centerCrop()
-                    .into(imgPrev);
-
-
-            RelativeLayout.LayoutParams viewParams = new RelativeLayout.LayoutParams(
-                    RelativeLayout.LayoutParams.WRAP_CONTENT,
-                    RelativeLayout.LayoutParams.WRAP_CONTENT);
-            viewParams.height = mWidthPixels + mStatusBarHeight;
-            viewParams.width = mWidthPixels;
-            viewParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-            imgPrev.setLayoutParams(viewParams);
-            preview.addView(imgPrev);
-
-            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)preview.getLayoutParams();
-            params.height = mWidthPixels + mStatusBarHeight;
-            preview.setLayoutParams(viewParams);
-        }
-}
+    abstract public void onBindViewHolder(final ViewHolder viewHolder, final int position);
 
     @Override
     public int getItemCount() {
@@ -260,18 +83,6 @@ protected int mStatusBarHeight;
 
     // Pass in the contact array into the constructor
     public ImgsAdapter(Context context, ArrayList<File> imgs) {
-
-        if(context instanceof EffectsActivity){
-
-            imgs.add(0, new File("e1"));
-            imgs.add(1, new File("e2"));
-            imgs.add(2, new File("e3"));
-            imgs.add(3, new File("e4"));
-            imgs.add(4, new File("e5"));
-            imgs.add(5, new File("e6"));
-            imgs.add(6, new File("e7"));
-            imgs.add(7, new File("e8"));
-        }
 
         mImgs = imgs;
         mContext = context;
@@ -300,78 +111,6 @@ protected int mStatusBarHeight;
         return cropped;
     }
 
-    protected class NetCallback implements CallBack{
-
-        @Override
-            public int call(final Bitmap bmp, final String styleNum) {
-            final EffectsActivity activity = (EffectsActivity) mContext;
-            Log.v("NetCallback", "in call function");
-            if(bmp == null){
-                //op failed
-                activity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(mContext, "Connection Error. Try Again", Toast.LENGTH_SHORT)
-                                .show();
-                    }
-                });
-                return -1;
-                //TODO:fill with error handling
-            }
-            final ImageView mImageView = (ImageView)(activity).findViewById(R.id.main_image);
-            activity.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    mImageView.setImageBitmap(bmp);
-                    loadingIcon.setVisibility(View.GONE);
-                    ImageButton btn = (ImageButton)(activity.findViewById(R.id.share));
-                    btn.setVisibility(View.VISIBLE);
-                    activity.mProcessingImage = false;
-                    //TODO: implement cache
-//                    new AsyncTask<Void,Void,Void>(){
-//                        @Override
-//                        protected Void doInBackground(Void... params) {
-//                            File file = new File(Environment.getExternalStoragePublicDirectory(
-//                                    Environment.DIRECTORY_PICTURES) ,"Caimera/results/" + styleNum);
-//                            OutputStream os = null;
-//
-//                            try {
-//                                os = new FileOutputStream(file);
-//                            } catch (FileNotFoundException e) {
-//                                e.printStackTrace();
-//                            }
-//
-//                            bmp.compress(Bitmap.CompressFormat.PNG, 100, os);
-//                            return null;
-//                        }
-//                    }.execute();
-                }
-            });
-
-            if(!EffectsActivity.active){
-                int color = ContextCompat.getColor(mContext, R.color.light_yellow);
-                android.support.v4.app.NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(mContext)
-                        .setSmallIcon(R.drawable.ic_launcher)
-                        .setContentTitle("Custom Effect Ready!")
-                            .setContentText("Tap to share/try more")
-                        .setColor(color);
-                Intent resultIntent = new Intent(activity, EffectsActivity.class);
-                //Set flags to resume and not create a new instance
-                Notification notification = mBuilder.build();
-                notification.flags = Notification.FLAG_ONGOING_EVENT | Notification.FLAG_NO_CLEAR;
-                resultIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-
-                PendingIntent resultPendingIntent = PendingIntent.getActivity(mContext.getApplicationContext(), (int)System.currentTimeMillis(), resultIntent, 0);
-                mBuilder.setContentIntent(resultPendingIntent);
-
-                // mId allows you to update the notification later on.
-                activity.mNotificationManager.notify(0, mBuilder.build());
-            }
-
-            //TODO:put anything that needs to happen after receiving the image here
-            return 0;
-        }
-    }
 
     /**
      * get uri to any resource type

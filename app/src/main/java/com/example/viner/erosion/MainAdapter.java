@@ -126,7 +126,7 @@ public class MainAdapter  extends ImgsAdapter{
 
                 ImageView imageView =  (new ViewHolder(view)).img;
 
-                String imgSrc = img.getAbsolutePath();
+                String imgSrc = mImgs.get(position).getAbsolutePath();
 
                 ImageButton btn = (ImageButton) mContext.findViewById(R.id.next);
                 btn.setVisibility(View.VISIBLE);

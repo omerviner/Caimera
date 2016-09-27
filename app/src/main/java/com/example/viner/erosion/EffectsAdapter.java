@@ -73,7 +73,7 @@ public class EffectsAdapter extends ImgsAdapter {
                 String imgSrc = (String)imageView.getTag();
                 Log.d("CHANGE", String.valueOf(position));
 
-                if (position < PRESET_STYLES_NUM){
+                if (position < QUICK_STYLES_NUM){
                     Log.d("CHOSSESTYLE","PRESET : " + ((EffectsActivity) mContext).mProcessingImage);
                     try {
                         if (((EffectsActivity) mContext).mProcessingImage){

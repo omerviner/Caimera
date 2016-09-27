@@ -62,10 +62,7 @@ public class EffectsActivity extends AppCompatActivity{
 //        this.overridePendingTransition(R.anim.anim_slide_in_left, R.anim.anim_slide_out_right);
 
         byte[] chosenImage = getIntent().getByteArrayExtra("imageData");
-//        File file = FileUtils.saveImageToFile(this, chosenImage, 0, false);
-//        mChosenImage = extras.getString("image");
 
-//        mChosenImage = file.getAbsolutePath();
 
         File mediaTempImgStorageDir = new File(Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES), "Caimera");
