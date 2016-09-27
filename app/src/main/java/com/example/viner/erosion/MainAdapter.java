@@ -24,9 +24,10 @@ public class MainAdapter  extends ImgsAdapter{
     private MainActivity mContext;
     private RecyclerView mRvImgs;
 
-    public MainAdapter(Context context, ArrayList<File> imgs) {
+    public MainAdapter(Context context, ArrayList<File> imgs, RecyclerView rvImgs) {
         super(context, imgs);
         mContext = (MainActivity) context;
+        mRvImgs = rvImgs;
     }
 
     @Override
@@ -61,56 +62,56 @@ public class MainAdapter  extends ImgsAdapter{
                     .into(curImg);
 
         }
-        View.OnClickListener imgButtonOnClick = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                ImageView imageView = (ImageView)v;
-                    String imgSrc = (String)imageView.getTag();
-
-                    ImageButton btn = (ImageButton) mContext.findViewById(R.id.next);
-                    btn.setVisibility(View.VISIBLE);
-
-                    ImageView imgPrev = (ImageView) mContext.findViewById(R.id.main_image_frame);
-                    if (imgPrev != null){
-                        Glide.with(mContext)
-                                .load(imgSrc)
-                                .centerCrop()
-                                .override(1000,1000)
-                                .into(imgPrev);
-
-
-                    } else {
-                        mContext.releaseCameraAndPreview();
-                        FrameLayout preview = (FrameLayout) mContext.findViewById(R.id.camera_preview);
-                        preview.removeAllViews();
-                        imgPrev = new ImageView(mContext);
-                        imgPrev.setId(R.id.main_image_frame);
-
-                        // Set the Drawable displayed
-                        //////////////
-                        Glide.with(mContext)
-                                .load(imgSrc)
-                                .override(1000,1000)
-                                .centerCrop()
-                                .into(imgPrev);
-
-
-                        RelativeLayout.LayoutParams viewParams = new RelativeLayout.LayoutParams(
-                                RelativeLayout.LayoutParams.WRAP_CONTENT,
-                                RelativeLayout.LayoutParams.WRAP_CONTENT);
-                        viewParams.height = mWidthPixels + mStatusBarHeight;
-                        viewParams.width = mWidthPixels;
-                        viewParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-                        imgPrev.setLayoutParams(viewParams);
-                        preview.addView(imgPrev);
-
-                        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)preview.getLayoutParams();
-                        params.height = mWidthPixels + mStatusBarHeight;
-                        preview.setLayoutParams(viewParams);
-                    }
-            }
-        };
+//        View.OnClickListener imgButtonOnClick = new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//
+//                ImageView imageView = (ImageView)v;
+//                    String imgSrc = (String)imageView.getTag();
+//
+//                    ImageButton btn = (ImageButton) mContext.findViewById(R.id.next);
+//                    btn.setVisibility(View.VISIBLE);
+//
+//                    ImageView imgPrev = (ImageView) mContext.findViewById(R.id.main_image_frame);
+//                    if (imgPrev != null){
+//                        Glide.with(mContext)
+//                                .load(imgSrc)
+//                                .centerCrop()
+//                                .override(1000,1000)
+//                                .into(imgPrev);
+//
+//
+//                    } else {
+//                        mContext.releaseCameraAndPreview();
+//                        FrameLayout preview = (FrameLayout) mContext.findViewById(R.id.camera_preview);
+//                        preview.removeAllViews();
+//                        imgPrev = new ImageView(mContext);
+//                        imgPrev.setId(R.id.main_image_frame);
+//
+//                        // Set the Drawable displayed
+//                        //////////////
+//                        Glide.with(mContext)
+//                                .load(imgSrc)
+//                                .override(1000,1000)
+//                                .centerCrop()
+//                                .into(imgPrev);
+//
+//
+//                        RelativeLayout.LayoutParams viewParams = new RelativeLayout.LayoutParams(
+//                                RelativeLayout.LayoutParams.WRAP_CONTENT,
+//                                RelativeLayout.LayoutParams.WRAP_CONTENT);
+//                        viewParams.height = mWidthPixels + mStatusBarHeight;
+//                        viewParams.width = mWidthPixels;
+//                        viewParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+//                        imgPrev.setLayoutParams(viewParams);
+//                        preview.addView(imgPrev);
+//
+//                        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)preview.getLayoutParams();
+//                        params.height = mWidthPixels + mStatusBarHeight;
+//                        preview.setLayoutParams(viewParams);
+//                    }
+//            }
+//        };
 
 
 //            img.setOnLongClickListener(imgButtonOnLongClick);
@@ -123,11 +124,17 @@ public class MainAdapter  extends ImgsAdapter{
             @Override public void onItemClick(View view, int position) {
 
                 Log.v("clicked: ", Integer.toString(position));
-                ImageView imageView = (ImageView)view;
+
+                ImageView imageView =  (new ViewHolder(view)).img;
+
                 String imgSrc = (String)imageView.getTag();
 
                 ImageButton btn = (ImageButton) mContext.findViewById(R.id.next);
                 btn.setVisibility(View.VISIBLE);
+
+                mContext.releaseCameraAndPreview();
+                FrameLayout preview = (FrameLayout) mContext.findViewById(R.id.camera_preview);
+                preview.removeAllViews();
 
                 ImageView imgPrev = (ImageView) mContext.findViewById(R.id.main_image_frame);
                 if (imgPrev != null){
@@ -136,12 +143,7 @@ public class MainAdapter  extends ImgsAdapter{
                             .centerCrop()
                             .override(1000,1000)
                             .into(imgPrev);
-
-
                 } else {
-                    mContext.releaseCameraAndPreview();
-                    FrameLayout preview = (FrameLayout) mContext.findViewById(R.id.camera_preview);
-                    preview.removeAllViews();
                     imgPrev = new ImageView(mContext);
                     imgPrev.setId(R.id.main_image_frame);
 
@@ -176,7 +178,7 @@ public class MainAdapter  extends ImgsAdapter{
             }
         });
 
-        return null;
+        return listener;
     }
 
 }

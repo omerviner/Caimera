@@ -81,9 +81,6 @@ public class MainActivity extends AppCompatActivity {
         // Lookup the recyclerview in activity layout
         rvImgs = (RecyclerView) findViewById(R.id.imgs);
 
-//        rvImgs.addOnItemTouchListener(MainAdapter.get);
-
-
         rvImgs.setHasFixedSize(true);
 
         // Initialize images path
@@ -109,14 +106,15 @@ public class MainActivity extends AppCompatActivity {
 
 //        mImgs = Lists.newArrayList(imgs);
         // Create adapter passing in the sample user data
-        ImgsAdapter adapter = new MainAdapter(this, mImgs);
+        ImgsAdapter adapter = new MainAdapter(this, mImgs, rvImgs);
 
         // Attach the adapter to the recyclerview to populate items
         rvImgs.setAdapter(adapter);
         // Set layout manager to position the items
         rvImgs.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        // That's all!
 
+        rvImgs.addOnItemTouchListener(adapter.getListener());
+        // That's all!
 //        LayoutInflater factory = getLayoutInflater();
 
 //        View mainView = factory.inflate(R.layout.activity_main, null);
@@ -170,6 +168,10 @@ public class MainActivity extends AppCompatActivity {
         rvImgs.bringToFront();
 //           mPreview.startCameraPreview();TODO: BEWARE this was removed and made the passed null surface go away(it might be since we are replacing an existing preview with a new one thus eliminating all refrences to it without releasing it in some way)
             Log.v("safeCameraOpenInView", "succ");
+
+
+        ImageButton btn = (ImageButton)findViewById(R.id.next);
+        btn.setVisibility(View.GONE);
 
         return qOpened;
     }
@@ -244,7 +246,7 @@ public class MainActivity extends AppCompatActivity {
             viewParams.width = displayMetrics.widthPixels;
             viewParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
             imgPrev.setLayoutParams(viewParams);
-
+            imgPrev.setId(R.id.main_image_frame);
             // Setting new view
             preview.addView(imgPrev);
 

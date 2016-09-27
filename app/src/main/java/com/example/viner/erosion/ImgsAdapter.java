@@ -42,8 +42,8 @@ import uk.co.senab.photoview.PhotoViewAttacher;
 
 // Create the basic adapter extending from RecyclerView.Adapter
 // Note that we specify the custom ViewHolder which gives us access to our views
-public class ImgsAdapter extends
-        RecyclerView.Adapter<ImgsAdapter.ViewHolder> {
+abstract class ImgsAdapter extends
+        RecyclerView.Adapter<ViewHolder> {
 
     private static final int PRESET_STYLES_NUM = 8;
     // Store a member variable for the images
@@ -257,28 +257,6 @@ protected int mStatusBarHeight;
         return mImgs.size();
     }
 
-    // Provide a direct reference to each of the views within a data item
-    // Used to cache the views within the item layout for fast access
-    public class ViewHolder extends RecyclerView.ViewHolder {
-        // Your holder should contain a member variable
-        // for any view that will be set as you render a row
-
-        public ImageButton img;
-        public ImageButton caimera_sign;
-
-        // We also create a constructor that accepts the entire item row
-        // and does the view lookups to find each subview
-        public ViewHolder(final View itemView) {
-            // Stores the itemView in a public final member variable that can be used
-            // to access the context from any ViewHolder instance.
-            super(itemView);
-
-            caimera_sign = (ImageButton)itemView.findViewById(R.id.caimera_sign);
-            img = (ImageButton)itemView.findViewById(R.id.imgBtn);
-
-        }
-    }
-
 
     // Pass in the contact array into the constructor
     public ImgsAdapter(Context context, ArrayList<File> imgs) {
@@ -322,7 +300,7 @@ protected int mStatusBarHeight;
         return cropped;
     }
 
-    private class NetCallback implements CallBack{
+    protected class NetCallback implements CallBack{
 
         @Override
             public int call(final Bitmap bmp, final String styleNum) {
@@ -436,6 +414,8 @@ protected int mStatusBarHeight;
         }
         return 0;
     }
+
+    abstract ImageItemClickListener getListener();
 
 
 }

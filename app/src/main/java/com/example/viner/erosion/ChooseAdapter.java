@@ -3,6 +3,7 @@ package com.example.viner.erosion;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
@@ -17,9 +18,35 @@ import java.util.ArrayList;
  */
 public class ChooseAdapter extends ImgsAdapter {
     private ChooseImageActivity mContext;
-    public ChooseAdapter(Context context, ArrayList<File> imgs) {
+    private RecyclerView mRvImgs;
+    public ChooseAdapter(Context context, ArrayList<File> imgs, RecyclerView rvImgs) {
         super(context, imgs);
+        mContext = (ChooseImageActivity)context;
+        mRvImgs = rvImgs;
+    }
 
+    @Override
+    ImageItemClickListener getListener() {
+        ImageItemClickListener listener = new ImageItemClickListener(mContext, mRvImgs ,new ImageItemClickListener.OnItemClickListener() {
+
+            @Override public void onItemClick(View view, int position) {
+
+                Log.v("chosen clicked: ", Integer.toString(position));
+                ImageView imageView = (new ViewHolder(view)).img;
+                String imgSrc = (String) imageView.getTag();
+                Log.d("CHANGE",String.valueOf(position));
+                Intent returnIntent = new Intent();
+                returnIntent.putExtra("chosen_image", imgSrc);
+                mContext.setResult(Activity.RESULT_OK, returnIntent);
+                mContext.finish();
+            }
+
+            @Override public void onLongItemClick(View view, int position) {
+                Log.v("chosen long clicked: ", Integer.toString(position));
+            }
+        });
+
+        return listener;
     }
 
     @Override
@@ -66,8 +93,8 @@ public class ChooseAdapter extends ImgsAdapter {
 
                 }
             };
-            viewHolder.img.setOnClickListener(listener);
-            viewHolder.caimera_sign.setOnClickListener(listener);
+//            viewHolder.img.setOnClickListener(listener);
+//            viewHolder.caimera_sign.setOnClickListener(listener);
 
 
 

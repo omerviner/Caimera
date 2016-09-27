@@ -9,11 +9,16 @@ import android.os.AsyncTask;
 import android.os.Environment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.NotificationCompat;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
+
+import com.bumptech.glide.Glide;
 import com.github.ybq.android.spinkit.SpinKitView;
 import com.squareup.picasso.Picasso;
 
@@ -34,6 +39,7 @@ public class EffectsAdapter extends ImgsAdapter {
     private SpinKitView loadingIcon;
     private List<String> presets = Arrays.asList("/e1", "/e2", "/e3", "/e4", "/e5", "/e6", "/e7", "/e8");
     private EffectsActivity mContext;
+    private RecyclerView mRvImgs;
     private static HashMap<String, Integer> presetMap = new HashMap<>();
     static{
         presetMap.put("/e1",R.drawable.e1);
@@ -45,12 +51,82 @@ public class EffectsAdapter extends ImgsAdapter {
         presetMap.put("/e7",R.drawable.e7);
     }
 
-    public EffectsAdapter(Context context, ArrayList<File> imgs) {
+    public EffectsAdapter(Context context, ArrayList<File> imgs, RecyclerView rvImgs) {
         super(context, imgs);
         for (String preset: presets) {
             imgs.add(new File(preset));
         }
-        loadingIcon = (SpinKitView) ((EffectsActivity)mContext).findViewById(R.id.spin_kit);
+        mContext = (EffectsActivity)context;
+        loadingIcon = (SpinKitView) mContext.findViewById(R.id.spin_kit);
+        mRvImgs = rvImgs;
+    }
+
+    @Override
+    ImageItemClickListener getListener() {
+        ImageItemClickListener listener = new ImageItemClickListener(mContext, mRvImgs ,new ImageItemClickListener.OnItemClickListener() {
+
+            @Override public void onItemClick(View view, int position) {
+
+                ImageView imageView = (new ViewHolder(view)).img;
+
+                String imgSrc = (String)imageView.getTag();
+                Log.d("CHANGE", String.valueOf(position));
+
+                if (position < PRESET_STYLES_NUM){
+                    Log.d("CHOSSESTYLE","PRESET : " + ((EffectsActivity) mContext).mProcessingImage);
+                    try {
+                        if (((EffectsActivity) mContext).mProcessingImage){
+                            return;
+                        } else {
+                            ((EffectsActivity) mContext).mProcessingImage = true;
+                        }
+                        Log.d("CHOSSESTYLE","ABOUT TO SEND");
+                        loadingIcon = (SpinKitView) ((EffectsActivity)mContext).findViewById(R.id.spin_kit);
+                        loadingIcon.setVisibility(View.VISIBLE);
+                        NetInterface.process(new NetCallback(), ((EffectsActivity) mContext).mChosenImage, null, String.valueOf(position));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    return;
+                }
+
+                if (((EffectsActivity) mContext).mProcessingImage){
+                    return;
+                } else {
+                    ((EffectsActivity) mContext).mProcessingImage = true;
+                }
+
+                String imgWithEffect = null;
+                try {
+                    loadingIcon = (SpinKitView) ((EffectsActivity)mContext).findViewById(R.id.spin_kit);
+                    NetInterface.process(new NetCallback(), ((EffectsActivity) mContext).mChosenImage, imgSrc, String.valueOf(position));
+                    loadingIcon.setVisibility(View.VISIBLE);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                ImageView mImageView = (ImageView)((EffectsActivity)mContext).findViewById(R.id.main_image);
+
+            }
+
+            @Override public void onLongItemClick(View view, int position) {
+
+                Log.v("effect long clicked: ", Integer.toString(position));
+
+                String src = (String)(new ViewHolder(view)).caimera_sign.getTag();
+                Log.d("ImgsAdapter", "LOngClick");
+
+                if (src.length() >= 5){
+                    File img = mImgs.remove(position);
+                    img.delete();
+                    notifyDataSetChanged();
+                }
+
+            }
+        });
+
+        return listener;
     }
 
     @Override
@@ -104,8 +180,8 @@ public class EffectsAdapter extends ImgsAdapter {
                         return false;
                     }
                 };
-                viewHolder.img.setOnLongClickListener(onLongClick);
-                viewHolder.caimera_sign.setOnLongClickListener(onLongClick);
+//                viewHolder.img.setOnLongClickListener(onLongClick);
+//                viewHolder.caimera_sign.setOnLongClickListener(onLongClick);
 
 
         }
@@ -157,8 +233,8 @@ public class EffectsAdapter extends ImgsAdapter {
 
 
 //            img.setOnLongClickListener(imgButtonOnLongClick);
-        viewHolder.img.setOnClickListener(imgButtonOnClick);
-        viewHolder.caimera_sign.setOnClickListener(imgButtonOnClick);
+//        viewHolder.img.setOnClickListener(imgButtonOnClick);
+//        viewHolder.caimera_sign.setOnClickListener(imgButtonOnClick);
     }
 
     private class NetCallback implements CallBack{
