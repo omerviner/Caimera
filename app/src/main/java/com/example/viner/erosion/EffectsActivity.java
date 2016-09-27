@@ -66,10 +66,10 @@ public class EffectsActivity extends AppCompatActivity{
 //        mChosenImage = extras.getString("image");
 
 //        mChosenImage = file.getAbsolutePath();
+
         File mediaTempImgStorageDir = new File(Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES), "Caimera");
         mChosenImage = mediaTempImgStorageDir.getPath() + File.separator + "caimera_chosen_temp.jpg";
-
 
         File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES), "Caimera" + File.separator + "styles");

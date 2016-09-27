@@ -77,57 +77,6 @@ public class MainActivity extends AppCompatActivity {
         File caimera_chosen_temp = new File(tempImagePath);
         caimera_chosen_temp.delete();
 
-        ///////////////////////////////////////
-
-
-//
-//        FlashMode[] flash_modes = new FlashMode[3];
-//        flash_modes[0] = FlashMode.OFF;
-//        flash_modes[1] = FlashMode.AUTO;
-//        flash_modes[2] = FlashMode.ALWAYS;
-
-//        CameraView cameraView = CameraView(this);
-
-//        CameraView cameraView = (CameraView)findViewById(R.id.camera_view);
-
-//        cameraView.setPreviewSize(new Size(100, 100));
-
-
-//        cameraView = new CameraView(this);
-//        this.findViewById(R.id.camera_view);
-
-//        Intent i = new CameraActivity.IntentBuilder(MainActivity.this)
-//                .skipConfirm()
-//                .facing(Facing.BACK)
-//                .to(new File(mediaStorageDir, "portrait-front.jpg"))
-//                .debug()
-//                .debugSavePreviewFrame()
-//                .flashModes(flash_modes)
-//                .updateMediaStore()
-//                .build();
-//
-//        CameraActivity.pl
-
-
-//        startActivityForResult(i, REQUEST_PORTRAIT_FFC);
-
-
-        ///////////////////////////////////////
-
-//        File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
-//                Environment.DIRECTORY_PICTURES), "Erosion");
-//
-//        Intent i=new CameraActivity.IntentBuilder(MainActivity.this)
-//                .skipConfirm()
-//                .facing(Facing.BACK)
-//                .to(new File(mediaStorageDir.getPath(), "portrait-front.jpg"))
-//                .debug()
-//                .zoomStyle(ZoomStyle.SEEKBAR)
-//                .updateMediaStore()
-//                .build();
-//
-//        startActivityForResult(i, GET_IMAGE);
-
 
         // Lookup the recyclerview in activity layout
         rvImgs = (RecyclerView) findViewById(R.id.imgs);

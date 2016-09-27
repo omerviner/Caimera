@@ -12,7 +12,9 @@ import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Environment;
 import android.provider.ContactsContract;
 import android.support.annotation.AnyRes;
 import android.support.annotation.NonNull;
@@ -31,10 +33,10 @@ import com.github.ybq.android.spinkit.SpinKitView;
 import com.github.ybq.android.spinkit.style.DoubleBounce;
 import com.squareup.picasso.Picasso;
 
-import java.io.File;
-import java.io.InputStream;
+import java.io.*;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import uk.co.senab.photoview.PhotoViewAttacher;
 
@@ -43,6 +45,7 @@ import uk.co.senab.photoview.PhotoViewAttacher;
 public class ImgsAdapter extends
         RecyclerView.Adapter<ImgsAdapter.ViewHolder> {
 
+    private static final int PRESET_STYLES_NUM = 8;
     // Store a member variable for the images
     public ArrayList<File> mImgs;
 //    private ArrayList<File> mImgs;
@@ -50,11 +53,20 @@ public class ImgsAdapter extends
     private Context mContext;
 
 //    private PhotoViewAttacher mAttacher;
-    private int mStatusBarHeight;
-    private int mWidthPixels;
+protected int mStatusBarHeight;
+    protected int mWidthPixels;
     private int mHeightPixels;
     private SpinKitView loadingIcon;
-
+    private static HashMap<String, Integer> presetMap = new HashMap<>();
+    static{
+        presetMap.put("/e1",R.drawable.e1);
+        presetMap.put("/e2",R.drawable.e2);
+        presetMap.put("/e3",R.drawable.e3);
+        presetMap.put("/e4",R.drawable.e4);
+        presetMap.put("/e5",R.drawable.e5);
+        presetMap.put("/e6",R.drawable.e6);
+        presetMap.put("/e7",R.drawable.e7);
+    }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -89,30 +101,14 @@ public class ImgsAdapter extends
 
         String imgPath = img.getAbsolutePath();
         Log.v("imgPath", imgPath);
-        if (imgPath.length() < 4){
-            if (imgPath.equals("/e1")){
-                Picasso.with(mContext).load(R.drawable.e1).into(curImg);
-            } else if (imgPath.equals("/e2")){
-                Picasso.with(mContext).load(R.drawable.e2).into(curImg);
-            } else if (imgPath.equals("/e3")){
-                Picasso.with(mContext).load(R.drawable.e3).into(curImg);
-            } else if (imgPath.equals("/e4")){
-                Picasso.with(mContext).load(R.drawable.e4).into(curImg);
-            } else if (imgPath.equals("/e5")){
-                Picasso.with(mContext).load(R.drawable.e5).into(curImg);
-            } else if (imgPath.equals("/e6")){
-                Picasso.with(mContext).load(R.drawable.e6).into(curImg);
-            } else if (imgPath.equals("/e7")){
-                Picasso.with(mContext).load(R.drawable.e7).into(curImg);
-            } else if (imgPath.equals("/e8")){
-                Picasso.with(mContext).load(R.drawable.e8).into(curImg);
-            }
-            return;
-        } else {
-            if (img.isDirectory()){
-                return;
-            }
 
+        if(img.isDirectory()){
+            return;
+        }
+        else if (position < 8  && mContext instanceof EffectsActivity){
+            Picasso.with(mContext).load(presetMap.get(imgPath)).into(curImg);
+        }
+        else {
             Picasso
                     .with(mContext)
                     .load(mImgs.get(position))
@@ -122,6 +118,7 @@ public class ImgsAdapter extends
 
             if (mContext instanceof EffectsActivity){
                 caimeraSign.setVisibility(View.VISIBLE);
+
                 View.OnLongClickListener onLongClick = new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View v) {
@@ -140,13 +137,120 @@ public class ImgsAdapter extends
                 viewHolder.img.setOnLongClickListener(onLongClick);
                 viewHolder.caimera_sign.setOnLongClickListener(onLongClick);
 
-                viewHolder.img.bringToFront();
-                viewHolder.caimera_sign.bringToFront();
 
             }
-
         }
+        View.OnClickListener imgButtonOnClick = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ImageView imageView = (ImageView)v;
+                String imgSrc = (String)imageView.getTag();
+                Log.d("CHANGE", String.valueOf(position));
+
+
+
+                if (mContext instanceof MainActivity) {
+                    mainOnClick(v);
+                }
+                if (mContext instanceof EffectsActivity){
+                    if (position < PRESET_STYLES_NUM){
+                        Log.d("CHOSSESTYLE","PRESET : " + ((EffectsActivity) mContext).mChosenStyle);
+                        try {
+                            if (((EffectsActivity) mContext).mProcessingImage){
+                                return;
+                            } else {
+                                ((EffectsActivity) mContext).mProcessingImage = true;
+                            }
+                            Log.d("CHOSSESTYLE","ABOUT TO SEND");
+                            loadingIcon = (SpinKitView) ((EffectsActivity)mContext).findViewById(R.id.spin_kit);
+                            loadingIcon.setVisibility(View.VISIBLE);
+                            NetInterface.process(new NetCallback(), ((EffectsActivity) mContext).mChosenImage, null, String.valueOf(position));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        return;
+                    }
+
+                    if (((EffectsActivity) mContext).mProcessingImage){
+                        return;
+                    } else {
+                        ((EffectsActivity) mContext).mProcessingImage = true;
+                    }
+
+                    String imgWithEffect = null;
+                    try {
+                        loadingIcon = (SpinKitView) ((EffectsActivity)mContext).findViewById(R.id.spin_kit);
+                        NetInterface.process(new NetCallback(), ((EffectsActivity) mContext).mChosenImage, imgSrc, String.valueOf(position));
+                        loadingIcon.setVisibility(View.VISIBLE);
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    ImageView mImageView = (ImageView)((EffectsActivity)mContext).findViewById(R.id.main_image);
+
+
+                } else if (mContext instanceof ChooseImageActivity) {
+                    Intent returnIntent = new Intent();
+                    returnIntent.putExtra("chosen_image", imgSrc);
+                    ((ChooseImageActivity)mContext).setResult(Activity.RESULT_OK, returnIntent);
+                    ((ChooseImageActivity)mContext).finish();
+                }
+            }
+        };
+
+
+//            img.setOnLongClickListener(imgButtonOnLongClick);
+        viewHolder.img.setOnClickListener(imgButtonOnClick);
+        viewHolder.caimera_sign.setOnClickListener(imgButtonOnClick);
     }
+
+    private void mainOnClick(View v) {
+        ImageView imageView = (ImageView)v;
+        String imgSrc = (String)imageView.getTag();
+
+        ImageButton btn = (ImageButton)((MainActivity)mContext).findViewById(R.id.next);
+        btn.setVisibility(View.VISIBLE);
+
+        ImageView imgPrev = (ImageView)((MainActivity)mContext).findViewById(R.id.main_image_frame);
+        if (imgPrev != null){
+            Glide.with(mContext)
+                    .load(imgSrc)
+                    .centerCrop()
+                    .override(1000,1000)
+                    .into(imgPrev);
+
+
+        } else {
+            ((MainActivity) mContext).releaseCameraAndPreview();
+            FrameLayout preview = (FrameLayout)((MainActivity)mContext).findViewById(R.id.camera_preview);
+            preview.removeAllViews();
+            imgPrev = new ImageView(mContext);
+            imgPrev.setId(R.id.main_image_frame);
+
+            // Set the Drawable displayed
+            //////////////
+            Glide.with(mContext)
+                    .load(imgSrc)
+                    .override(1000,1000)
+                    .centerCrop()
+                    .into(imgPrev);
+
+
+            RelativeLayout.LayoutParams viewParams = new RelativeLayout.LayoutParams(
+                    RelativeLayout.LayoutParams.WRAP_CONTENT,
+                    RelativeLayout.LayoutParams.WRAP_CONTENT);
+            viewParams.height = mWidthPixels + mStatusBarHeight;
+            viewParams.width = mWidthPixels;
+            viewParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+            imgPrev.setLayoutParams(viewParams);
+            preview.addView(imgPrev);
+
+            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)preview.getLayoutParams();
+            params.height = mWidthPixels + mStatusBarHeight;
+            preview.setLayoutParams(viewParams);
+        }
+}
 
     @Override
     public int getItemCount() {
@@ -172,171 +276,6 @@ public class ImgsAdapter extends
             caimera_sign = (ImageButton)itemView.findViewById(R.id.caimera_sign);
             img = (ImageButton)itemView.findViewById(R.id.imgBtn);
 
-            View.OnClickListener imgButtonOnClick = new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    ImageView imageView = (ImageView)v;
-                    String imgSrc = (String)imageView.getTag();
-
-                    if (imgSrc.length() < 5){
-                        Log.d("CHOSSESTYLE","PRESET : " + ((EffectsActivity) mContext).mProcessingImage);
-                        imgSrc = imgSrc.replaceAll("[^\\d.]", "");
-                        try {
-                            if (((EffectsActivity) mContext).mProcessingImage){
-                                return;
-                            } else {
-                                ((EffectsActivity) mContext).mProcessingImage = true;
-                            }
-                            Log.d("CHOSSESTYLE","ABOUT TO SEND");
-                            loadingIcon = (SpinKitView) ((EffectsActivity)mContext).findViewById(R.id.spin_kit);
-                            loadingIcon.setVisibility(View.VISIBLE);
-                            NetInterface.process(new NetCallback(), ((EffectsActivity) mContext).mChosenImage, null, imgSrc);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                        return;
-//                        ImageView mImageView = (ImageView)((EffectsActivity)mContext).findViewById(R.id.main_image);
-                    }
-//                    Bitmap bitmap = BitmapFactory.decodeFile(imgSrc);
-//                    Bitmap bitmap = ((BitmapDrawable)imageView.getDrawable()).getBitmap();
-
-                    if (mContext instanceof MainActivity) {
-
-                        ImageButton btn = (ImageButton)((MainActivity)mContext).findViewById(R.id.next);
-                        btn.setVisibility(View.VISIBLE);
-
-                        ImageView imgPrev = (ImageView)((MainActivity)mContext).findViewById(R.id.main_image_frame);
-                        if (imgPrev != null){
-//                            if (bitmap.getHeight() > bitmap.getWidth()){
-//                                Picasso.with(mContext)
-//                                        .load(new File(imgSrc))
-//                                        .resize(mWidthPixels,0)
-//                                        .centerCrop()
-//                                        .into(imgPrev);
-//                            } else {
-//                                Picasso.with(mContext)
-//                                        .load(new File(imgSrc))
-//                                        .resize(0,mWidthPixels)
-//                                        .centerCrop()
-//                                        .into(imgPrev);
-//                            }
-//                            Drawable drawable = new BitmapDrawable(mContext.getResources(), bitmap);
-//                            imgPrev.setImageDrawable(drawable);
-
-
-                            Glide.with(mContext)
-                                    .load(imgSrc)
-                                    .centerCrop()
-                                    .override(1000,1000)
-                                    .into(imgPrev);
-
-//                            mAttacher = new PhotoViewAttacher(imgPrev);
-//                            mAttacher.setScaleType(ImageView.ScaleType.CENTER_CROP);
-//                            mAttacher.setDisplayMatrix(new Matrix());
-
-                        } else {
-                            ((MainActivity) mContext).releaseCameraAndPreview();
-                            FrameLayout preview = (FrameLayout)((MainActivity)mContext).findViewById(R.id.camera_preview);
-                            preview.removeAllViews();
-                            imgPrev = new ImageView(mContext);
-                            imgPrev.setId(R.id.main_image_frame);
-
-                            // Set the Drawable displayed
-//                        Drawable bitmap = getResources().getDrawable(R.drawable.wallpaper);
-
-                            //////////////
-                            Glide.with(mContext)
-                                    .load(imgSrc)
-                                    .override(1000,1000)
-                                    .centerCrop()
-                                    .into(imgPrev);
-//                            Drawable drawable = new BitmapDrawable(mContext.getResources(), bitmap);
-//                            imgPrev.setImageDrawable(drawable);
-                            ///////////////
-//                            Picasso.with(mContext)
-//                                    .load(new File(imgSrc))
-//                                    .fit() // will explain later
-//                                    .into(imgPrev);
-
-                            // Attach a PhotoViewAttacher, which takes care of all of the zooming functionality.
-                            // (not needed unless you are going to change the drawable later)
-//                            mAttacher = new PhotoViewAttacher(imgPrev);
-//                            mAttacher.setScaleType(ImageView.ScaleType.CENTER_CROP);
-//                            mAttacher.getDisplayMatrix(new Matrix());
-
-//                        ImageView imgPrev = new ImageView(mContext);
-                            RelativeLayout.LayoutParams viewParams = new RelativeLayout.LayoutParams(
-                                    RelativeLayout.LayoutParams.WRAP_CONTENT,
-                                    RelativeLayout.LayoutParams.WRAP_CONTENT);
-                            viewParams.height = mWidthPixels + mStatusBarHeight;
-                            viewParams.width = mWidthPixels;
-                            viewParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-                            imgPrev.setLayoutParams(viewParams);
-                            preview.addView(imgPrev);
-
-                            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)preview.getLayoutParams();
-                            params.height = mWidthPixels + mStatusBarHeight;
-                            preview.setLayoutParams(viewParams);
-                        }
-
-
-                    } else if (mContext instanceof EffectsActivity){
-                        if (((EffectsActivity) mContext).mProcessingImage == true){
-                            return;
-                        } else {
-                            ((EffectsActivity) mContext).mProcessingImage = true;
-                        }
-
-                        String imgWithEffect = null;
-                        try {
-                            loadingIcon = (SpinKitView) ((EffectsActivity)mContext).findViewById(R.id.spin_kit);
-                            NetInterface.process(new NetCallback(), ((EffectsActivity) mContext).mChosenImage, imgSrc);
-                            loadingIcon.setVisibility(View.VISIBLE);
-
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-
-                        ImageView mImageView = (ImageView)((EffectsActivity)mContext).findViewById(R.id.main_image);
-
-
-                    } else if (mContext instanceof ChooseImageActivity) {
-                        Intent returnIntent = new Intent();
-                        returnIntent.putExtra("chosen_image", imgSrc);
-                        ((ChooseImageActivity)mContext).setResult(Activity.RESULT_OK, returnIntent);
-                        ((ChooseImageActivity)mContext).finish();
-                    }
-                }
-            };
-
-            View.OnLongClickListener imgButtonOnLongClick = new View.OnLongClickListener(){
-
-                @Override
-                public boolean onLongClick(final View v) {
-
-                    ImageButton caimeraBtn = (ImageButton)v.findViewById(R.id.caimera_sign);
-                    String src = (String)caimeraBtn.getTag();
-
-                    if (src.length() < 5){
-                        return false;
-                    }
-
-                    mImgs.remove(getLayoutPosition()); // 8 ready-made effects
-                    notifyDataSetChanged();
-                    return true;
-                }
-            };
-
-//            img.setOnLongClickListener(imgButtonOnLongClick);
-            img.setOnClickListener(imgButtonOnClick);
-            caimera_sign.setOnClickListener(imgButtonOnClick);
-
-
-            if (mContext instanceof EffectsActivity){
-
-//                img.setOnLongClickListener(imgButtonOnLongClick);
-//                caimera_sign.setOnLongClickListener(imgButtonOnLongClick);
-            }
         }
     }
 
@@ -386,10 +325,10 @@ public class ImgsAdapter extends
     private class NetCallback implements CallBack{
 
         @Override
-        public int call(final InputStream result) {
+            public int call(final Bitmap bmp, final String styleNum) {
             final EffectsActivity activity = (EffectsActivity) mContext;
             Log.v("NetCallback", "in call function");
-            if(result == null){
+            if(bmp == null){
                 //op failed
                 activity.runOnUiThread(new Runnable() {
                     @Override
@@ -401,20 +340,37 @@ public class ImgsAdapter extends
                 return -1;
                 //TODO:fill with error handling
             }
-            final Bitmap bmp = BitmapFactory.decodeStream(result);
             final ImageView mImageView = (ImageView)(activity).findViewById(R.id.main_image);
             activity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     mImageView.setImageBitmap(bmp);
                     loadingIcon.setVisibility(View.GONE);
-
                     ImageButton btn = (ImageButton)(activity.findViewById(R.id.share));
                     btn.setVisibility(View.VISIBLE);
                     activity.mProcessingImage = false;
+                    //TODO: implement cache
+//                    new AsyncTask<Void,Void,Void>(){
+//                        @Override
+//                        protected Void doInBackground(Void... params) {
+//                            File file = new File(Environment.getExternalStoragePublicDirectory(
+//                                    Environment.DIRECTORY_PICTURES) ,"Caimera/results/" + styleNum);
+//                            OutputStream os = null;
+//
+//                            try {
+//                                os = new FileOutputStream(file);
+//                            } catch (FileNotFoundException e) {
+//                                e.printStackTrace();
+//                            }
+//
+//                            bmp.compress(Bitmap.CompressFormat.PNG, 100, os);
+//                            return null;
+//                        }
+//                    }.execute();
                 }
             });
-            if(!activity.active){
+
+            if(!EffectsActivity.active){
                 int color = ContextCompat.getColor(mContext, R.color.light_yellow);
                 android.support.v4.app.NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(mContext)
                         .setSmallIcon(R.drawable.ic_launcher)
