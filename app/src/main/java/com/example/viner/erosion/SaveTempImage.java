@@ -19,8 +19,8 @@ public class SaveTempImage extends AsyncTask<byte[], Integer, Boolean> {
     protected Boolean doInBackground(byte[]... data) {
         int count = data.length;
 
-        for (int i = 0; i < count; i++) {
-            FileUtils.saveImageToFile(null, data[i], 0, false);
+        for (byte[] aData : data) {
+            FileUtils.saveImageToFile(null, aData, 0, false);
         }
         return true;
     }

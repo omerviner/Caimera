@@ -2,10 +2,13 @@ package com.example.viner.erosion;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.Environment;
 import android.util.Log;
 import okhttp3.*;
-import java.io.File;
-import java.io.IOException;
+
+import java.io.*;
 import java.util.concurrent.TimeUnit;
 
 
@@ -23,7 +26,7 @@ public class NetInterface {
     private static final int STYLE_PATH = 2;
     private static final int CONTENT_PATH = 1;
     private static final int BASE_ARG_NUM = STYLE_NUM;
-
+    private static final int QUICK_STYLE_NUM = 8;
 
 
     public static void process(final Object... args) throws Exception {
@@ -36,10 +39,10 @@ public class NetInterface {
         String uploadUrl = BASE_URL + newExtension;
         RequestBody requestBody;
         final CallBack callback = (CallBack)args[0];
-//        uncomment this to activate only the callback**********************
-//        callback.call(null);
-        if(args.length > BASE_ARG_NUM) {
-            String styleNum = (String)args[STYLE_NUM];
+
+        final String styleNum = (String)args[STYLE_NUM];
+
+        if(Integer.parseInt(styleNum) < QUICK_STYLE_NUM) {
             requestBody = buildBodyBase(contentPath).addFormDataPart("model", styleNum).build();
             uploadUrl = BASE_URL + presetExtension;
         }else{
@@ -60,7 +63,7 @@ public class NetInterface {
             public void onFailure(Call call, IOException e) {
                 Log.d(TAG, e.getMessage());
 
-                callback.call(null);
+                callback.call(null, null);
 
             }
 
@@ -69,11 +72,15 @@ public class NetInterface {
             public void onResponse(Call call, Response response) throws IOException {
                 try {
                     Log.d(TAG, "RESPONSE");
-                    callback.call(response.body().byteStream());
+                    Bitmap im = BitmapFactory.decodeStream(response.body().byteStream());
+
+                    callback.call(im, styleNum);
+
                 } catch (Exception e) {
                     e.printStackTrace();
-                    callback.call(null);
+                    callback.call(null, null);
                 }
+                response.close();
             }
         });
     }
