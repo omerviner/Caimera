@@ -81,17 +81,7 @@ public class MainActivity extends AppCompatActivity {
         // Lookup the recyclerview in activity layout
         rvImgs = (RecyclerView) findViewById(R.id.imgs);
 
-        rvImgs.addOnItemTouchListener(
-                new ImageItemClickListener(mContext, rvImgs ,new ImageItemClickListener.OnItemClickListener() {
-                    @Override public void onItemClick(View view, int position) {
-                        Log.v("clicked: ", Integer.toString(position));
-                    }
-
-                    @Override public void onLongItemClick(View view, int position) {
-                        Log.v("long clicked: ", Integer.toString(position));
-                    }
-                })
-        );
+//        rvImgs.addOnItemTouchListener(MainAdapter.get);
 
 
         rvImgs.setHasFixedSize(true);
@@ -372,6 +362,5 @@ public class MainActivity extends AppCompatActivity {
         }
         return 0;
     }
-
 
 }
