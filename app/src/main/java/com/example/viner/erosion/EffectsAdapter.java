@@ -30,7 +30,7 @@ import java.util.List;
  * Created by omer on 27/09/2016.
  */
 public class EffectsAdapter extends ImgsAdapter {
-    private static final int PRESET_STYLES_NUM = 8;
+    private static final int QUICK_STYLES_NUM = 8;
     private SpinKitView loadingIcon;
     private List<String> presets = Arrays.asList("/e1", "/e2", "/e3", "/e4", "/e5", "/e6", "/e7", "/e8");
     private EffectsActivity mContext;
@@ -43,13 +43,15 @@ public class EffectsAdapter extends ImgsAdapter {
         presetMap.put("/e5",R.drawable.e5);
         presetMap.put("/e6",R.drawable.e6);
         presetMap.put("/e7",R.drawable.e7);
+        presetMap.put("/e8",R.drawable.e8);
     }
 
     public EffectsAdapter(Context context, ArrayList<File> imgs) {
         super(context, imgs);
-        for (String preset: presets) {
-            imgs.add(new File(preset));
+        for (int i = 0;i < presets.size();  i++) {
+            mImgs.add(i, new File(presets.get(i)));
         }
+        mContext = (EffectsActivity) context;
         loadingIcon = (SpinKitView) ((EffectsActivity)mContext).findViewById(R.id.spin_kit);
     }
 
@@ -76,13 +78,13 @@ public class EffectsAdapter extends ImgsAdapter {
         if(img.isDirectory()){
             return;
         }
-        else if (position < 8){
+        else if (position < QUICK_STYLES_NUM){
             Picasso.with(mContext).load(presetMap.get(imgPath)).into(curImg);
         }
         else {
             Picasso
                     .with(mContext)
-                    .load(mImgs.get(position))
+                    .load(img)
                     .resize(150,150)
                     .centerCrop()
                     .into(curImg);
@@ -116,47 +118,45 @@ public class EffectsAdapter extends ImgsAdapter {
                 String imgSrc = (String)imageView.getTag();
                 Log.d("CHANGE", String.valueOf(position));
 
-                if (position < PRESET_STYLES_NUM){
-                    Log.d("CHOSSESTYLE","PRESET : " + ((EffectsActivity) mContext).mProcessingImage);
+                if (position < QUICK_STYLES_NUM){
+                    Log.d("CHOSSESTYLE","PRESET : " + mContext.mProcessingImage);
                     try {
-                        if (((EffectsActivity) mContext).mProcessingImage){
+                        if (mContext.mProcessingImage){
                             return;
                         } else {
-                            ((EffectsActivity) mContext).mProcessingImage = true;
+                            mContext.mProcessingImage = true;
                         }
                         Log.d("CHOSSESTYLE","ABOUT TO SEND");
-                        loadingIcon = (SpinKitView) ((EffectsActivity)mContext).findViewById(R.id.spin_kit);
+                        loadingIcon = (SpinKitView) mContext.findViewById(R.id.spin_kit);
                         loadingIcon.setVisibility(View.VISIBLE);
-                        NetInterface.process(new NetCallback(), ((EffectsActivity) mContext).mChosenImage, null, String.valueOf(position));
+                        NetInterface.process(new NetCallback(), mContext.mChosenImage, null, String.valueOf(position));
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                     return;
                 }
 
-                if (((EffectsActivity) mContext).mProcessingImage){
+                if (mContext.mProcessingImage){
                     return;
                 } else {
-                    ((EffectsActivity) mContext).mProcessingImage = true;
+                    mContext.mProcessingImage = true;
                 }
 
                 String imgWithEffect = null;
                 try {
-                    loadingIcon = (SpinKitView) ((EffectsActivity)mContext).findViewById(R.id.spin_kit);
-                    NetInterface.process(new NetCallback(), ((EffectsActivity) mContext).mChosenImage, imgSrc, String.valueOf(position));
+                    loadingIcon = (SpinKitView) mContext.findViewById(R.id.spin_kit);
+                    NetInterface.process(new NetCallback(), mContext.mChosenImage, imgSrc, String.valueOf(position));
                     loadingIcon.setVisibility(View.VISIBLE);
 
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
 
-                ImageView mImageView = (ImageView)((EffectsActivity)mContext).findViewById(R.id.main_image);
+                ImageView mImageView = (ImageView) mContext.findViewById(R.id.main_image);
 
             }
         };
 
-
-//            img.setOnLongClickListener(imgButtonOnLongClick);
         viewHolder.img.setOnClickListener(imgButtonOnClick);
         viewHolder.caimera_sign.setOnClickListener(imgButtonOnClick);
     }
@@ -165,7 +165,7 @@ public class EffectsAdapter extends ImgsAdapter {
 
         @Override
         public int call(final Bitmap bmp, final String styleNum) {
-            final EffectsActivity activity = (EffectsActivity) mContext;
+            final EffectsActivity activity = mContext;
             Log.v("NetCallback", "in call function");
             if(bmp == null){
                 //op failed
@@ -188,23 +188,23 @@ public class EffectsAdapter extends ImgsAdapter {
                     ImageButton btn = (ImageButton)(activity.findViewById(R.id.share));
                     btn.setVisibility(View.VISIBLE);
                     activity.mProcessingImage = false;
-                    new AsyncTask<Void,Void,Void>(){
-                        @Override
-                        protected Void doInBackground(Void... params) {
-                            File file = new File(Environment.getExternalStoragePublicDirectory(
-                                    Environment.DIRECTORY_PICTURES) ,"Caimera/results/" + styleNum);
-                            OutputStream os = null;
-
-                            try {
-                                os = new FileOutputStream(file);
-                            } catch (FileNotFoundException e) {
-                                e.printStackTrace();
-                            }
-
-                            bmp.compress(Bitmap.CompressFormat.PNG, 100, os);
-                            return null;
-                        }
-                    }.execute();
+//                    new AsyncTask<Void,Void,Void>(){
+//                        @Override
+//                        protected Void doInBackground(Void... params) {
+//                            File file = new File(Environment.getExternalStoragePublicDirectory(
+//                                    Environment.DIRECTORY_PICTURES) ,"Caimera/results/" + styleNum);
+//                            OutputStream os = null;
+//
+//                            try {
+//                                os = new FileOutputStream(file);
+//                            } catch (FileNotFoundException e) {
+//                                e.printStackTrace();
+//                            }
+//
+//                            bmp.compress(Bitmap.CompressFormat.PNG, 100, os);
+//                            return null;
+//                        }
+//                    }.execute();
                 }
             });
 

@@ -117,7 +117,7 @@ public class EffectsActivity extends AppCompatActivity{
         }
 
         // Create adapter passing in the sample user data
-        mAdapter = new ImgsAdapter(this, mImgs);
+        mAdapter = new EffectsAdapter(this, mImgs);
 
         // Attach the adapter to the recyclerview to populate items
         rvImgs.setAdapter(mAdapter);
