@@ -24,6 +24,7 @@ public class MainAdapter  extends ImgsAdapter{
 
     public MainAdapter(Context context, ArrayList<File> imgs) {
         super(context, imgs);
+        mContext = (MainActivity) context;
     }
 
     @Override
