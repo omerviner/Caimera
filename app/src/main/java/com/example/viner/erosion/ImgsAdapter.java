@@ -79,7 +79,7 @@ public class ImgsAdapter extends
         // Set item views based on your views and data model
         ImageButton curImg = viewHolder.img;
 
-        ImageButton caimeraSign = viewHolder.caimera_sign;
+        final ImageButton caimeraSign = viewHolder.caimera_sign;
         caimeraSign.setVisibility(View.GONE);
         caimeraSign.setClipToOutline(true);
         caimeraSign.setTag(img.getAbsolutePath());
@@ -122,6 +122,23 @@ public class ImgsAdapter extends
 
             if (mContext instanceof EffectsActivity){
                 caimeraSign.setVisibility(View.VISIBLE);
+                View.OnLongClickListener onLongClick = new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        String src = (String)caimeraSign.getTag();
+                        Log.d("ImgsAdapter", "LOngClick");
+
+                        if (src.length() < 5){
+                            return false;
+                        }
+                        File img = mImgs.remove(position);
+                        img.delete();
+                        notifyDataSetChanged();
+                        return false;
+                    }
+                };
+                viewHolder.img.setOnLongClickListener(onLongClick);
+                viewHolder.caimera_sign.setOnLongClickListener(onLongClick);
 
 
             }
@@ -152,7 +169,6 @@ public class ImgsAdapter extends
 
             caimera_sign = (ImageButton)itemView.findViewById(R.id.caimera_sign);
             img = (ImageButton)itemView.findViewById(R.id.imgBtn);
-
             View.OnClickListener imgButtonOnClick = new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -261,19 +277,6 @@ public class ImgsAdapter extends
                         }
 
 
-//                        imgPrev.setScaleType(ImageView.ScaleType.CENTER_CROP);
-//                        Picasso.with(mContext)
-//                                .load(new File(imgSrc))
-////                                    .fit() // will explain later
-//                                .resize(mWidthPixels, mWidthPixels)
-//                                .center()
-//
-//                                .into(imgPrev);
-//                        imgPrev.setAdjustViewBounds(true);
-//                        imgPrev.setScaleType(ImageView.ScaleType.CENTER_CROP);
-
-//                        preview.addView(imgPrev);
-
                     } else if (mContext instanceof EffectsActivity){
                         if (((EffectsActivity) mContext).mProcessingImage == true){
                             return;
@@ -294,60 +297,6 @@ public class ImgsAdapter extends
                         ImageView mImageView = (ImageView)((EffectsActivity)mContext).findViewById(R.id.main_image);
 
 
-                        View.OnLongClickListener imgButtonOnLongClick = new View.OnLongClickListener(){
-
-                            @Override
-                            public boolean onLongClick(final View v) {
-
-                                ImageButton caimeraBtn = (ImageButton)v.findViewById(R.id.caimera_sign);
-                                String src = (String)caimeraBtn.getTag();
-
-                                if (src.length() < 5){
-                                    return false;
-                                }
-
-                                mImgs.remove(getPosition()); // 8 ready-made effects
-
-//                        File file = new File(src);
-//                        file.delete();
-
-
-
-//                        new MaterialDialog.Builder(mContext)
-//
-//                                .title(R.string.title)
-//                                .content(R.string.content)
-//                                .positiveText(R.string.agree)
-//                                .negativeText(R.string.disagree)
-//                                .onPositive(new MaterialDialog.SingleButtonCallback() {
-//                                    @Override
-//                                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-////                                        Log.v("Dialog", "Was positive");
-//                                        img.setVisibility(View.GONE);
-//                                        File file = new File((String)img.getTag());
-//                                        file.delete();
-                                        notifyDataSetChanged();
-//                                    }
-//                                })
-//                                .show();
-
-                                return true;
-                            }
-                        };
-
-                        itemView.setOnLongClickListener(imgButtonOnLongClick);
-
-
-                        // Set the Drawable displayed
-//                        Drawable drawable = new BitmapDrawable(mContext.getResources(), bitmap);
-//                        mImageView.setImageDrawable(drawable);
-
-                        // Attach a PhotoViewAttacher, which takes care of all of the zooming functionality.
-                        // (not needed unless you are going to change the drawable later)
-//                        PhotoViewAttacher mAttacher = new PhotoViewAttacher(mImageView);
-//                        mAttacher.getScale();
-//                        mAttacher.getDisplayMatrix(new Matrix());
-
                     } else if (mContext instanceof ChooseImageActivity) {
                         Intent returnIntent = new Intent();
                         returnIntent.putExtra("chosen_image", imgSrc);
@@ -357,6 +306,25 @@ public class ImgsAdapter extends
                 }
             };
 
+            View.OnLongClickListener imgButtonOnLongClick = new View.OnLongClickListener(){
+
+                @Override
+                public boolean onLongClick(final View v) {
+
+                    ImageButton caimeraBtn = (ImageButton)v.findViewById(R.id.caimera_sign);
+                    String src = (String)caimeraBtn.getTag();
+
+                    if (src.length() < 5){
+                        return false;
+                    }
+
+                    mImgs.remove(getLayoutPosition()); // 8 ready-made effects
+                    notifyDataSetChanged();
+                    return true;
+                }
+            };
+
+//            img.setOnLongClickListener(imgButtonOnLongClick);
             img.setOnClickListener(imgButtonOnClick);
             caimera_sign.setOnClickListener(imgButtonOnClick);
 
@@ -427,7 +395,7 @@ public class ImgsAdapter extends
                                 .show();
                     }
                 });
-
+                return -1;
                 //TODO:fill with error handling
             }
             final Bitmap bmp = BitmapFactory.decodeStream(result);

@@ -176,7 +176,7 @@ public class MainActivity extends AppCompatActivity {
 
         opened = safeCameraOpenInView();
 
-        if(opened == false){
+        if(!opened){
             Log.d("CameraGuide","Error, Camera failed to open");
             return;
         }
@@ -193,7 +193,7 @@ public class MainActivity extends AppCompatActivity {
                         mCamera.takePicture(null, null, mPicture);
                     } else {
                         safeCameraOpenInView();
-//                        setLayout();
+                        setLayout();
                         captureButton.bringToFront();
                         recyclerView.bringToFront();
 
@@ -202,7 +202,6 @@ public class MainActivity extends AppCompatActivity {
             }
         );
     }
-
 
 
     /**
@@ -214,15 +213,11 @@ public class MainActivity extends AppCompatActivity {
         releaseCameraAndPreview();
         mCamera = getCameraInstance();
         qOpened = (mCamera != null);
-
-        if(qOpened == true) {
-            mPreview = new Preview(this.getApplicationContext(), mCamera, mCameraView);
-            FrameLayout preview = (FrameLayout) mCameraView.findViewById(R.id.camera_preview);
-
-                    preview.addView(mPreview);
-            mPreview.startCameraPreview();
+        mPreview = new Preview(this.getApplicationContext(), mCamera, mCameraView);
+        FrameLayout preview = (FrameLayout) mCameraView.findViewById(R.id.camera_preview);
+        preview.addView(mPreview);
+//           mPreview.startCameraPreview();TODO: BEWARE this was removed and made the passed null surface go away(it might be since we are replacing an existing preview with a new one thus eliminating all refrences to it without releasing it in some way)
             Log.v("safeCameraOpenInView", "succ");
-        }
 
         return qOpened;
     }
@@ -287,32 +282,9 @@ public class MainActivity extends AppCompatActivity {
                     .into(imgPrev);
 
 
-            //                                Picasso.with(mContext)
-//                                        .load(new File(imgSrc))
-//                                        .resize(mWidthPixels,0)
-//                                        .centerCrop()
-//                                        .into(imgPrev);
-//            Drawable drawable = new BitmapDrawable(bitmap);
-//            imgPrev.setImageDrawable(drawable);
-
-            // Use PhotoView to view / crop / move / etc.
-//            PhotoViewAttacher mAttacher = new PhotoViewAttacher(imgPrev);
-//            mAttacher.setScaleType(ImageView.ScaleType.CENTER_CROP);
-//            mAttacher.getDisplayMatrix(new Matrix());
-
-            // PhotoView params
-//            RelativeLayout.LayoutParams viewParams = new RelativeLayout.LayoutParams(
-//                    RelativeLayout.LayoutParams.MATCH_PARENT,
-//                    RelativeLayout.LayoutParams.WRAP_CONTENT);
-//            viewParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
 //
             DisplayMetrics displayMetrics = mContext.getResources().getDisplayMetrics();
-//
-//            viewParams.height = displayMetrics.widthPixels;
 
-//            mAttacher.setScale(displayMetrics.widthPixels / imgPrev.getWidth());
-
-//            imgPrev.setLayoutParams(viewParams);
             RelativeLayout.LayoutParams viewParams = new RelativeLayout.LayoutParams(
                     RelativeLayout.LayoutParams.WRAP_CONTENT,
                     RelativeLayout.LayoutParams.WRAP_CONTENT);
@@ -324,55 +296,12 @@ public class MainActivity extends AppCompatActivity {
             // Setting new view
             preview.addView(imgPrev);
 
-//            DisplayMetrics displayMetrics = mContext.getResources().getDisplayMetrics();
-//            int mWidthPixels = displayMetrics.widthPixels;
-//
-//            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)preview.getLayoutParams();
-//            params.height = mWidthPixels;
-//            preview.setLayoutParams(params);
-
-//            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)preview.getLayoutParams();
-////                        imgPrev.setImageBitmap(bitmap);
-////                        imgPrev.setLayoutParams(params);
-////                        imgPrev.getLayoutParams().height = 1100;
-//
-//
-//            preview.setLayoutParams(params);
-
         }
     };
 
 
     public void onClickImageIsChosen(View view){
 
-//        ((MainActivity) mContext).releaseCameraAndPreview();
-//        FrameLayout preview = (FrameLayout)((MainActivity)mContext).findViewById(R.id.camera_preview);
-//
-//        preview.removeAllViews();
-//
-//        ImageView imgPrev = new ImageView(mContext);
-//        // Set the Drawable displayed
-////                        Drawable bitmap = getResources().getDrawable(R.drawable.wallpaper);
-//        Drawable drawable = new BitmapDrawable(BitmapFactory.decodeByteArray(mPicture, 0, mPicture.length));
-////        Drawable drawable = new BitmapDrawable(mContext.getResources(), bitmap);
-//        imgPrev.setImageDrawable(drawable);
-//
-//        // Attach a PhotoViewAttacher, which takes care of all of the zooming functionality.
-//        // (not needed unless you are going to change the drawable later)
-//        PhotoViewAttacher mAttacher = new PhotoViewAttacher(imgPrev);
-//        mAttacher.getScale();
-//        mAttacher.getDisplayMatrix(new Matrix());
-//
-////                        ImageView imgPrev = new ImageView(mContext);
-//        RelativeLayout.LayoutParams viewParams = new RelativeLayout.LayoutParams(
-//                RelativeLayout.LayoutParams.WRAP_CONTENT,
-//                RelativeLayout.LayoutParams.WRAP_CONTENT);
-//
-//        viewParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-//        imgPrev.setLayoutParams(viewParams);
-//        preview.addView(imgPrev);
-
-        ///////
 
         ImageView image = (ImageView) this.findViewById(R.id.main_image_frame);
         image.setDrawingCacheEnabled(true);
@@ -383,10 +312,8 @@ public class MainActivity extends AppCompatActivity {
         cropped.compress(Bitmap.CompressFormat.PNG, 100, stream);
         byte[] byteArray = stream.toByteArray();
 
-//        File file = FileUtils.saveImageToFile(this, byteArray, 0, false);
         new SaveTempImage(new saveCallback()).execute(byteArray);
         Intent intent = new Intent(this, EffectsActivity.class);
-//        intent.putExtra("imageData", byteArray);
 
 
         startActivity(intent);
@@ -403,7 +330,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        if (opened == true){
+        if (opened){
             safeCameraOpenInView();
         }
 
@@ -446,6 +373,7 @@ public class MainActivity extends AppCompatActivity {
 
             listOfAllImages.add(absolutePathOfImage);
         }
+        cursor.close();//TODO: omer added since is the correct way to work with a cursor.Check!!
         return listOfAllImages;
     }
 
@@ -457,11 +385,6 @@ public class MainActivity extends AppCompatActivity {
         mStatusBarHeight = getStatusBarHeight();
         params.height = displayMetrics.heightPixels - displayMetrics.widthPixels - mStatusBarHeight;
         rec_filler.setLayoutParams(params);
-
-//        View square_filler = findViewById(R.id.square_filler);
-//        RelativeLayout.LayoutParams sq_params = (RelativeLayout.LayoutParams)square_filler.getLayoutParams();
-//        sq_params.height = displayMetrics.heightPixels - params.height;
-//        square_filler.setLayoutParams(sq_params);
 
         RelativeLayout imgsRelLayout = (RelativeLayout)findViewById(R.id.imgsRelativeLayout);
         RelativeLayout btnsRelLayout = (RelativeLayout)findViewById(R.id.btnsRelativeLayout);

@@ -216,4 +216,5 @@ public class EffectsActivity extends AppCompatActivity{
 
     }
 
+
 }
