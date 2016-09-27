@@ -19,11 +19,13 @@ import java.util.ArrayList;
 public class ChooseAdapter extends ImgsAdapter {
     private ChooseImageActivity mContext;
     private RecyclerView mRvImgs;
+
     public ChooseAdapter(Context context, ArrayList<File> imgs, RecyclerView rvImgs) {
         super(context, imgs);
         mContext = (ChooseImageActivity)context;
         mRvImgs = rvImgs;
     }
+
 
     @Override
     ImageItemClickListener getListener() {
