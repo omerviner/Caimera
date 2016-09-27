@@ -49,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
     String tempImagePath;
     boolean opened;
     int mStatusBarHeight;
+    RecyclerView rvImgs;
 
     private static final int REQUEST_CAMERA = 0;
     private static final int REQUEST_CAMERA_PERMISSION = 1;
@@ -129,7 +130,21 @@ public class MainActivity extends AppCompatActivity {
 
 
         // Lookup the recyclerview in activity layout
-        final RecyclerView rvImgs = (RecyclerView) findViewById(R.id.imgs);
+        rvImgs = (RecyclerView) findViewById(R.id.imgs);
+
+        rvImgs.addOnItemTouchListener(
+                new ImageItemClickListener(mContext, rvImgs ,new ImageItemClickListener.OnItemClickListener() {
+                    @Override public void onItemClick(View view, int position) {
+                        Log.v("clicked: ", Integer.toString(position));
+                    }
+
+                    @Override public void onLongItemClick(View view, int position) {
+                        Log.v("long clicked: ", Integer.toString(position));
+                    }
+                })
+        );
+
+
         rvImgs.setHasFixedSize(true);
 
         // Initialize images path
@@ -183,7 +198,6 @@ public class MainActivity extends AppCompatActivity {
 
         // Trap the capture button.
         final Button captureButton = (Button) mCameraView.findViewById(R.id.button_capture);
-        final RecyclerView recyclerView = (RecyclerView) mCameraView.findViewById(R.id.imgs);
         captureButton.setOnClickListener(
             new View.OnClickListener() {
                 @Override
@@ -195,14 +209,12 @@ public class MainActivity extends AppCompatActivity {
                         safeCameraOpenInView();
                         setLayout();
                         captureButton.bringToFront();
-                        recyclerView.bringToFront();
-
+                        rvImgs.bringToFront();
                     }
                 }
             }
         );
     }
-
 
     /**
      * Recommended "safe" way to open the camera.
@@ -216,6 +228,7 @@ public class MainActivity extends AppCompatActivity {
         mPreview = new Preview(this.getApplicationContext(), mCamera, mCameraView);
         FrameLayout preview = (FrameLayout) mCameraView.findViewById(R.id.camera_preview);
         preview.addView(mPreview);
+        rvImgs.bringToFront();
 //           mPreview.startCameraPreview();TODO: BEWARE this was removed and made the passed null surface go away(it might be since we are replacing an existing preview with a new one thus eliminating all refrences to it without releasing it in some way)
             Log.v("safeCameraOpenInView", "succ");
 

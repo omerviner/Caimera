@@ -140,6 +140,8 @@ public class ImgsAdapter extends
                 viewHolder.img.setOnLongClickListener(onLongClick);
                 viewHolder.caimera_sign.setOnLongClickListener(onLongClick);
 
+                viewHolder.img.bringToFront();
+                viewHolder.caimera_sign.bringToFront();
 
             }
 
@@ -169,6 +171,7 @@ public class ImgsAdapter extends
 
             caimera_sign = (ImageButton)itemView.findViewById(R.id.caimera_sign);
             img = (ImageButton)itemView.findViewById(R.id.imgBtn);
+
             View.OnClickListener imgButtonOnClick = new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
