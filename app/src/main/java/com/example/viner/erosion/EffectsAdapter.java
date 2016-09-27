@@ -52,7 +52,7 @@ public class EffectsAdapter extends ImgsAdapter {
             mImgs.add(i, new File(presets.get(i)));
         }
         mContext = (EffectsActivity) context;
-        loadingIcon = (SpinKitView) ((EffectsActivity)mContext).findViewById(R.id.spin_kit);
+        loadingIcon = (SpinKitView) mContext.findViewById(R.id.spin_kit);
     }
 
     @Override
@@ -127,7 +127,6 @@ public class EffectsAdapter extends ImgsAdapter {
                             mContext.mProcessingImage = true;
                         }
                         Log.d("CHOSSESTYLE","ABOUT TO SEND");
-                        loadingIcon = (SpinKitView) mContext.findViewById(R.id.spin_kit);
                         loadingIcon.setVisibility(View.VISIBLE);
                         NetInterface.process(new NetCallback(), mContext.mChosenImage, null, String.valueOf(position));
                     } catch (Exception e) {

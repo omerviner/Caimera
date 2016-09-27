@@ -30,7 +30,7 @@ public class MainAdapter  extends ImgsAdapter{
     @Override
     public void onBindViewHolder(final ViewHolder viewHolder, final int position) {
         // Get the data model based on position
-        File img = mImgs.get(position);
+        final File img = mImgs.get(position);
 
 
         // Set item views based on your views and data model
@@ -41,7 +41,6 @@ public class MainAdapter  extends ImgsAdapter{
         caimeraSign.setClipToOutline(true);
         caimeraSign.setTag(img.getAbsolutePath());
         curImg.setClipToOutline(true);
-        curImg.setTag(img.getAbsolutePath());
         caimeraSign.setTag(img.getAbsolutePath());
 
         String imgPath = img.getAbsolutePath();
@@ -51,10 +50,10 @@ public class MainAdapter  extends ImgsAdapter{
             return;
         }
         else {
-            Picasso
+            Glide
                     .with(mContext)
                     .load(mImgs.get(position))
-                    .resize(150,150)
+                    .override(150,150)
                     .centerCrop()
                     .into(curImg);
 
@@ -64,7 +63,7 @@ public class MainAdapter  extends ImgsAdapter{
             public void onClick(View v) {
 
                 ImageView imageView = (ImageView)v;
-                    String imgSrc = (String)imageView.getTag();
+                    String imgSrc = img.getAbsolutePath();
 
                     ImageButton btn = (ImageButton) mContext.findViewById(R.id.next);
                     btn.setVisibility(View.VISIBLE);
