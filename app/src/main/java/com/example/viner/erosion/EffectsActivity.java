@@ -5,8 +5,6 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -14,38 +12,25 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import com.google.common.collect.Lists;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
-import uk.co.senab.photoview.PhotoView;
 
-/**
- * Created by Viner on 15/08/2016.
- */
-public class EffectsActivity extends AppCompatActivity{
+public class EffectsActivity extends AppCompatActivity {
 
     static final int CHOOSE_IMAGE_REQUEST = 1;
     ArrayList<File> mImgs;
     ImgsAdapter mAdapter;
     String mChosenImage;
-    String mChosenStyle;
     Context mContext;
     boolean mProcessingImage;
     public static boolean active;
@@ -57,12 +42,6 @@ public class EffectsActivity extends AppCompatActivity{
         setContentView(R.layout.effects);
         mContext = this;
         mNotificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
-//        Bundle extras = getIntent().getExtras();
-
-//        this.overridePendingTransition(R.anim.anim_slide_in_left, R.anim.anim_slide_out_right);
-
-        byte[] chosenImage = getIntent().getByteArrayExtra("imageData");
-
 
         File mediaTempImgStorageDir = new File(Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES), "Caimera");
@@ -70,29 +49,22 @@ public class EffectsActivity extends AppCompatActivity{
 
         File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES), "Caimera" + File.separator + "styles");
-        if (!mediaStorageDir.exists()){
+        if (!mediaStorageDir.exists()) {
             mediaStorageDir.mkdirs();
         }
-//        String path = mediaStorageDir.getPath() + File.separator + "erosion_tmp" + ".jpg";
-//        File curImage = new File(path);
 
-        ImageView imgView = (ImageView) findViewById(R.id.main_image);
-
-        Bitmap img = null;
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-//        try {
-//            img = BitmapFactory.decodeStream(new FileInputStream(curImage), null, options);
-//        } catch (FileNotFoundException e) {
-//            e.printStackTrace();
-//        }
-
-        imgView.setImageBitmap(img);
+        /*TODO: seems to be redundant code?
+*        ImageView imgView = (ImageView) findViewById(R.id.main_image);
+*        Bitmap img = null;
+*        BitmapFactory.Options options = new BitmapFactory.Options();
+*        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+*        imgView.setImageBitmap(img)
+*/
 
         DisplayMetrics displayMetrics = this.getResources().getDisplayMetrics();
         View effect_scroller = findViewById(R.id.effectsRelativeLayout);
-        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)effect_scroller.getLayoutParams();
-        int statusBarHeight = (int)Math.ceil(25 * displayMetrics.density);
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) effect_scroller.getLayoutParams();
+        int statusBarHeight = (int) Math.ceil(25 * displayMetrics.density);
 
         params.height = displayMetrics.heightPixels - displayMetrics.widthPixels - statusBarHeight;
         effect_scroller.setLayoutParams(params);
@@ -105,13 +77,7 @@ public class EffectsActivity extends AppCompatActivity{
 
         rvImgs.setHasFixedSize(true);
 
-        File[] files = mediaStorageDir.listFiles();
-
-        mImgs = new ArrayList<File>();
-
-        for (int i = 0; i < files.length; i++){
-            mImgs.add(files[i]);
-        }
+        mImgs = new ArrayList<>(Arrays.asList(mediaStorageDir.listFiles()));
 
         // Create adapter passing in the sample user data
         mAdapter = new EffectsAdapter(this, mImgs, rvImgs);
@@ -124,7 +90,7 @@ public class EffectsActivity extends AppCompatActivity{
         rvImgs.addOnItemTouchListener(mAdapter.getListener());
     }
 
-    public void onClickImageIsChosen(View view){
+    public void onClickImageIsChosen(View view) {
         ImageView image = (ImageView) this.findViewById(R.id.main_image);
         image.setDrawingCacheEnabled(true);
         Bitmap cropped = Bitmap.createBitmap(image.getDrawingCache());
@@ -136,7 +102,7 @@ public class EffectsActivity extends AppCompatActivity{
         FileUtils.saveImageToFile(this, byteArray, 0, true);
     }
 
-    public void onClickChooseEffect(View view){
+    public void onClickChooseEffect(View view) {
         Intent intent = new Intent(this, ChooseImageActivity.class);
         startActivityForResult(intent, CHOOSE_IMAGE_REQUEST);
     }
@@ -146,7 +112,7 @@ public class EffectsActivity extends AppCompatActivity{
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
         if (requestCode == CHOOSE_IMAGE_REQUEST) {
-            if(resultCode == Activity.RESULT_OK){
+            if (resultCode == Activity.RESULT_OK) {
                 String imgUrl = data.getStringExtra("chosen_image");
                 File newEffect = new File(imgUrl);
                 FileUtils.copyFile(this, newEffect);
@@ -155,15 +121,15 @@ public class EffectsActivity extends AppCompatActivity{
 //                Log.v("ChooseImageActivity: ", imgUrl);
                 mAdapter.notifyDataSetChanged();
             }
-            if (resultCode == Activity.RESULT_CANCELED) {
-                //Write your code if there's no result
-            }
+//            if (resultCode == Activity.RESULT_CANCELED) {
+//                //Write your code if there's no result
+//            }
         }
     }//onActivityResult
 
-    public void onClickShareButton(View v){
+    public void onClickShareButton(View v) {
         try {
-            ImageView mImageView = (ImageView)((EffectsActivity)mContext).findViewById(R.id.main_image);
+            ImageView mImageView = (ImageView) ((EffectsActivity) mContext).findViewById(R.id.main_image);
             mImageView.buildDrawingCache();
             mImageView.setDrawingCacheEnabled(true);
             Bitmap bmp = mImageView.getDrawingCache();
@@ -177,7 +143,7 @@ public class EffectsActivity extends AppCompatActivity{
             fOut.close();
             mImageView.setDrawingCacheEnabled(false);
             file.setReadable(true, false);
-            final Intent intent = new Intent(     android.content.Intent.ACTION_SEND);
+            final Intent intent = new Intent(android.content.Intent.ACTION_SEND);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
             intent.setType("image/png");
