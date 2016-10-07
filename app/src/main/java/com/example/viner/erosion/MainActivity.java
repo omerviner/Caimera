@@ -50,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
     boolean opened;
     int mStatusBarHeight;
     RecyclerView rvImgs;
+    FrameLayout mPreviewFrame;
 
     private static final int REQUEST_CAMERA = 0;
     private static final int REQUEST_CAMERA_PERMISSION = 1;
@@ -143,10 +144,14 @@ public class MainActivity extends AppCompatActivity {
                         // get an image from the camera
                         mCamera.takePicture(null, null, mPicture);
                     } else {
+//                        Intent intent = new Intent(new MainActivity);
+//                        finish();
+//                        startActivity(intent);
+
                         safeCameraOpenInView();
-                        setLayout();
-                        captureButton.bringToFront();
-                        rvImgs.bringToFront();
+//                        setLayout();
+//                        captureButton.bringToFront();
+//                        rvImgs.bringToFront();
                     }
                 }
             }
@@ -162,10 +167,14 @@ public class MainActivity extends AppCompatActivity {
         releaseCameraAndPreview();
         mCamera = getCameraInstance();
         qOpened = (mCamera != null);
-        mPreview = new Preview(this.getApplicationContext(), mCamera, mCameraView);
-        FrameLayout preview = (FrameLayout) mCameraView.findViewById(R.id.camera_preview);
-        preview.addView(mPreview);
-        rvImgs.bringToFront();
+        if (mPreview == null){
+            mPreview = new Preview(this.getApplicationContext(), mCamera, mCameraView);
+            mPreviewFrame = (FrameLayout) mCameraView.findViewById(R.id.camera_preview);
+            mPreviewFrame.addView(mPreview);
+        }
+
+
+//        rvImgs.bringToFront();
 //           mPreview.startCameraPreview();TODO: BEWARE this was removed and made the passed null surface go away(it might be since we are replacing an existing preview with a new one thus eliminating all refrences to it without releasing it in some way)
             Log.v("safeCameraOpenInView", "succ");
 
@@ -199,6 +208,7 @@ public class MainActivity extends AppCompatActivity {
             mPreview.destroyDrawingCache();
             mPreview.mCamera = null;
         }
+//        mPreviewFrame.removeAllViews();
     }
 
 
@@ -219,12 +229,27 @@ public class MainActivity extends AppCompatActivity {
 
             // Close camera
             ((MainActivity) mContext).releaseCameraAndPreview();
-            FrameLayout preview = (FrameLayout)((MainActivity)mContext).findViewById(R.id.camera_preview);
-            preview.removeAllViews();
+//            mPreviewFrame.removeAllViews();
 
+            ImageView imgPrev = (ImageView)findViewById(R.id.main_image_frame);
+
+            if (imgPrev == null){
+                imgPrev = new ImageView(mContext);
+//            imgPrev.setId(R.id.main_image_frame);
+                DisplayMetrics displayMetrics = mContext.getResources().getDisplayMetrics();
+
+                RelativeLayout.LayoutParams viewParams = new RelativeLayout.LayoutParams(
+                        RelativeLayout.LayoutParams.WRAP_CONTENT,
+                        RelativeLayout.LayoutParams.WRAP_CONTENT);
+                viewParams.height = displayMetrics.widthPixels + mStatusBarHeight;
+                viewParams.width = displayMetrics.widthPixels;
+                viewParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+                imgPrev.setLayoutParams(viewParams);
+                imgPrev.setId(R.id.main_image_frame);
+                // Setting new view
+                mPreviewFrame.addView(imgPrev);
+            }
             // Create image view with captured image
-            ImageView imgPrev = new ImageView(mContext);
-            imgPrev.setId(R.id.main_image_frame);
 
 //            Bitmap bitmap = BitmapFactory.decodeByteArray(croppedData, 0, croppedData.length);
 
@@ -235,44 +260,29 @@ public class MainActivity extends AppCompatActivity {
                     .centerCrop()
                     .into(imgPrev);
 
-
-//
-            DisplayMetrics displayMetrics = mContext.getResources().getDisplayMetrics();
-
-            RelativeLayout.LayoutParams viewParams = new RelativeLayout.LayoutParams(
-                    RelativeLayout.LayoutParams.WRAP_CONTENT,
-                    RelativeLayout.LayoutParams.WRAP_CONTENT);
-            viewParams.height = displayMetrics.widthPixels + mStatusBarHeight;
-            viewParams.width = displayMetrics.widthPixels;
-            viewParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-            imgPrev.setLayoutParams(viewParams);
-            imgPrev.setId(R.id.main_image_frame);
-            // Setting new view
-            preview.addView(imgPrev);
-
         }
     };
 
 
-    public void onClickImageIsChosen(View view){
-
-
-        ImageView image = (ImageView) this.findViewById(R.id.main_image_frame);
-        image.setDrawingCacheEnabled(true);
-
-        Bitmap cropped = Bitmap.createBitmap(image.getDrawingCache());
-
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        cropped.compress(Bitmap.CompressFormat.PNG, 100, stream);
-        byte[] byteArray = stream.toByteArray();
-
-        new SaveTempImage(new saveCallback()).execute(byteArray);
-        Intent intent = new Intent(this, EffectsActivity.class);
-
-
-        startActivity(intent);
-
-    }
+//    public void onClickImageIsChosen(View view){
+//
+//
+//        ImageView image = (ImageView) this.findViewById(R.id.main_image_frame);
+//        image.setDrawingCacheEnabled(true);
+//
+//        Bitmap cropped = Bitmap.createBitmap(image.getDrawingCache());
+//
+//        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+//        cropped.compress(Bitmap.CompressFormat.PNG, 100, stream);
+//        byte[] byteArray = stream.toByteArray();
+//
+//        new SaveTempImage(new saveCallback()).execute(byteArray);
+//        Intent intent = new Intent(this, EffectsActivity.class);
+//
+//
+//        startActivity(intent);
+//
+//    }
 
     @Override
     protected void onPause() {
