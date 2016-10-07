@@ -5,6 +5,8 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.NotificationCompat;
 import android.support.v7.widget.RecyclerView;
@@ -17,6 +19,9 @@ import com.bumptech.glide.Glide;
 import com.github.ybq.android.spinkit.SpinKitView;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -69,7 +74,13 @@ public class EffectsAdapter extends ImgsAdapter {
                         Log.d("CHOSSESTYLE","ABOUT TO SEND");
                         loadingIcon = (SpinKitView) mContext.findViewById(R.id.spin_kit);
                         loadingIcon.setVisibility(View.VISIBLE);
-                        NetInterface.process(new NetCallback(), mContext.mChosenImage, null, String.valueOf(position));
+                        File result = new File(mContext.getExternalCacheDir(), "results/" + String.valueOf(position));
+                        if(result.exists()){//Cache :TODO: DEBUG!!!
+                            new NetCallback().call(BitmapFactory.decodeFile(mContext.getExternalCacheDir() + "results/" + String.valueOf(position)),  String.valueOf(position));
+                        }
+                        else {
+                            NetInterface.process(new NetCallback(), mContext.mChosenImage, null, String.valueOf(position));
+                        }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -167,23 +178,22 @@ public class EffectsAdapter extends ImgsAdapter {
                     ImageButton btn = (ImageButton)(activity.findViewById(R.id.share));
                     btn.setVisibility(View.VISIBLE);
                     activity.mProcessingImage = false;
-//                    new AsyncTask<Void,Void,Void>(){
-//                        @Override
-//                        protected Void doInBackground(Void... params) {
-//                            File file = new File(Environment.getExternalStoragePublicDirectory(
-//                                    Environment.DIRECTORY_PICTURES) ,"Caimera/results/" + styleNum);
-//                            OutputStream os = null;
-//
-//                            try {
-//                                os = new FileOutputStream(file);
-//                            } catch (FileNotFoundException e) {
-//                                e.printStackTrace();
-//                            }
-//
-//                            bmp.compress(Bitmap.CompressFormat.PNG, 100, os);
-//                            return null;
-//                        }
-//                    }.execute();
+                    new AsyncTask<Void,Void,Void>(){
+                        @Override
+                        protected Void doInBackground(Void... params) {
+                            File file = new File(activity.getExternalCacheDir() ,"results/" + styleNum);
+                            OutputStream os = null;
+
+                            try {
+                                os = new FileOutputStream(file);
+                            } catch (FileNotFoundException e) {
+                                e.printStackTrace();
+                            }
+
+                            bmp.compress(Bitmap.CompressFormat.PNG, 100, os);
+                            return null;
+                        }
+                    }.execute();//cache TODO: debug!
                 }
             });
 
@@ -191,7 +201,7 @@ public class EffectsAdapter extends ImgsAdapter {
                 int color = ContextCompat.getColor(mContext, R.color.light_yellow);
                 android.support.v4.app.NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(mContext)
                         .setSmallIcon(R.drawable.ic_launcher)
-                        .setContentTitle("Custom Effect Ready!")
+                        .setContentTitle("Caimera")
                         .setContentText("Tap to share/try more")
                         .setColor(color);
                 Intent resultIntent = new Intent(activity, EffectsActivity.class);
