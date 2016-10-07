@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.hardware.Camera;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -27,8 +28,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import com.bumptech.glide.Glide;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
+
+import java.io.*;
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
 import uk.co.senab.photoview.PhotoViewAttacher;
@@ -83,11 +84,6 @@ public class MainActivity extends AppCompatActivity {
 
         rvImgs.setHasFixedSize(true);
 
-        // Initialize images path
-//        imgs = Img.createImgsList(20);
-        // get path of imgs
-//        File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
-//                Environment.DIRECTORY_PICTURES), "Erosion");
 
         if (!mediaStorageDir.exists()) {
             mediaStorageDir.mkdir();
@@ -283,7 +279,20 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
+        new AsyncTask<Void,Void,Void>(){
+            @Override
+            protected Void doInBackground(Void... params) {
+                File dir = new File(mContext.getExternalCacheDir() ,"results");
+                if (dir.isDirectory())
+                {
+                    String[] children = dir.list();
+                    for (String aChildren : children) {
+                        new File(dir, aChildren).delete();
+                    }
+                }
+                return null;
+            }
+        }.execute();//cache TODO:debug!
         if (opened){
             safeCameraOpenInView();
         }

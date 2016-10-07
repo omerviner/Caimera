@@ -21,7 +21,7 @@ public class ChooseAdapter extends ImgsAdapter {
     private RecyclerView mRvImgs;
 
     public ChooseAdapter(Context context, ArrayList<File> imgs, RecyclerView rvImgs) {
-        super(context, imgs);
+        super(context, imgs, rvImgs);
         mContext = (ChooseImageActivity)context;
         mRvImgs = rvImgs;
     }
