@@ -40,8 +40,10 @@ abstract class ImgsAdapter extends
 
     }
 
-    @Override
-    abstract public void onBindViewHolder(final ViewHolder viewHolder, final int position);
+//    @Override
+//    public void onBindViewHolder(final RecyclerView.ViewHolder viewHolder, final int position){};
+
+
 
     @Override
     public int getItemCount() {
