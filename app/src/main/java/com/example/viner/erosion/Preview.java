@@ -227,7 +227,10 @@ class Preview extends SurfaceView implements SurfaceHolder.Callback {
             }
 
             final int scaledChildHeight = previewHeight * width / previewWidth;
-            mCameraView.layout(0, height - scaledChildHeight, width, height);
+//            mCameraView.layout(0, height - scaledChildHeight, width, height);
+            mCameraView.layout(0, 0, width, height);
+
+            ((MainActivity)mContext).setLayout();
 
         }
     }

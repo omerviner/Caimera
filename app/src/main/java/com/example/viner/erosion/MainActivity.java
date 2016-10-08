@@ -6,9 +6,10 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
+import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
+import android.media.ImageReader;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -18,6 +19,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.TextureView;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -28,10 +30,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import com.bumptech.glide.Glide;
-
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
+
 import uk.co.senab.photoview.PhotoViewAttacher;
 
 
@@ -67,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
 
         mCameraView = findViewById(android.R.id.content);
         mContext = this;
+        mPreviewFrame = (FrameLayout) mCameraView.findViewById(R.id.camera_preview);
 
 //        this.overridePendingTransition(R.anim.anim_slide_out_right, R.anim.anim_slide_in_left);
 //        Button btn = (Button)((MainActivity)mContext).findViewById(R.id.button_capture);
@@ -85,6 +90,11 @@ public class MainActivity extends AppCompatActivity {
 
         rvImgs.setHasFixedSize(true);
 
+        // Initialize images path
+//        imgs = Img.createImgsList(20);
+        // get path of imgs
+//        File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
+//                Environment.DIRECTORY_PICTURES), "Erosion");
 
         if (!mediaStorageDir.exists()) {
             mediaStorageDir.mkdir();
@@ -121,7 +131,6 @@ public class MainActivity extends AppCompatActivity {
 //        ViewGroup.LayoutParams params = rec_filler.getLayoutParams();
 //        params.height = rec_filler.getMeasuredWidth();
 //        rec_filler.setLayoutParams(params);
-        setLayout();
 
         opened = safeCameraOpenInView();
 
@@ -133,24 +142,20 @@ public class MainActivity extends AppCompatActivity {
         // Trap the capture button.
         final Button captureButton = (Button) mCameraView.findViewById(R.id.button_capture);
         captureButton.setOnClickListener(
-            new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (mCamera != null){
-                        // get an image from the camera
-                        mCamera.takePicture(null, null, mPicture);
-                    } else {
-//                        Intent intent = new Intent(new MainActivity);
-//                        finish();
-//                        startActivity(intent);
-
-                        safeCameraOpenInView();
-//                        setLayout();
-//                        captureButton.bringToFront();
-//                        rvImgs.bringToFront();
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (mCamera != null){
+                            // get an image from the camera
+                            mCamera.takePicture(null, null, mPicture);
+                        } else {
+                            if (mPreviewFrame != null){
+                                mPreviewFrame.removeAllViews();
+                            }
+                            safeCameraOpenInView();
+                        }
                     }
                 }
-            }
         );
     }
 
@@ -159,22 +164,24 @@ public class MainActivity extends AppCompatActivity {
      * @return
      */
     private boolean safeCameraOpenInView() {
+
         boolean qOpened = false;
         releaseCameraAndPreview();
         mCamera = getCameraInstance();
         qOpened = (mCamera != null);
-        if (mPreview == null){
-            mPreview = new Preview(this.getApplicationContext(), mCamera, mCameraView);
-            mPreviewFrame = (FrameLayout) mCameraView.findViewById(R.id.camera_preview);
+
+        if(qOpened == true) {
+            mPreview = new Preview(this, mCamera, mCameraView);
+
             mPreviewFrame.addView(mPreview);
+//            mPreview.startCameraPreview();
         }
 
-
 //        rvImgs.bringToFront();
-//           mPreview.startCameraPreview();TODO: BEWARE this was removed and made the passed null surface go away(it might be since we are replacing an existing preview with a new one thus eliminating all refrences to it without releasing it in some way)
-            Log.v("safeCameraOpenInView", "succ");
+//           mPreview.startCameraPreview(); // TODO: BEWARE this was removed and made the passed null surface go away(it might be since we are replacing an existing preview with a new one thus eliminating all refrences to it without releasing it in some way)
+        Log.v("safeCameraOpenInView", "succ");
 
-
+//        setLayout();
         ImageButton btn = (ImageButton)findViewById(R.id.next);
         btn.setVisibility(View.GONE);
 
@@ -204,7 +211,10 @@ public class MainActivity extends AppCompatActivity {
             mPreview.destroyDrawingCache();
             mPreview.mCamera = null;
         }
-//        mPreviewFrame.removeAllViews();
+        if (mPreviewFrame != null){
+            mPreviewFrame.removeAllViews();
+        }
+
     }
 
 
@@ -260,25 +270,25 @@ public class MainActivity extends AppCompatActivity {
     };
 
 
-//    public void onClickImageIsChosen(View view){
-//
-//
-//        ImageView image = (ImageView) this.findViewById(R.id.main_image_frame);
-//        image.setDrawingCacheEnabled(true);
-//
-//        Bitmap cropped = Bitmap.createBitmap(image.getDrawingCache());
-//
-//        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-//        cropped.compress(Bitmap.CompressFormat.PNG, 100, stream);
-//        byte[] byteArray = stream.toByteArray();
-//
-//        new SaveTempImage(new saveCallback()).execute(byteArray);
-//        Intent intent = new Intent(this, EffectsActivity.class);
-//
-//
-//        startActivity(intent);
-//
-//    }
+    public void onClickImageIsChosen(View view){
+
+
+        ImageView image = (ImageView) this.findViewById(R.id.main_image_frame);
+        image.setDrawingCacheEnabled(true);
+
+        Bitmap cropped = Bitmap.createBitmap(image.getDrawingCache());
+
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        cropped.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        byte[] byteArray = stream.toByteArray();
+
+        new SaveTempImage(new saveCallback()).execute(byteArray);
+        Intent intent = new Intent(this, EffectsActivity.class);
+
+
+        startActivity(intent);
+
+    }
 
     @Override
     protected void onPause() {
@@ -289,20 +299,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        new AsyncTask<Void,Void,Void>(){
-            @Override
-            protected Void doInBackground(Void... params) {
-                File dir = new File(mContext.getExternalCacheDir() ,"results");
-                if (dir.isDirectory())
-                {
-                    String[] children = dir.list();
-                    for (String aChildren : children) {
-                        new File(dir, aChildren).delete();
-                    }
-                }
-                return null;
-            }
-        }.execute();//cache TODO:debug!
+
         if (opened){
             safeCameraOpenInView();
         }
@@ -349,7 +346,7 @@ public class MainActivity extends AppCompatActivity {
         return listOfAllImages;
     }
 
-    private void setLayout(){
+    public void setLayout(){
         DisplayMetrics displayMetrics = this.getResources().getDisplayMetrics();
 
         View rec_filler = findViewById(R.id.rec_filler);
@@ -357,6 +354,7 @@ public class MainActivity extends AppCompatActivity {
         mStatusBarHeight = getStatusBarHeight();
         params.height = displayMetrics.heightPixels - displayMetrics.widthPixels - mStatusBarHeight;
         rec_filler.setLayoutParams(params);
+//        rec_filler.bringToFront();
 
         RelativeLayout imgsRelLayout = (RelativeLayout)findViewById(R.id.imgsRelativeLayout);
         RelativeLayout btnsRelLayout = (RelativeLayout)findViewById(R.id.btnsRelativeLayout);
@@ -364,6 +362,7 @@ public class MainActivity extends AppCompatActivity {
         relParams.height = params.height;
         imgsRelLayout.setLayoutParams(relParams);
         btnsRelLayout.setLayoutParams(relParams);
+//        btnsRelLayout.bringToFront();
     }
 
     @SuppressLint("NewApi")
