@@ -362,6 +362,8 @@ public class MainActivity extends AppCompatActivity {
         relParams.height = params.height;
         imgsRelLayout.setLayoutParams(relParams);
         btnsRelLayout.setLayoutParams(relParams);
+
+        mPreviewFrame.getLayoutParams().height = displayMetrics.heightPixels;
 //        btnsRelLayout.bringToFront();
     }
 
