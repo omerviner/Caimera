@@ -50,6 +50,7 @@ public class ChooseAdapter extends
     public ChooseAdapter(Context context, ArrayList<File> imgs, RecyclerView rvImgs) {
         mContext = (ChooseImageActivity)context;
         mRvImgs = rvImgs;
+        mImgs = imgs;
     }
 
 
