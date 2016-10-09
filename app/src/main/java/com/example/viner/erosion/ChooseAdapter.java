@@ -45,8 +45,6 @@ public class ChooseAdapter extends
         return (int)Math.ceil(mImgs.size()/4);
     }
 
-
-
     public ChooseAdapter(Context context, ArrayList<File> imgs, RecyclerView rvImgs) {
         mContext = (ChooseImageActivity)context;
         mRvImgs = rvImgs;
@@ -73,36 +71,48 @@ public class ChooseAdapter extends
         img3.setClipToOutline(true);
         img4.setClipToOutline(true);
 
-        img1.setTag(imgFile1.getAbsolutePath());
-        img2.setTag(imgFile2.getAbsolutePath());
-        img3.setTag(imgFile3.getAbsolutePath());
-        img4.setTag(imgFile4.getAbsolutePath());
+//        img1.setTag(imgFile1.getAbsolutePath());
+//        img2.setTag(imgFile2.getAbsolutePath());
+//        img3.setTag(imgFile3.getAbsolutePath());
+//        img4.setTag(imgFile4.getAbsolutePath());
 
-        String imgPath1 = imgFile1.getAbsolutePath();
-        String imgPath2 = imgFile2.getAbsolutePath();
-        String imgPath3 = imgFile3.getAbsolutePath();
-        String imgPath4 = imgFile4.getAbsolutePath();
+//        String imgPath1 = imgFile1.getAbsolutePath();
+//        String imgPath2 = imgFile2.getAbsolutePath();
+//        String imgPath3 = imgFile3.getAbsolutePath();
+//        String imgPath4 = imgFile4.getAbsolutePath();
 //        Log.v("imgPath", imgPath);
 
         View.OnClickListener listener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ImageView imageView = (ImageView) v;
-                String imgSrc = mImgs.get(position).getAbsolutePath();
-                Log.d("CHANGE", String.valueOf(position));
+                ImageView imageView = (ImageView)v;
+                int realPosition = position * 4;
+
+                if (v.getId() == R.id.imgBtn1){
+                } else if (imageView.getId() == R.id.imgBtn2){
+                    realPosition = realPosition + 1;
+                } else if (imageView.getId() == R.id.imgBtn3){
+                    realPosition = realPosition + 2;
+                } else if (imageView.getId() == R.id.imgBtn4){
+                    realPosition = realPosition + 3;
+                }
+
+                Log.d("onClickPosition: ", Integer.toString(realPosition));
+                String imgSrc = mImgs.get(realPosition).toString();
+//                String imgSrc = (String) imageView.getTag();
+                Log.d("CHANGE", imgSrc);
                 Intent returnIntent = new Intent();
                 returnIntent.putExtra("chosen_image", imgSrc);
                 mContext.setResult(Activity.RESULT_OK, returnIntent);
                 mContext.finish();
-
             }
         };
 
         if (!imgFile1.isDirectory() && imgFile1.isFile()) {
-            Glide
+            Picasso
                     .with(mContext)
                     .load(mImgs.get(position * 4))
-                    .override(150, 150)
+                    .resize(150, 150)
                     .centerCrop()
                     .into(img1);
             viewHolder.img1.setOnClickListener(listener);
