@@ -105,7 +105,6 @@ public class FileUtils {
             Log.v("Error saving: ", e.toString());
             e.printStackTrace();
         }
-
         return data;
 
     }
@@ -148,23 +147,26 @@ public class FileUtils {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         Bitmap bitmap = BitmapFactory.decodeByteArray(data , 0, data.length);
         int size = Math.min(bitmap.getWidth(), bitmap.getHeight());
-        Bitmap cropped = Bitmap.createBitmap(bitmap, 0,0,size, size);
 
+        Matrix matrix = new Matrix();
         if (rotation == 90){
-            cropped = RotateBitmap(cropped, 90);
+            matrix.postRotate(90);
         } else if (rotation == 270){
-            cropped = RotateBitmap(cropped, 270);
+            matrix.postRotate(270);
+        } else {
+            matrix.postRotate(0);
         }
 
-        cropped.compress(Bitmap.CompressFormat.JPEG, 100, bos);//100 is the best quality possible
+        Bitmap cropped = Bitmap.createBitmap(bitmap, 0,0,size, size, matrix, true);
+        cropped.compress(Bitmap.CompressFormat.JPEG, 100, bos); // 100 (best quality)
         byte[] square = bos.toByteArray();
         return square;
     }
 
-    public static Bitmap RotateBitmap(Bitmap source, float angle)
-    {
-        Matrix matrix = new Matrix();
-        matrix.postRotate(angle);
-        return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
-    }
+//    public static Bitmap RotateBitmap(Bitmap source, float angle)
+//    {
+//        Matrix matrix = new Matrix();
+//        matrix.postRotate(angle);
+//        return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
+//    }
 }

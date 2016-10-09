@@ -196,29 +196,6 @@ public class MainActivity extends AppCompatActivity {
             // Close camera
             ((MainActivity) mContext).releaseCameraAndPreview();
 
-//            ImageView imgPrev = (ImageView)findViewById(R.id.main_image_frame);
-
-//            if (imgPrev == null){
-//                imgPrev = new ImageView(mContext);
-//                DisplayMetrics displayMetrics = mContext.getResources().getDisplayMetrics();
-//
-//                RelativeLayout.LayoutParams viewParams = new RelativeLayout.LayoutParams(
-//                        RelativeLayout.LayoutParams.WRAP_CONTENT,
-//                        RelativeLayout.LayoutParams.WRAP_CONTENT);
-//                viewParams.height = displayMetrics.widthPixels + mStatusBarHeight;
-//                viewParams.width = displayMetrics.widthPixels;
-//                viewParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-//                imgPrev.setLayoutParams(viewParams);
-//                imgPrev.setId(R.id.main_image_frame);
-//                // Setting new view
-//                mPreviewFrame.addView(imgPrev);
-//            }
-
-//            Glide.with(mContext)
-//                    .load(croppedData)
-//                    .asBitmap()
-//                    .centerCrop()
-//                    .into(imgPrev);
         }
     };
 
