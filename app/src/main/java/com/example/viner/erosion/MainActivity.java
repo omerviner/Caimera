@@ -40,6 +40,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+
 import android.content.pm.PackageManager;
 
 import uk.co.senab.photoview.PhotoViewAttacher;
@@ -52,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
 
     // Reference to the containing view.
     private View mCameraView;
-    private byte[] imageToSend;
+    public byte[] imageToSend;
     private Context mContext;
     ArrayList<File> mImgs;
     String tempImagePath;
@@ -172,7 +174,12 @@ public class MainActivity extends AppCompatActivity {
             ImageButton btn = (ImageButton)((MainActivity)mContext).findViewById(R.id.next);
             btn.setVisibility(View.VISIBLE);
 
+            // Omer: data is what should be sent to SaveTempImage
+                    //  set imageToSend as data variable
+
+            // Omer: original capture
             imageToSend = FileUtils.getCapturedData(mContext, data, mPreview.rotation);
+
             Log.v("PictureCallback", "Sending files");
 
             // Close camera
@@ -182,18 +189,21 @@ public class MainActivity extends AppCompatActivity {
     };
 
     public void onClickImageIsChosen(View view){
-        if (imageToSend == null){
-            ImageView image = (ImageView) this.findViewById(R.id.main_image_frame);
-            Bitmap cropped = ((GlideBitmapDrawable)image.getDrawable().getCurrent()).getBitmap();
 
+        // Current Image capture
+        ImageView image = (ImageView) this.findViewById(R.id.main_image_frame);
+        if (imageToSend == null){
+            // Get image from ImageView
+            Bitmap screenShot = ((GlideBitmapDrawable)image.getDrawable().getCurrent()).getBitmap();
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            cropped.compress(Bitmap.CompressFormat.PNG, 100, stream);
+            screenShot.compress(Bitmap.CompressFormat.PNG, 100, stream);
             imageToSend = stream.toByteArray();
         }
 
+
+        // Async-Saving
         new SaveTempImage(new saveCallback()).execute(imageToSend);
         Intent intent = new Intent(this, EffectsActivity.class);
-
         startActivity(intent);
     }
 
@@ -326,6 +336,7 @@ public class MainActivity extends AppCompatActivity {
                                 if (mPreviewFrame != null) {
                                     mPreviewFrame.removeAllViews();
                                 }
+                                imageToSend = null;
                                 safeCameraOpenInView();
                             }
                         }

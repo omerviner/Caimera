@@ -6,6 +6,7 @@ import android.util.Log;
 
 import java.io.File;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created by Viner on 25/09/2016.
@@ -20,7 +21,11 @@ public class SaveTempImage extends AsyncTask<byte[], Integer, Boolean> {
         int count = data.length;
 
         for (byte[] aData : data) {
-            FileUtils.saveImageToFile(null, aData, 0, false);
+            try {
+                FileUtils.saveImageToFile(null, aData, 0, false);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         return true;
     }
