@@ -23,6 +23,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.concurrent.ExecutionException;
 
 public class EffectsActivity extends AppCompatActivity {
 
@@ -95,7 +96,7 @@ public class EffectsActivity extends AppCompatActivity {
         rvImgs.addOnItemTouchListener(mAdapter.getListener());
     }
 
-    public void onClickImageIsChosen(View view) {
+    public void onClickImageIsChosen(View view) throws ExecutionException, InterruptedException {
         ImageView image = (ImageView) this.findViewById(R.id.main_image);
         image.setDrawingCacheEnabled(true);
         Bitmap cropped = Bitmap.createBitmap(image.getDrawingCache());

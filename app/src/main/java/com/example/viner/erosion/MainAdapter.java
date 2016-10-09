@@ -52,7 +52,7 @@ public class MainAdapter  extends ImgsAdapter{
 
         return new ImageItemClickListener(mContext, rv , new ImageItemClickListener.OnItemClickListener() {
             @Override public void onItemClick(View view, int position) {
-
+                mContext.imageToSend = null;
                 Log.v("clicked: ", Integer.toString(position));
 
                 String imgSrc = mImgs.get(position).getAbsolutePath();
@@ -78,7 +78,6 @@ public class MainAdapter  extends ImgsAdapter{
                     // Set the Drawable displayed
                     Glide.with(mContext)
                             .load(imgSrc)
-                            .override(1000,1000)
                             .centerCrop()
                             .into(imgPrev);
 
