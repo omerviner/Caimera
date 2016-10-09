@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
 
     // Reference to the containing view.
     private View mCameraView;
-    private byte[] imageToSent;
+    private byte[] imageToSend;
     private Context mContext;
     ArrayList<File> mImgs;
     String tempImagePath;
