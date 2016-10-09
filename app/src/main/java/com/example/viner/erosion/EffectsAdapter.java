@@ -72,15 +72,8 @@ public class EffectsAdapter extends ImgsAdapter {
                             mContext.mProcessingImage = true;
                         }
                         Log.d("CHOSSESTYLE","ABOUT TO SEND");
-                        loadingIcon = (SpinKitView) mContext.findViewById(R.id.spin_kit);
                         loadingIcon.setVisibility(View.VISIBLE);
-                        File result = new File(mContext.getExternalCacheDir(), "results/" + String.valueOf(position));
-                        if(result.exists()){//Cache :TODO: DEBUG!!!
-                            new NetCallback().call(BitmapFactory.decodeFile(mContext.getExternalCacheDir() + "results/" + String.valueOf(position)),  String.valueOf(position));
-                        }
-                        else {
-                            NetInterface.process(new NetCallback(), mContext.mChosenImage, null, String.valueOf(position));
-                        }
+                        NetInterface.process(new NetCallback(), mContext.mChosenImage, null, String.valueOf(position));
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -170,35 +163,21 @@ public class EffectsAdapter extends ImgsAdapter {
                 //TODO:fill with error handling
             }
             final ImageView mImageView = (ImageView)(activity).findViewById(R.id.main_image);
+            //set result in view
             activity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    mImageView.setImageBitmap(bmp);
+                    Glide.with(activity).load(bmp).centerCrop().into(mImageView);
                     loadingIcon.setVisibility(View.GONE);
                     ImageButton btn = (ImageButton)(activity.findViewById(R.id.share));
                     btn.setVisibility(View.VISIBLE);
                     activity.mProcessingImage = false;
-                    new AsyncTask<Void,Void,Void>(){
-                        @Override
-                        protected Void doInBackground(Void... params) {
-                            File file = new File(activity.getExternalCacheDir() ,"results/" + styleNum);
-                            OutputStream os = null;
-
-                            try {
-                                os = new FileOutputStream(file);
-                            } catch (FileNotFoundException e) {
-                                e.printStackTrace();
-                            }
-
-                            bmp.compress(Bitmap.CompressFormat.PNG, 100, os);
-                            return null;
-                        }
-                    }.execute();//cache TODO: debug!
                 }
             });
 
+
             if(!EffectsActivity.active){
-                int color = ContextCompat.getColor(mContext, R.color.light_yellow);
+                int color = ContextCompat.getColor(activity, R.color.light_yellow);
                 android.support.v4.app.NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(mContext)
                         .setSmallIcon(R.drawable.ic_launcher)
                         .setContentTitle("Caimera")
@@ -217,7 +196,21 @@ public class EffectsAdapter extends ImgsAdapter {
                 activity.mNotificationManager.notify(0, mBuilder.build());
             }
 
-            //TODO:put anything that needs to happen after receiving the image here
+            //if this effect is used for the first time on this content image.
+            if(Integer.getInteger(styleNum) >= 0) {
+                //cache Effect result
+                File file = new File(activity.getExternalCacheDir(), "results/" + styleNum);
+                OutputStream os = null;
+
+                try {
+                    os = new FileOutputStream(file);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+
+                bmp.compress(Bitmap.CompressFormat.PNG, 100, os);
+            }
+
             return 0;
         }
     }

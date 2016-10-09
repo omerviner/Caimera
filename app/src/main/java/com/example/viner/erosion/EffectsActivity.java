@@ -22,7 +22,6 @@ import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 
 public class EffectsActivity extends AppCompatActivity {
@@ -35,6 +34,7 @@ public class EffectsActivity extends AppCompatActivity {
     boolean mProcessingImage;
     public static boolean active;
     public NotificationManager mNotificationManager;
+    File cacheDir;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +50,12 @@ public class EffectsActivity extends AppCompatActivity {
         File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES), "Caimera" + File.separator + "styles");
         if (!mediaStorageDir.exists()) {
-            mediaStorageDir.mkdirs();
+            mediaStorageDir.mkdir();
+        }
+
+        cacheDir = new File(getExternalCacheDir() ,"results/");
+        if (!cacheDir.exists()) {
+            cacheDir.mkdir();
         }
 
         /*TODO: seems to be redundant code?
@@ -153,7 +158,15 @@ public class EffectsActivity extends AppCompatActivity {
         }
 
     }
-
+    @Override
+    public void onDestroy(){
+        String[] children = cacheDir.list();
+        for (int i = 0; i < children.length; i++)
+        {
+            new File(cacheDir, children[i]).delete();
+        }
+        cacheDir.delete();//TODO: is this ok??
+    }
     @Override
     public void onStart() {
         super.onStart();

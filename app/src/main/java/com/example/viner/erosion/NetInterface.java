@@ -22,25 +22,33 @@ public class NetInterface {
     private static final MediaType MEDIA_TYPE_PNG = MediaType.parse("image/png");
     private static final String presetExtension = "presets/";
     private static final String newExtension = "process/";
+    private static final int CONTEXT = 4;
     private static final int STYLE_NUM = 3;
     private static final int STYLE_PATH = 2;
     private static final int CONTENT_PATH = 1;
-    private static final int BASE_ARG_NUM = STYLE_NUM;
     private static final int QUICK_STYLE_NUM = 8;
 
 
     public static void process(final Object... args) throws Exception {
+        final String styleNum = (String)args[STYLE_NUM];
+        final CallBack callback = (CallBack)args[0];
+        Context mContext = (Context)args[CONTEXT];
+        File cachedResult = new File(mContext.getExternalCacheDir(), "results/" + styleNum);
+        if(cachedResult.exists()){
+            callback.call(BitmapFactory.decodeFile(cachedResult.getPath()), styleNum);
+            return;
+        }
+        String contentPath = (String)args[CONTENT_PATH];
+        String uploadUrl = BASE_URL + newExtension;
+        RequestBody requestBody;
+
+
         final OkHttpClient client = new OkHttpClient.Builder()
                 .connectTimeout(20, TimeUnit.MINUTES)
                 .writeTimeout(20, TimeUnit.MINUTES)
                 .readTimeout(20, TimeUnit.MINUTES)
                 .build();
-        String contentPath = (String)args[CONTENT_PATH];
-        String uploadUrl = BASE_URL + newExtension;
-        RequestBody requestBody;
-        final CallBack callback = (CallBack)args[0];
 
-        final String styleNum = (String)args[STYLE_NUM];
 
         if(Integer.parseInt(styleNum) < QUICK_STYLE_NUM) {
             requestBody = buildBodyBase(contentPath).addFormDataPart("model", styleNum).build();

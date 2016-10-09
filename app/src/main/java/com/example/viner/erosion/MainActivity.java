@@ -214,7 +214,7 @@ public class MainActivity extends AppCompatActivity {
             imageToSend = stream.toByteArray();
         }
 
-        new SaveTempImage(new saveCallback()).execute(imageToSend);
+        new SaveTempImage(new saveCallback(), this).execute(imageToSend, mPreview.rotation);
         Intent intent = new Intent(this, EffectsActivity.class);
 
         startActivity(intent);
