@@ -128,6 +128,7 @@ public class MainActivity extends AppCompatActivity {
                             // get an image from the camera
                             mCamera.takePicture(null, null, mPicture);
                         } else {
+                            imageToSend = null;
                             if (mPreviewFrame != null) {
                                 mPreviewFrame.removeAllViews();
                             }
@@ -173,9 +174,9 @@ public class MainActivity extends AppCompatActivity {
             mPreview.destroyDrawingCache();
             mPreview.mCamera = null;
         }
-        if (mPreviewFrame != null){
-            mPreviewFrame.removeAllViews();
-        }
+//        if (mPreviewFrame != null){
+//            mPreviewFrame.removeAllViews();
+//        }
     }
 
     /**
@@ -189,47 +190,49 @@ public class MainActivity extends AppCompatActivity {
             ImageButton btn = (ImageButton)((MainActivity)mContext).findViewById(R.id.next);
             btn.setVisibility(View.VISIBLE);
 
-            byte[] croppedData = FileUtils.getCapturedData(mContext, data, mPreview.rotation);
+            imageToSend = FileUtils.getCapturedData(mContext, data, mPreview.rotation);
             Log.v("PictureCallback", "Sending files");
 
             // Close camera
             ((MainActivity) mContext).releaseCameraAndPreview();
 
-            ImageView imgPrev = (ImageView)findViewById(R.id.main_image_frame);
+//            ImageView imgPrev = (ImageView)findViewById(R.id.main_image_frame);
 
-            if (imgPrev == null){
-                imgPrev = new ImageView(mContext);
-                DisplayMetrics displayMetrics = mContext.getResources().getDisplayMetrics();
+//            if (imgPrev == null){
+//                imgPrev = new ImageView(mContext);
+//                DisplayMetrics displayMetrics = mContext.getResources().getDisplayMetrics();
+//
+//                RelativeLayout.LayoutParams viewParams = new RelativeLayout.LayoutParams(
+//                        RelativeLayout.LayoutParams.WRAP_CONTENT,
+//                        RelativeLayout.LayoutParams.WRAP_CONTENT);
+//                viewParams.height = displayMetrics.widthPixels + mStatusBarHeight;
+//                viewParams.width = displayMetrics.widthPixels;
+//                viewParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+//                imgPrev.setLayoutParams(viewParams);
+//                imgPrev.setId(R.id.main_image_frame);
+//                // Setting new view
+//                mPreviewFrame.addView(imgPrev);
+//            }
 
-                RelativeLayout.LayoutParams viewParams = new RelativeLayout.LayoutParams(
-                        RelativeLayout.LayoutParams.WRAP_CONTENT,
-                        RelativeLayout.LayoutParams.WRAP_CONTENT);
-                viewParams.height = displayMetrics.widthPixels + mStatusBarHeight;
-                viewParams.width = displayMetrics.widthPixels;
-                viewParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-                imgPrev.setLayoutParams(viewParams);
-                imgPrev.setId(R.id.main_image_frame);
-                // Setting new view
-                mPreviewFrame.addView(imgPrev);
-            }
-
-            Glide.with(mContext)
-                    .load(croppedData)
-                    .asBitmap()
-                    .centerCrop()
-                    .into(imgPrev);
+//            Glide.with(mContext)
+//                    .load(croppedData)
+//                    .asBitmap()
+//                    .centerCrop()
+//                    .into(imgPrev);
         }
     };
 
     public void onClickImageIsChosen(View view){
-        ImageView image = (ImageView) this.findViewById(R.id.main_image_frame);
-        Bitmap cropped = ((GlideBitmapDrawable)image.getDrawable().getCurrent()).getBitmap();
+        if (imageToSend == null){
+            ImageView image = (ImageView) this.findViewById(R.id.main_image_frame);
+            Bitmap cropped = ((GlideBitmapDrawable)image.getDrawable().getCurrent()).getBitmap();
 
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        cropped.compress(Bitmap.CompressFormat.PNG, 100, stream);
-        byte[] byteArray = stream.toByteArray();
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            cropped.compress(Bitmap.CompressFormat.PNG, 100, stream);
+            imageToSend = stream.toByteArray();
+        }
 
-        new SaveTempImage(new saveCallback()).execute(byteArray);
+        new SaveTempImage(new saveCallback()).execute(imageToSend);
         Intent intent = new Intent(this, EffectsActivity.class);
 
         startActivity(intent);
