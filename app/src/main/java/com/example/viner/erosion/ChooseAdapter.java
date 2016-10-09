@@ -50,7 +50,6 @@ public class ChooseAdapter extends
     public ChooseAdapter(Context context, ArrayList<File> imgs, RecyclerView rvImgs) {
         mContext = (ChooseImageActivity)context;
         mRvImgs = rvImgs;
-        mImgs = imgs;
     }
 
 
@@ -88,7 +87,7 @@ public class ChooseAdapter extends
             @Override
             public void onClick(View v) {
                 ImageView imageView = (ImageView) v;
-                String imgSrc = (String) imageView.getTag();
+                String imgSrc = mImgs.get(position).getAbsolutePath();
                 Log.d("CHANGE", String.valueOf(position));
                 Intent returnIntent = new Intent();
                 returnIntent.putExtra("chosen_image", imgSrc);
@@ -99,40 +98,40 @@ public class ChooseAdapter extends
         };
 
         if (!imgFile1.isDirectory() && imgFile1.isFile()) {
-            Picasso
+            Glide
                     .with(mContext)
                     .load(mImgs.get(position * 4))
-                    .resize(150, 150)
+                    .override(150, 150)
                     .centerCrop()
                     .into(img1);
             viewHolder.img1.setOnClickListener(listener);
         }
 
         if (!imgFile2.isDirectory() && imgFile2.isFile()) {
-            Picasso
+            Glide
                     .with(mContext)
                     .load(mImgs.get(position * 4 + 1))
-                    .resize(150, 150)
+                    .override(150, 150)
                     .centerCrop()
                     .into(img2);
             viewHolder.img2.setOnClickListener(listener);
         }
 
         if (!imgFile3.isDirectory() && imgFile3.isFile()) {
-            Picasso
+            Glide
                     .with(mContext)
                     .load(mImgs.get(position * 4 + 2))
-                    .resize(150, 150)
+                    .override(150, 150)
                     .centerCrop()
                     .into(img3);
             viewHolder.img3.setOnClickListener(listener);
         }
 
         if (!imgFile4.isDirectory() && imgFile4.isFile()) {
-            Picasso
+            Glide
                     .with(mContext)
                     .load(mImgs.get(position * 4 + 3))
-                    .resize(150, 150)
+                    .override(150, 150)
                     .centerCrop()
                     .into(img4);
             viewHolder.img4.setOnClickListener(listener);

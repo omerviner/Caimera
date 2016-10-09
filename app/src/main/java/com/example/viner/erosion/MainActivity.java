@@ -170,15 +170,11 @@ public class MainActivity extends AppCompatActivity {
         mCamera = getCameraInstance();
         qOpened = (mCamera != null);
 
-        if(qOpened == true) {
+        if(qOpened) {
             mPreview = new Preview(this, mCamera, mCameraView);
 
             mPreviewFrame.addView(mPreview);
-//            mPreview.startCameraPreview();
         }
-
-//        rvImgs.bringToFront();
-//           mPreview.startCameraPreview(); // TODO: BEWARE this was removed and made the passed null surface go away(it might be since we are replacing an existing preview with a new one thus eliminating all refrences to it without releasing it in some way)
         Log.v("safeCameraOpenInView", "succ");
 
 //        setLayout();
