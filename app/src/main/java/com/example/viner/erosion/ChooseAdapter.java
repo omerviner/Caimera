@@ -98,10 +98,10 @@ public class ChooseAdapter extends
 
         // TODO: For loop
         if (!imgFile1.isDirectory() && imgFile1.isFile()) {
-            Picasso
+            Glide
                     .with(mContext)
                     .load(mImgs.get(position * 4))
-                    .resize(150, 150)
+                    .override(150, 150)
                     .centerCrop()
                     .into(img1);
             viewHolder.img1.setOnClickListener(listener);

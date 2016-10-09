@@ -1,8 +1,10 @@
 package com.example.viner.erosion;
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
@@ -13,6 +15,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -57,7 +61,6 @@ public class MainActivity extends AppCompatActivity {
     RecyclerView rvImgs;
     FrameLayout mPreviewFrame;
 
-    private static final int REQUEST_CAMERA = 0;
     private static final int REQUEST_CAMERA_PERMISSION = 1;
     private static final int REQUEST_PORTRAIT_FFC = 2;
 
@@ -73,9 +76,6 @@ public class MainActivity extends AppCompatActivity {
         mContext = this;
         mPreviewFrame = (FrameLayout) mCameraView.findViewById(R.id.camera_preview);
 
-//        this.overridePendingTransition(R.anim.anim_slide_out_right, R.anim.anim_slide_in_left);
-//        Button btn = (Button)((MainActivity)mContext).findViewById(R.id.button_capture);
-//        btn.setVisibility(View.VISIBLE);
 
         File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES), "Caimera");
@@ -87,6 +87,7 @@ public class MainActivity extends AppCompatActivity {
         // Lookup the recyclerview in activity layout
         rvImgs = (RecyclerView) findViewById(R.id.imgs);
         rvImgs.setHasFixedSize(true);
+
 
         if (!mediaStorageDir.exists()) {
             mediaStorageDir.mkdir();
@@ -113,31 +114,17 @@ public class MainActivity extends AppCompatActivity {
         rvImgs.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
 
         rvImgs.addOnItemTouchListener(adapter.getListener());
-        opened = safeCameraOpenInView();
+        // That's all!
+//        LayoutInflater factory = getLayoutInflater();
 
-        if(!opened){
-            Log.d("CameraGuide","Error, Camera failed to open");
-            return;
-        }
+//        View mainView = factory.inflate(R.layout.activity_main, null);
 
-        // Trap the capture button.
-        final Button captureButton = (Button) mCameraView.findViewById(R.id.button_capture);
-        captureButton.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (mCamera != null){
-                            // get an image from the camera
-                            mCamera.takePicture(null, null, mPicture);
-                        } else {
-                            if (mPreviewFrame != null){
-                                mPreviewFrame.removeAllViews();
-                            }
-                            safeCameraOpenInView();
-                        }
-                    }
-                }
-        );
+//        View rec_filler = (View)findViewById(R.id.rec_filler);
+//
+//        ViewGroup.LayoutParams params = rec_filler.getLayoutParams();
+//        params.height = rec_filler.getMeasuredWidth();
+//        rec_filler.setLayoutParams(params);
+        initCameraFunctionality();
     }
 
     /**
@@ -170,6 +157,7 @@ public class MainActivity extends AppCompatActivity {
             mCamera.stopPreview();
             mCamera.release();
             mCamera = null;
+            opened = false;
         }
         if(mPreview != null){
             mPreview.destroyDrawingCache();
@@ -247,8 +235,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        if (opened){
-            safeCameraOpenInView();
+        if (!opened){
+            initCameraFunctionality();
         }
     }
     private class saveCallback implements Callable<Integer>{
@@ -326,5 +314,83 @@ public class MainActivity extends AppCompatActivity {
         return 0;
     }
 
+    private void initCameraFunctionality(){
+        if(ContextCompat.checkSelfPermission(this,
+                Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){
 
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.READ_CONTACTS)) {
+
+                // Show an expanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+
+            } else {
+
+                // No explanation needed, we can request the permission.
+
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.READ_CONTACTS},
+                        REQUEST_CAMERA_PERMISSION);
+            }
+
+        }
+        else {
+            opened = safeCameraOpenInView();
+            if (!opened) {
+                Log.d("CameraGuide", "Error, Camera failed to open");
+                return;
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_CAMERA_PERMISSION: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    // permission was granted, yay! Do the
+                    // contacts-related task you need to do.
+                    opened = safeCameraOpenInView();
+                    if (!opened) {
+                        Log.d("CameraGuide", "Error, Camera failed to open");
+                        return;
+                    }
+
+                    // Trap the capture button.
+                    final Button captureButton = (Button) mCameraView.findViewById(R.id.button_capture);
+                    captureButton.setOnClickListener(
+                            new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    if (mCamera != null) {
+                                        // get an image from the camera
+                                        mCamera.takePicture(null, null, mPicture);
+                                    } else {
+                                        if (mPreviewFrame != null) {
+                                            mPreviewFrame.removeAllViews();
+                                        }
+                                        safeCameraOpenInView();
+                                    }
+                                }
+                            }
+                    );
+
+                } else {
+
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                }
+                return;
+            }
+
+            // other 'case' lines to check for other
+            // permissions this app might request
+        }
+    }
 }
