@@ -118,6 +118,24 @@ public class MainActivity extends AppCompatActivity {
 
         rvImgs.addOnItemTouchListener(adapter.getListener());
         initCameraFunctionality();
+        // Trap the capture button.
+        final Button captureButton = (Button) mCameraView.findViewById(R.id.button_capture);
+        captureButton.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (mCamera != null) {
+                            // get an image from the camera
+                            mCamera.takePicture(null, null, mPicture);
+                        } else {
+                            if (mPreviewFrame != null) {
+                                mPreviewFrame.removeAllViews();
+                            }
+                            safeCameraOpenInView();
+                        }
+                    }
+                }
+        );
     }
 
     /**
@@ -354,24 +372,7 @@ public class MainActivity extends AppCompatActivity {
                         return;
                     }
 
-                    // Trap the capture button.
-                    final Button captureButton = (Button) mCameraView.findViewById(R.id.button_capture);
-                    captureButton.setOnClickListener(
-                            new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    if (mCamera != null) {
-                                        // get an image from the camera
-                                        mCamera.takePicture(null, null, mPicture);
-                                    } else {
-                                        if (mPreviewFrame != null) {
-                                            mPreviewFrame.removeAllViews();
-                                        }
-                                        safeCameraOpenInView();
-                                    }
-                                }
-                            }
-                    );
+
 
                 } else {
 
