@@ -27,7 +27,6 @@ public class ChooseAdapter extends
     private RecyclerView mRvImgs;
     protected ArrayList<File> mImgs;
 
-
     @Override
     public ViewHolderColumn onCreateViewHolder(ViewGroup parent, int viewType) {
 
@@ -71,17 +70,6 @@ public class ChooseAdapter extends
         img3.setClipToOutline(true);
         img4.setClipToOutline(true);
 
-//        img1.setTag(imgFile1.getAbsolutePath());
-//        img2.setTag(imgFile2.getAbsolutePath());
-//        img3.setTag(imgFile3.getAbsolutePath());
-//        img4.setTag(imgFile4.getAbsolutePath());
-
-//        String imgPath1 = imgFile1.getAbsolutePath();
-//        String imgPath2 = imgFile2.getAbsolutePath();
-//        String imgPath3 = imgFile3.getAbsolutePath();
-//        String imgPath4 = imgFile4.getAbsolutePath();
-//        Log.v("imgPath", imgPath);
-
         View.OnClickListener listener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -108,6 +96,7 @@ public class ChooseAdapter extends
             }
         };
 
+        // TODO: For loop
         if (!imgFile1.isDirectory() && imgFile1.isFile()) {
             Picasso
                     .with(mContext)
@@ -147,8 +136,6 @@ public class ChooseAdapter extends
                     .into(img4);
             viewHolder.img4.setOnClickListener(listener);
         }
-
     }
-
 
 }

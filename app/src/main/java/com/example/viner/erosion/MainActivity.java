@@ -30,6 +30,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.GlideBitmapDrawable;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -46,10 +48,8 @@ public class MainActivity extends AppCompatActivity {
 
     // Reference to the containing view.
     private View mCameraView;
-    private File curImage;
-    private byte[] imgData;
+    private byte[] imageToSent;
     private Context mContext;
-    File[] imgs;
     ArrayList<File> mImgs;
     String tempImagePath;
     boolean opened;
@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int REQUEST_CAMERA = 0;
     private static final int REQUEST_CAMERA_PERMISSION = 1;
-    private static final int REQUEST_PORTRAIT_FFC = 0;
+    private static final int REQUEST_PORTRAIT_FFC = 2;
 
 
 
@@ -84,17 +84,9 @@ public class MainActivity extends AppCompatActivity {
         File caimera_chosen_temp = new File(tempImagePath);
         caimera_chosen_temp.delete();
 
-
         // Lookup the recyclerview in activity layout
         rvImgs = (RecyclerView) findViewById(R.id.imgs);
-
         rvImgs.setHasFixedSize(true);
-
-        // Initialize images path
-//        imgs = Img.createImgsList(20);
-        // get path of imgs
-//        File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
-//                Environment.DIRECTORY_PICTURES), "Erosion");
 
         if (!mediaStorageDir.exists()) {
             mediaStorageDir.mkdir();
@@ -121,17 +113,6 @@ public class MainActivity extends AppCompatActivity {
         rvImgs.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
 
         rvImgs.addOnItemTouchListener(adapter.getListener());
-        // That's all!
-//        LayoutInflater factory = getLayoutInflater();
-
-//        View mainView = factory.inflate(R.layout.activity_main, null);
-
-//        View rec_filler = (View)findViewById(R.id.rec_filler);
-//
-//        ViewGroup.LayoutParams params = rec_filler.getLayoutParams();
-//        params.height = rec_filler.getMeasuredWidth();
-//        rec_filler.setLayoutParams(params);
-
         opened = safeCameraOpenInView();
 
         if(!opened){
@@ -167,7 +148,7 @@ public class MainActivity extends AppCompatActivity {
 
         boolean qOpened = false;
         releaseCameraAndPreview();
-        mCamera = getCameraInstance();
+        mCamera = Preview.getCameraInstance();
         qOpened = (mCamera != null);
 
         if(qOpened) {
@@ -184,19 +165,6 @@ public class MainActivity extends AppCompatActivity {
         return qOpened;
     }
 
-    /** A safe way to get an instance of the Camera object. */
-    public static Camera getCameraInstance(){
-        Camera c = null;
-        try {
-            c = Camera.open(); // attempt to get a Camera instance
-            Log.v("getCameraInstance", "opened");
-        }
-        catch (Exception e){
-            // Camera is not available (in use or does not exist)
-        }
-        return c; // returns null if camera is unavailable
-    }
-
     public void releaseCameraAndPreview() {
         if (mCamera != null) {
             mCamera.stopPreview();
@@ -210,9 +178,7 @@ public class MainActivity extends AppCompatActivity {
         if (mPreviewFrame != null){
             mPreviewFrame.removeAllViews();
         }
-
     }
-
 
     /**
      * Picture Callback for handling a picture capture and saving it out to a file.
@@ -221,7 +187,6 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
-            imgData = data;
 
             ImageButton btn = (ImageButton)((MainActivity)mContext).findViewById(R.id.next);
             btn.setVisibility(View.VISIBLE);
@@ -231,13 +196,11 @@ public class MainActivity extends AppCompatActivity {
 
             // Close camera
             ((MainActivity) mContext).releaseCameraAndPreview();
-//            mPreviewFrame.removeAllViews();
 
             ImageView imgPrev = (ImageView)findViewById(R.id.main_image_frame);
 
             if (imgPrev == null){
                 imgPrev = new ImageView(mContext);
-//            imgPrev.setId(R.id.main_image_frame);
                 DisplayMetrics displayMetrics = mContext.getResources().getDisplayMetrics();
 
                 RelativeLayout.LayoutParams viewParams = new RelativeLayout.LayoutParams(
@@ -251,28 +214,18 @@ public class MainActivity extends AppCompatActivity {
                 // Setting new view
                 mPreviewFrame.addView(imgPrev);
             }
-            // Create image view with captured image
-
-//            Bitmap bitmap = BitmapFactory.decodeByteArray(croppedData, 0, croppedData.length);
 
             Glide.with(mContext)
                     .load(croppedData)
                     .asBitmap()
-                    .override(1000, 1000)
                     .centerCrop()
                     .into(imgPrev);
-
         }
     };
 
-
     public void onClickImageIsChosen(View view){
-
-
         ImageView image = (ImageView) this.findViewById(R.id.main_image_frame);
-        image.setDrawingCacheEnabled(true);
-
-        Bitmap cropped = Bitmap.createBitmap(image.getDrawingCache());
+        Bitmap cropped = ((GlideBitmapDrawable)image.getDrawable().getCurrent()).getBitmap();
 
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         cropped.compress(Bitmap.CompressFormat.PNG, 100, stream);
@@ -281,9 +234,7 @@ public class MainActivity extends AppCompatActivity {
         new SaveTempImage(new saveCallback()).execute(byteArray);
         Intent intent = new Intent(this, EffectsActivity.class);
 
-
         startActivity(intent);
-
     }
 
     @Override
@@ -299,7 +250,6 @@ public class MainActivity extends AppCompatActivity {
         if (opened){
             safeCameraOpenInView();
         }
-
     }
     private class saveCallback implements Callable<Integer>{
 
@@ -308,7 +258,6 @@ public class MainActivity extends AppCompatActivity {
             return null;
         }
     }
-
 
     /**
      * Getting All Images Path
@@ -330,7 +279,6 @@ public class MainActivity extends AppCompatActivity {
         cursor = activity.getContentResolver().query(uri, projection, null,
                 null, null);
 
-
         column_index_data = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
         column_index_folder_name = cursor
                 .getColumnIndexOrThrow(MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
@@ -338,7 +286,7 @@ public class MainActivity extends AppCompatActivity {
             absolutePathOfImage = cursor.getString(column_index_data);
             listOfAllImages.add(absolutePathOfImage);
         }
-        cursor.close();//TODO: omer added since is the correct way to work with a cursor.Check!!
+        cursor.close();
         return listOfAllImages;
     }
 
@@ -350,7 +298,6 @@ public class MainActivity extends AppCompatActivity {
         mStatusBarHeight = getStatusBarHeight();
         params.height = displayMetrics.heightPixels - displayMetrics.widthPixels - mStatusBarHeight;
         rec_filler.setLayoutParams(params);
-//        rec_filler.bringToFront();
 
         RelativeLayout imgsRelLayout = (RelativeLayout)findViewById(R.id.imgsRelativeLayout);
         RelativeLayout btnsRelLayout = (RelativeLayout)findViewById(R.id.btnsRelativeLayout);
@@ -360,7 +307,6 @@ public class MainActivity extends AppCompatActivity {
         btnsRelLayout.setLayoutParams(relParams);
 
         mPreviewFrame.getLayoutParams().height = displayMetrics.heightPixels;
-//        btnsRelLayout.bringToFront();
     }
 
     @SuppressLint("NewApi")
@@ -379,5 +325,6 @@ public class MainActivity extends AppCompatActivity {
         }
         return 0;
     }
+
 
 }

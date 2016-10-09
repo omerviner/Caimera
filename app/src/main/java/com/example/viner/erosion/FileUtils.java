@@ -70,28 +70,8 @@ public class FileUtils {
     }
 
     public static byte[] getCapturedData(Context context, byte[] data, int rotation){
-//        File pictureFile = getOutputMediaFile(context);
-//        if (pictureFile == null){
-//            Toast.makeText(context, "Image retrieval failed.", Toast.LENGTH_SHORT)
-//                    .show();
-//            return null;
-//        }
-        byte[] croppedData = cropAndRotateImageBytes(data, rotation);
 
-//        try {
-//
-////            FileOutputStream fos = new FileOutputStream(pictureFile, true);
-////            fos.write(croppedData);
-////            fos.close();
-//
-//            // Restart the camera preview.
-//        } catch (FileNotFoundException e) {
-//            Log.v("Error saving: ", e.toString());
-//            e.printStackTrace();
-//        } catch (IOException e) {
-//            Log.v("Error saving: ", e.toString());
-//            e.printStackTrace();
-//        }
+        byte[] croppedData = cropAndRotateImageBytes(data, rotation);
 
         return croppedData;
     }
@@ -161,12 +141,10 @@ public class FileUtils {
         }
         Log.v("saveFileToImage", pictureFile.getAbsolutePath());
         return pictureFile;
-
     }
 
     public static byte[] cropAndRotateImageBytes(byte[] data, int rotation)
     {
-
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         Bitmap bitmap = BitmapFactory.decodeByteArray(data , 0, data.length);
         int size = Math.min(bitmap.getWidth(), bitmap.getHeight());
@@ -180,7 +158,6 @@ public class FileUtils {
 
         cropped.compress(Bitmap.CompressFormat.JPEG, 100, bos);//100 is the best quality possible
         byte[] square = bos.toByteArray();
-
         return square;
     }
 
