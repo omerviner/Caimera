@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
@@ -41,6 +40,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
+import android.content.pm.PackageManager;
 
 import uk.co.senab.photoview.PhotoViewAttacher;
 
@@ -61,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
     RecyclerView rvImgs;
     FrameLayout mPreviewFrame;
 
+    private static final int REQUEST_CAMERA = 0;
     private static final int REQUEST_CAMERA_PERMISSION = 1;
     private static final int REQUEST_PORTRAIT_FFC = 2;
 
@@ -76,6 +77,9 @@ public class MainActivity extends AppCompatActivity {
         mContext = this;
         mPreviewFrame = (FrameLayout) mCameraView.findViewById(R.id.camera_preview);
 
+//        this.overridePendingTransition(R.anim.anim_slide_out_right, R.anim.anim_slide_in_left);
+//        Button btn = (Button)((MainActivity)mContext).findViewById(R.id.button_capture);
+//        btn.setVisibility(View.VISIBLE);
 
         File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES), "Caimera");
@@ -87,7 +91,6 @@ public class MainActivity extends AppCompatActivity {
         // Lookup the recyclerview in activity layout
         rvImgs = (RecyclerView) findViewById(R.id.imgs);
         rvImgs.setHasFixedSize(true);
-
 
         if (!mediaStorageDir.exists()) {
             mediaStorageDir.mkdir();
@@ -114,16 +117,6 @@ public class MainActivity extends AppCompatActivity {
         rvImgs.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
 
         rvImgs.addOnItemTouchListener(adapter.getListener());
-        // That's all!
-//        LayoutInflater factory = getLayoutInflater();
-
-//        View mainView = factory.inflate(R.layout.activity_main, null);
-
-//        View rec_filler = (View)findViewById(R.id.rec_filler);
-//
-//        ViewGroup.LayoutParams params = rec_filler.getLayoutParams();
-//        params.height = rec_filler.getMeasuredWidth();
-//        rec_filler.setLayoutParams(params);
         initCameraFunctionality();
     }
 
@@ -157,7 +150,6 @@ public class MainActivity extends AppCompatActivity {
             mCamera.stopPreview();
             mCamera.release();
             mCamera = null;
-            opened = false;
         }
         if(mPreview != null){
             mPreview.destroyDrawingCache();
@@ -235,8 +227,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        if (!opened){
-            initCameraFunctionality();
+        if (opened){
+            safeCameraOpenInView();
         }
     }
     private class saveCallback implements Callable<Integer>{
