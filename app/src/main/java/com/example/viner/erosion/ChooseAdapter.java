@@ -99,7 +99,7 @@ public class ChooseAdapter extends
 
                 Log.d("onClickPosition: ", Integer.toString(realPosition));
                 String imgSrc = mImgs.get(realPosition).toString();
-//                String imgSrc = (String) imageView.getTag();
+
                 Log.d("CHANGE", imgSrc);
                 Intent returnIntent = new Intent();
                 returnIntent.putExtra("chosen_image", imgSrc);
