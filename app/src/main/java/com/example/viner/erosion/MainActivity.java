@@ -118,24 +118,7 @@ public class MainActivity extends AppCompatActivity {
 
         rvImgs.addOnItemTouchListener(adapter.getListener());
         initCameraFunctionality();
-        // Trap the capture button.
-        final Button captureButton = (Button) mCameraView.findViewById(R.id.button_capture);
-        captureButton.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (mCamera != null) {
-                            // get an image from the camera
-                            mCamera.takePicture(null, null, mPicture);
-                        } else {
-                            if (mPreviewFrame != null) {
-                                mPreviewFrame.removeAllViews();
-                            }
-                            safeCameraOpenInView();
-                        }
-                    }
-                }
-        );
+
     }
 
     /**
@@ -330,7 +313,7 @@ public class MainActivity extends AppCompatActivity {
 
             // Should we show an explanation?
             if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    Manifest.permission.READ_CONTACTS)) {
+                    Manifest.permission.CAMERA)) {
 
                 // Show an expanation to the user *asynchronously* -- don't block
                 // this thread waiting for the user's response! After the user
@@ -341,7 +324,7 @@ public class MainActivity extends AppCompatActivity {
                 // No explanation needed, we can request the permission.
 
                 ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.READ_CONTACTS},
+                        new String[]{Manifest.permission.CAMERA},
                         REQUEST_CAMERA_PERMISSION);
             }
 
@@ -352,14 +335,33 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("CameraGuide", "Error, Camera failed to open");
                 return;
             }
+            final Button captureButton = (Button) mCameraView.findViewById(R.id.button_capture);
+            captureButton.setOnClickListener(
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (mCamera != null) {
+                                // get an image from the camera
+                                mCamera.takePicture(null, null, mPicture);
+                            } else {
+                                if (mPreviewFrame != null) {
+                                    mPreviewFrame.removeAllViews();
+                                }
+                                safeCameraOpenInView();
+                            }
+                        }
+                    }
+            );
         }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[], int[] grantResults) {
+        Log.d("APPPermissions", "result pre switch");
         switch (requestCode) {
-            case REQUEST_CAMERA_PERMISSION: {
+            case REQUEST_CAMERA_PERMISSION:
+                Log.d("APPPermissions", "result");
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -371,6 +373,24 @@ public class MainActivity extends AppCompatActivity {
                         Log.d("CameraGuide", "Error, Camera failed to open");
                         return;
                     }
+                    final Button captureButton = (Button) mCameraView.findViewById(R.id.button_capture);
+                    captureButton.setOnClickListener(
+                            new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    if (mCamera != null) {
+                                        // get an image from the camera
+                                        mCamera.takePicture(null, null, mPicture);
+                                    } else {
+                                        if (mPreviewFrame != null) {
+                                            mPreviewFrame.removeAllViews();
+                                        }
+                                        safeCameraOpenInView();
+                                    }
+                                }
+                            }
+                    );
+
 
 
 
@@ -386,4 +406,3 @@ public class MainActivity extends AppCompatActivity {
             // permissions this app might request
         }
     }
-}
