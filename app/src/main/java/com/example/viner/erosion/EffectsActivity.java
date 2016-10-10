@@ -33,6 +33,7 @@ public class EffectsActivity extends AppCompatActivity {
     ImgsAdapter mAdapter;
     String mChosenImage;
     Context mContext;
+    private RecyclerView rvImgs;
     boolean mProcessingImage;
     public static boolean active;
     public NotificationManager mNotificationManager;
@@ -59,7 +60,6 @@ public class EffectsActivity extends AppCompatActivity {
             cacheDir.mkdir();
         }
 
-
         DisplayMetrics displayMetrics = this.getResources().getDisplayMetrics();
         View effect_scroller = findViewById(R.id.effectsRelativeLayout);
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) effect_scroller.getLayoutParams();
@@ -72,7 +72,7 @@ public class EffectsActivity extends AppCompatActivity {
         effect_buttons.setLayoutParams(params);
 
         // Lookup the recyclerview in activity layout
-        final RecyclerView rvImgs = (RecyclerView) findViewById(R.id.effects);
+        rvImgs = (RecyclerView) findViewById(R.id.effects);
 
         rvImgs.setHasFixedSize(true);
 
@@ -85,18 +85,6 @@ public class EffectsActivity extends AppCompatActivity {
         rvImgs.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         // That's all!
         rvImgs.addOnItemTouchListener(mAdapter.getListener());
-    }
-
-    public void onClickImageIsChosen(View view) throws ExecutionException, InterruptedException {//TODO:why do we screenshot?!
-//        ImageView image = (ImageView) this.findViewById(R.id.main_image);
-//        image.setDrawingCacheEnabled(true);
-//        Bitmap cropped = Bitmap.createBitmap(image.getDrawingCache());
-//
-//        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-//        cropped.compress(Bitmap.CompressFormat.PNG, 100, stream);
-//        byte[] byteArray = stream.toByteArray();
-//
-//        FileUtils.saveImageToFile(this, byteArray, 0, true);
     }
 
     public void onClickChooseEffect(View view) {
@@ -122,7 +110,6 @@ public class EffectsActivity extends AppCompatActivity {
 //                mAdapter.notifyItemInserted(mAdapter.mImgs.size() - 1);
 //                mAdapter.notifyDataSetChanged();
             }
-
         }
     }
 
@@ -200,6 +187,8 @@ class AddCallback  implements Callable<Integer>{
     public Integer call() throws Exception {
         mAdapter.mImgs.add(addFile);
         mAdapter.notifyItemInserted(mAdapter.mImgs.size() - 1);
+        rvImgs.smoothScrollToPosition(mAdapter.mImgs.size() - 1);
+
         return null;
     }
 }
