@@ -20,6 +20,7 @@ public class NetInterface {
     private static final String TAG = "NetInterface-------";
     private static final String BASE_URL = "http://52.54.68.110:3000/api/";//TODO:this is an ex2 elastic ip, check!
     private static final MediaType MEDIA_TYPE_PNG = MediaType.parse("image/png");
+    private static final MediaType MEDIA_TYPE_GIF = MediaType.parse("image/gif");
     private static final String presetExtension = "presets/";
     private static final String newExtension = "process/";
     private static final int CONTEXT = 4;
@@ -34,6 +35,7 @@ public class NetInterface {
         final CallBack callback = (CallBack)args[0];
         final Context mContext = (Context)args[CONTEXT];
         File cachedResult = new File(mContext.getExternalCacheDir(), "results/" + styleNum);
+
         if(cachedResult.exists()){
             callback.call(BitmapFactory.decodeFile(cachedResult.getPath()), styleNum);
             return;
@@ -49,7 +51,7 @@ public class NetInterface {
                 .readTimeout(20, TimeUnit.MINUTES)
                 .build();
 
-
+        //divide to either preset or custom style
         if(Integer.parseInt(styleNum) < QUICK_STYLE_NUM) {
             requestBody = buildBodyBase(contentPath).addFormDataPart("model", styleNum).build();
             uploadUrl = BASE_URL + presetExtension;
@@ -59,18 +61,16 @@ public class NetInterface {
                     RequestBody.create(MEDIA_TYPE_PNG, new File(stylePath))).build();
         }
 
-
         Request request = new Request.Builder()
                 .url(uploadUrl)
                 .post(requestBody)
                 .build();
         Log.d(TAG, "preSend");
+        //perform the request async.
         client.newCall(request).enqueue(new Callback() {
-
             @Override
             public void onFailure(Call call, IOException e) {
                 Log.d(TAG, e.getMessage());
-
                 callback.call(null, null);
 
             }
@@ -94,8 +94,9 @@ public class NetInterface {
     }
 
     public static MultipartBody.Builder buildBodyBase(String contentPath){
+        MediaType mediaType = contentPath.endsWith("gif") ? MEDIA_TYPE_GIF : MEDIA_TYPE_PNG;//TODO:take another look at the filetype vs mediatype
         return new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
-                .addFormDataPart("content", "content.png", RequestBody.create(MEDIA_TYPE_PNG, new File(contentPath)));
+                .addFormDataPart("content", "content.png", RequestBody.create(mediaType, new File(contentPath)));
     }
 }
