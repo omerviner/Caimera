@@ -32,7 +32,7 @@ public class NetInterface {
     public static void process(final Object... args) throws Exception {
         final String styleNum = (String)args[STYLE_NUM];
         final CallBack callback = (CallBack)args[0];
-        Context mContext = (Context)args[CONTEXT];
+        final Context mContext = (Context)args[CONTEXT];
         File cachedResult = new File(mContext.getExternalCacheDir(), "results/" + styleNum);
         if(cachedResult.exists()){
             callback.call(BitmapFactory.decodeFile(cachedResult.getPath()), styleNum);
