@@ -21,24 +21,29 @@ public class SaveTempImage extends AsyncTask<Object, Integer, Boolean> {
     private final Context mContext;
     private static final String FILENAME = Environment.getExternalStoragePublicDirectory(
             Environment.DIRECTORY_PICTURES) + "/" + "Caimera/" + "caimera_chosen_temp.jpg";
+
     SaveTempImage(Callable<Integer> callback, Context context){
         mContext = context;
         this.callback = callback;
     }
 
-    protected Boolean doInBackground(Object... args) throws IOException {
+    protected Boolean doInBackground(Object... args){
         byte[] im  = (byte[])args[0];
         int rotation = (int)args[1];
-        Bitmap bmp = FileUtils.getCropped(mContext, im, rotation);
+
+        Bitmap bmp = FileUtils.getCroppedRotatedBitmap(mContext, im, rotation);
         FileOutputStream out = null;
         try {
             out = new FileOutputStream(FILENAME);
-            bmp.compress(Bitmap.CompressFormat.PNG, 100, out); // bmp is your Bitmap instance
-            // PNG is a lossless format, the compression factor (100) is ignored
+            bmp.compress(Bitmap.CompressFormat.PNG, 100, out);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-                if (out != null) out.close();
+                if (out != null) try {
+                    out.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
         }
         return true;
     }

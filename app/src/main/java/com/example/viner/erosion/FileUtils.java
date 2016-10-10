@@ -175,7 +175,7 @@ public class FileUtils {
 //        return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
 //    }
 
-    public static Bitmap getCroppedBitmap(Context context, byte[] data, int rotation) {
+    public static Bitmap getCroppedRotatedBitmap(Context context, byte[] data, int rotation) {
 
         Bitmap b = null;
         try {

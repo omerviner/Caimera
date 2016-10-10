@@ -28,7 +28,6 @@ import java.util.concurrent.ExecutionException;
 public class EffectsActivity extends AppCompatActivity {
 
     static final int CHOOSE_IMAGE_REQUEST = 1;
-    ArrayList<File> mImgs;
     ImgsAdapter mAdapter;
     String mChosenImage;
     Context mContext;
@@ -50,22 +49,15 @@ public class EffectsActivity extends AppCompatActivity {
 
         File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES), "Caimera" + File.separator + "styles");
+
         if (!mediaStorageDir.exists()) {
             mediaStorageDir.mkdir();
         }
-
         cacheDir = new File(getExternalCacheDir() ,"results/");
         if (!cacheDir.exists()) {
             cacheDir.mkdir();
         }
 
-        /*TODO: seems to be redundant code?
-*        ImageView imgView = (ImageView) findViewById(R.id.main_image);
-*        Bitmap img = null;
-*        BitmapFactory.Options options = new BitmapFactory.Options();
-*        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-*        imgView.setImageBitmap(img)
-*/
 
         DisplayMetrics displayMetrics = this.getResources().getDisplayMetrics();
         View effect_scroller = findViewById(R.id.effectsRelativeLayout);
@@ -83,10 +75,8 @@ public class EffectsActivity extends AppCompatActivity {
 
         rvImgs.setHasFixedSize(true);
 
-        mImgs = new ArrayList<>(Arrays.asList(mediaStorageDir.listFiles()));
-
-        // Create adapter passing in the sample user data
-        mAdapter = new EffectsAdapter(this, mImgs, rvImgs);
+        // Create adapter passing in the user data
+        mAdapter = new EffectsAdapter(this, new ArrayList<>(Arrays.asList(mediaStorageDir.listFiles())), rvImgs);
 
         // Attach the adapter to the recyclerview to populate items
         rvImgs.setAdapter(mAdapter);
@@ -96,7 +86,7 @@ public class EffectsActivity extends AppCompatActivity {
         rvImgs.addOnItemTouchListener(mAdapter.getListener());
     }
 
-    public void onClickImageIsChosen(View view) throws ExecutionException, InterruptedException {
+    public void onClickImageIsChosen(View view) throws ExecutionException, InterruptedException {//TODO:why do we screenshot?!
         ImageView image = (ImageView) this.findViewById(R.id.main_image);
         image.setDrawingCacheEnabled(true);
         Bitmap cropped = Bitmap.createBitmap(image.getDrawingCache());
@@ -123,18 +113,15 @@ public class EffectsActivity extends AppCompatActivity {
                 File newEffect = new File(imgUrl);
                 FileUtils.copyFile(this, newEffect);
                 mAdapter.mImgs.add(newEffect);
-                mAdapter.notifyItemInserted(mImgs.size() - 1);
-//                Log.v("ChooseImageActivity: ", imgUrl);
+                mAdapter.notifyItemInserted(mAdapter.mImgs.size() - 1);
                 mAdapter.notifyDataSetChanged();
             }
-//            if (resultCode == Activity.RESULT_CANCELED) {
-//                //Write your code if there's no result
-//            }
+
         }
     }//onActivityResult
 
     public void onClickShareButton(View v) {
-        try {
+        try {//TODO:Why are we taking a screenshot!?, we should use the cache instead.
             ImageView mImageView = (ImageView) ((EffectsActivity) mContext).findViewById(R.id.main_image);
             mImageView.buildDrawingCache();
             mImageView.setDrawingCacheEnabled(true);
@@ -159,19 +146,20 @@ public class EffectsActivity extends AppCompatActivity {
         }
 
     }
-    @Override
-    public void onDestroy(){
-        String[] children = cacheDir.list();
-        for (int i = 0; i < children.length; i++)
-        {
-            new File(cacheDir, children[i]).delete();
-        }
-        cacheDir.delete();//TODO: is this ok??
-    }
+
+
     @Override
     public void onStart() {
         super.onStart();
         active = true;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        active = true;
+        mNotificationManager.cancelAll();
+
     }
 
     @Override
@@ -187,12 +175,15 @@ public class EffectsActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        active = false;
-        mNotificationManager.cancelAll();
-
+    public void onDestroy(){
+        super.onDestroy();
+        String[] children = cacheDir.list();
+        for (String aChildren : children) {
+            new File(cacheDir, aChildren).delete();
+        }
+        cacheDir.delete();//TODO: is this ok??
     }
+
 
 
 }

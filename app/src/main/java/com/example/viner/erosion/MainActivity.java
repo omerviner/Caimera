@@ -98,18 +98,16 @@ public class MainActivity extends AppCompatActivity {
             mediaStorageDir.mkdir();
         }
 
-        ArrayList<String> imgsPaths = getAllShownImagesPath(this);
+        ArrayList<String> imgsPaths = getAllShownImagesPath(this);//TODO:either ask for permission or cancel this .
 
-        mImgs = new ArrayList<File>();
-
-        for (int i = 0; i < imgsPaths.size(); i++){
-            File file = new File(imgsPaths.get(i));
-            if (file.isFile()){
+        mImgs = new ArrayList<>();
+        for (String imgsPath : imgsPaths) {
+            File file = new File(imgsPath);
+            if (file.isFile()) {
                 mImgs.add(0, file);
             }
         }
 
-//        mImgs = Lists.newArrayList(imgs);
         // Create adapter passing in the sample user data
         ImgsAdapter adapter = new MainAdapter(this, mImgs, rvImgs);
 
@@ -176,9 +174,10 @@ public class MainActivity extends AppCompatActivity {
 
             // Omer: data is what should be sent to SaveTempImage
                     //  set imageToSend as data variable
+            imageToSend = data;
 
             // Omer: original capture
-            imageToSend = FileUtils.getCapturedData(mContext, data, mPreview.rotation);
+//            imageToSend = FileUtils.getCapturedData(mContext, data, mPreview.rotation);
 
             Log.v("PictureCallback", "Sending files");
 
