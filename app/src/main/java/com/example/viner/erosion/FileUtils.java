@@ -75,79 +75,79 @@ public class FileUtils {
         return curImage;
     }
 
-    public static byte[] getCapturedData(Context context, byte[] data, int rotation) {
+//    public static byte[] getCapturedData(Context context, byte[] data, int rotation) {
+//
+//        byte[] croppedData = cropAndRotateImageBytes(context, data, rotation);
+//        return croppedData;
+//    }
+//
+//    public static byte[] copyFile(Context context, File file) {
+//        File pictureFile = getOutputMediaFile(context, true);
+//
+//        if (pictureFile == null) {
+//            Toast.makeText(context, "Image retrieval failed.", Toast.LENGTH_SHORT)
+//                    .show();
+//            return null;
+//        }
+//
+//        byte[] data = new byte[(int) file.length()];
+//        try {
+//            new FileInputStream(file).read(data);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//
+//        try {
+//
+//            FileOutputStream fos = new FileOutputStream(pictureFile, true);
+//            fos.write(data);
+//            fos.close();
+//
+//        } catch (FileNotFoundException e) {
+//            Log.v("Error saving: ", e.toString());
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            Log.v("Error saving: ", e.toString());
+//            e.printStackTrace();
+//        }
+//        return data;
+//
+//    }
+//
+//    public static File saveImageToFile(Context context, byte[] data, int rotation, boolean saveStyle) {
+//        File pictureFile = getOutputMediaFile(context, saveStyle);
+//        try {
+//            pictureFile.createNewFile();
+//        } catch (Exception e) {
+//
+//        }
+//
+//        if (pictureFile == null) {
+//            Toast.makeText(context, "Image retrieval failed.", Toast.LENGTH_SHORT)
+//                    .show();
+//            return null;
+//        }
+//        byte[] croppedData = cropAndRotateImageBytes(context, data, rotation);
+//
+//        try {
+//
+//            FileOutputStream fos = new FileOutputStream(pictureFile, true);
+//            fos.write(croppedData);
+//            fos.close();
+//
+//            // Restart the camera preview.
+//        } catch (FileNotFoundException e) {
+//            Log.v("Error saving: ", e.toString());
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            Log.v("Error saving: ", e.toString());
+//            e.printStackTrace();
+//        }
+//        Log.v("saveFileToImage", pictureFile.getAbsolutePath());
+//        return pictureFile;
+//    }
 
-        byte[] croppedData = cropAndRotateImageBytes(context, data, rotation);
-        return croppedData;
-    }
-
-    public static byte[] copyFile(Context context, File file) {
-        File pictureFile = getOutputMediaFile(context, true);
-
-        if (pictureFile == null) {
-            Toast.makeText(context, "Image retrieval failed.", Toast.LENGTH_SHORT)
-                    .show();
-            return null;
-        }
-
-        byte[] data = new byte[(int) file.length()];
-        try {
-            new FileInputStream(file).read(data);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        try {
-
-            FileOutputStream fos = new FileOutputStream(pictureFile, true);
-            fos.write(data);
-            fos.close();
-
-        } catch (FileNotFoundException e) {
-            Log.v("Error saving: ", e.toString());
-            e.printStackTrace();
-        } catch (IOException e) {
-            Log.v("Error saving: ", e.toString());
-            e.printStackTrace();
-        }
-        return data;
-
-    }
-
-    public static File saveImageToFile(Context context, byte[] data, int rotation, boolean saveStyle) {
-        File pictureFile = getOutputMediaFile(context, saveStyle);
-        try {
-            pictureFile.createNewFile();
-        } catch (Exception e) {
-
-        }
-
-        if (pictureFile == null) {
-            Toast.makeText(context, "Image retrieval failed.", Toast.LENGTH_SHORT)
-                    .show();
-            return null;
-        }
-        byte[] croppedData = cropAndRotateImageBytes(context, data, rotation);
-
-        try {
-
-            FileOutputStream fos = new FileOutputStream(pictureFile, true);
-            fos.write(croppedData);
-            fos.close();
-
-            // Restart the camera preview.
-        } catch (FileNotFoundException e) {
-            Log.v("Error saving: ", e.toString());
-            e.printStackTrace();
-        } catch (IOException e) {
-            Log.v("Error saving: ", e.toString());
-            e.printStackTrace();
-        }
-        Log.v("saveFileToImage", pictureFile.getAbsolutePath());
-        return pictureFile;
-    }
-
-    public static byte[] cropAndRotateImageBytes(Context mContext, byte[] data, int rotation) {
+    public static Bitmap cropAndRotateImageBytes(Context mContext, byte[] data, int rotation) {
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
@@ -158,14 +158,12 @@ public class FileUtils {
             matrix.postRotate(90);
         } else if (rotation == 270) {
             matrix.postRotate(270);
-        } else {
-            matrix.postRotate(0);
         }
 
         Bitmap cropped = Bitmap.createBitmap(bitmap, 0, 0, size, size, matrix, true);
-        cropped.compress(Bitmap.CompressFormat.JPEG, 100, bos); // 100 (best quality)
-        byte[] square = bos.toByteArray();
-        return square;
+//        cropped.compress(Bitmap.CompressFormat.JPEG, 100, bos); // 100 (best quality)
+//        byte[] square = bos.toByteArray();
+        return cropped;
     }
 
 //    public static Bitmap RotateBitmap(Bitmap source, float angle)
