@@ -3,48 +3,34 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.Matrix;
-import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
-import android.media.ImageReader;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.TextureView;
 import android.view.View;
 import android.view.Window;
-import android.widget.Button;
-import android.widget.FrameLayout;
-import android.widget.GridView;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import com.bumptech.glide.Glide;
+import android.widget.*;
 import com.bumptech.glide.load.resource.bitmap.GlideBitmapDrawable;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-
-import android.content.pm.PackageManager;
-
-import uk.co.senab.photoview.PhotoViewAttacher;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -63,10 +49,7 @@ public class MainActivity extends AppCompatActivity {
     RecyclerView rvImgs;
     FrameLayout mPreviewFrame;
 
-    private static final int REQUEST_CAMERA = 0;
     private static final int REQUEST_CAMERA_PERMISSION = 1;
-    private static final int REQUEST_PORTRAIT_FFC = 2;
-
 
 
     @Override
@@ -78,10 +61,6 @@ public class MainActivity extends AppCompatActivity {
         mCameraView = findViewById(android.R.id.content);
         mContext = this;
         mPreviewFrame = (FrameLayout) mCameraView.findViewById(R.id.camera_preview);
-
-//        this.overridePendingTransition(R.anim.anim_slide_out_right, R.anim.anim_slide_in_left);
-//        Button btn = (Button)((MainActivity)mContext).findViewById(R.id.button_capture);
-//        btn.setVisibility(View.VISIBLE);
 
         File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES), "Caimera");
@@ -117,7 +96,9 @@ public class MainActivity extends AppCompatActivity {
         rvImgs.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
 
         rvImgs.addOnItemTouchListener(adapter.getListener());
-        initCameraFunctionality();
+        initCaptureButton();//the order between the inits is very important(permission handling)//1
+        initCamera();//2
+
 
     }
 
@@ -139,7 +120,6 @@ public class MainActivity extends AppCompatActivity {
         }
         Log.v("safeCameraOpenInView", "succ");
 
-//        setLayout();
         ImageButton btn = (ImageButton)findViewById(R.id.next);
         btn.setVisibility(View.GONE);
 
@@ -156,9 +136,6 @@ public class MainActivity extends AppCompatActivity {
             mPreview.destroyDrawingCache();
             mPreview.mCamera = null;
         }
-//        if (mPreviewFrame != null){
-//            mPreviewFrame.removeAllViews();
-//        }
     }
 
     /**
@@ -173,7 +150,7 @@ public class MainActivity extends AppCompatActivity {
             btn.setVisibility(View.VISIBLE);
 
             // Omer: data is what should be sent to SaveTempImage
-                    //  set imageToSend as data variable
+            //  set imageToSend as data variable
             imageToSend = data;
 
             // Omer: original capture
@@ -216,11 +193,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        if (opened){
-            safeCameraOpenInView();
+        if (!opened){
+            initCamera();
         }
     }
-    private class saveCallback implements Callable<Integer>{
+    private class saveCallback implements Callable<Integer>{//TODO:the class should be an effects activity nested class and delay the req until the file is saved
 
         @Override
         public Integer call() throws Exception {
@@ -295,7 +272,7 @@ public class MainActivity extends AppCompatActivity {
         return 0;
     }
 
-    private void initCameraFunctionality(){
+    private void initCamera(){
         if(ContextCompat.checkSelfPermission(this,
                 Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){
 
@@ -309,7 +286,7 @@ public class MainActivity extends AppCompatActivity {
 
             } else {
 
-                // No explanation needed, we can request the permission.
+                //request the permission.
 
                 ActivityCompat.requestPermissions(this,
                         new String[]{Manifest.permission.CAMERA},
@@ -324,29 +301,14 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
             final Button captureButton = (Button) mCameraView.findViewById(R.id.button_capture);
-            captureButton.setOnClickListener(
-                    new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            if (mCamera != null) {
-                                // get an image from the camera
-                                mCamera.takePicture(null, null, mPicture);
-                            } else {
-                                if (mPreviewFrame != null) {
-                                    mPreviewFrame.removeAllViews();
-                                }
-                                imageToSend = null;
-                                safeCameraOpenInView();
-                            }
-                        }
-                    }
-            );
         }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[], int[] grantResults) {
+        final Button captureButton = (Button) mCameraView.findViewById(R.id.button_capture);
+
         switch (requestCode) {
             case REQUEST_CAMERA_PERMISSION:
                 Log.d("APPPermissions", "result");
@@ -361,7 +323,6 @@ public class MainActivity extends AppCompatActivity {
                         Log.d("CameraGuide", "Error, Camera failed to open");
                         return;
                     }
-                    final Button captureButton = (Button) mCameraView.findViewById(R.id.button_capture);
                     captureButton.setOnClickListener(
                             new View.OnClickListener() {
                                 @Override
@@ -383,14 +344,55 @@ public class MainActivity extends AppCompatActivity {
 
 
                 } else {
-
-                    // permission denied, boo! Disable the
-                    // functionality that depends on this permission.
+                    captureButton.setOnClickListener(new View.OnClickListener(){
+                        @Override
+                        public void onClick(View v) {
+                            showSettingsAlert();
+                        }
+                    });
                 }
-                return;
-            }
-
-            // other 'case' lines to check for other
-            // permissions this app might request
         }
+
+        }
+    private void initCaptureButton(){
+        final Button captureButton = (Button) mCameraView.findViewById(R.id.button_capture);
+        captureButton.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (mCamera != null) {
+                            // get an image from the camera
+                            mCamera.takePicture(null, null, mPicture);
+                        } else {
+                            if (mPreviewFrame != null) {
+                                mPreviewFrame.removeAllViews();
+                            }
+                            imageToSend = null;
+                            safeCameraOpenInView();
+                        }
+                    }
+                }
+        );
     }
+
+    private void showSettingsAlert() {
+        AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
+        alertDialog.setTitle("Alert");
+        alertDialog.setMessage("App needs to access the Camera to take pictures.");
+        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "DONT ALLOW",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "SETTINGS",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        startActivity(new Intent(android.provider.Settings.ACTION_SETTINGS));
+                    }
+                });
+        alertDialog.show();
+    }
+
+}
