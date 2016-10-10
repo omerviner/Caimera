@@ -57,7 +57,7 @@ public class MainAdapter  extends ImgsAdapter{
                 Log.v("clicked: ", Integer.toString(position));
 
                 String imgSrc = mImgs.get(position).getAbsolutePath();
-
+                mContext.imgUrl = imgSrc;
                 ImageButton btn = (ImageButton) mContext.findViewById(R.id.next);
                 btn.setVisibility(View.VISIBLE);
 

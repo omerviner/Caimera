@@ -28,19 +28,17 @@ public class SaveTempImage extends AsyncTask<Object, Integer, Boolean> {
         byte[] im  = getImage(args);
         int rotation = (int)args[ROTATION];
         File target = (File)args[TARGET];
-
         Bitmap bmp = FileUtils.cropAndRotateImageBytes(mContext, im, rotation);
         FileOutputStream out = null;
         try {
-            if(target.isFile()){
-                target.delete();
-            }
-            out = new FileOutputStream(target,false);
+            out = new  FileOutputStream(target, false);
+//            out.write(im);
             bmp.compress(Bitmap.CompressFormat.PNG, 100, out);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
                 if (out != null) try {
+                    out.flush();
                     out.close();
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -51,8 +49,14 @@ public class SaveTempImage extends AsyncTask<Object, Integer, Boolean> {
 
     private byte[] getImage(Object[] args) {
         try {
-            return (args.length < 4) ? (byte[]) args[IM_BYTE_ARRAY] : toByteArray(new File((String) args[IM_PATH]));
+            if(args.length < 4){
+                Log.d("SaveImage", "Camera Pic");
+                return (byte[]) args[IM_BYTE_ARRAY];
+            }
+            Log.d("SaveImage", "Device Image");
+            return toByteArray(new File((String) args[IM_PATH]));
         } catch (IOException e) {
+            Log.d("SaveImage", " NO image");
             e.printStackTrace();
             return null;
         }

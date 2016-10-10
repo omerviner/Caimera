@@ -149,7 +149,7 @@ public class FileUtils {
 
     public static Bitmap cropAndRotateImageBytes(Context mContext, byte[] data, int rotation) {
 
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+//        ByteArrayOutputStream bos = new ByteArrayOutputStream();
         Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
         int size = Math.min(bitmap.getWidth(), bitmap.getHeight());
 
