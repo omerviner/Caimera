@@ -18,26 +18,22 @@ import java.util.concurrent.TimeUnit;
 
 public class NetInterface {
     private static final String TAG = "NetInterface-------";
-    private static final String BASE_URL = "http://52.54.68.110:3000/api/";//TODO:this is an ex2 elastic ip, check!
+    private static final String BASE_URL = "http://52.54.68.110:3000/api/";//TODO:changed
     private static final MediaType MEDIA_TYPE_PNG = MediaType.parse("image/png");
     private static final MediaType MEDIA_TYPE_GIF = MediaType.parse("image/gif");
-    private static final String presetExtension = "presets/";
-    private static final String newExtension = "process/";
-    private static final int CONTEXT = 4;
-    private static final int STYLE_NUM = 3;
-    private static final int STYLE_PATH = 2;
-    private static final int CONTENT_PATH = 1;
-    private static final int QUICK_STYLE_NUM = 8;
+    private static final String presetExtension = "presets/", newExtension = "process/";
+    private static final int CALLBACK = 0, CONTENT_PATH = 1, STYLE_PATH = 2, STYLE_NUM = 3, CONTEXT = 4,
+            QUICK_STYLE_NUM = 8;
 
 
     public static void process(final Object... args) throws Exception {
         final String styleNum = (String)args[STYLE_NUM];
-        final CallBack callback = (CallBack)args[0];
+        final CallBack callback = (CallBack)args[CALLBACK];
         final Context mContext = (Context)args[CONTEXT];
-        File cachedResult = new File(mContext.getExternalCacheDir(), "results/" + styleNum);
+        final File resultCacheFile = new File(mContext.getExternalCacheDir(), "results/" + styleNum);
 
-        if(cachedResult.exists()){
-            callback.call(BitmapFactory.decodeFile(cachedResult.getPath()), styleNum);
+        if(resultCacheFile.exists()){
+            callback.call(BitmapFactory.decodeFile(resultCacheFile.getPath()), styleNum);
             return;
         }
         String contentPath = (String)args[CONTENT_PATH];
@@ -78,17 +74,23 @@ public class NetInterface {
             @SuppressWarnings("unchecked")
             @Override
             public void onResponse(Call call, Response response) throws IOException {
+                Bitmap im = null;
                 try {
                     Log.d(TAG, "RESPONSE");
-                    Bitmap im = BitmapFactory.decodeStream(response.body().byteStream());
-
+                    im = BitmapFactory.decodeStream(response.body().byteStream());
                     callback.call(im, styleNum);
+                    //cache Effect result
 
                 } catch (Exception e) {
                     e.printStackTrace();
                     callback.call(null, null);
                 }
                 response.close();
+
+                //cache the result.
+                if(im != null) {
+                    cacheResult(im, resultCacheFile);
+                }
             }
         });
     }
@@ -98,5 +100,16 @@ public class NetInterface {
         return new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart("content", "content.png", RequestBody.create(mediaType, new File(contentPath)));
+    }
+
+    private static void cacheResult(Bitmap im, File target){
+        OutputStream os = null;
+        try {
+            os = new FileOutputStream(target);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        im.compress(Bitmap.CompressFormat.PNG, 100, os);
     }
 }

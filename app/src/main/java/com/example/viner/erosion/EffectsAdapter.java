@@ -160,7 +160,6 @@ public class EffectsAdapter extends ImgsAdapter {
                     }
                 });
                 return -1;
-                //TODO:fill with error handling
             }
             final ImageView mImageView = (ImageView)(activity).findViewById(R.id.main_image);
             //set result in view
@@ -177,41 +176,29 @@ public class EffectsAdapter extends ImgsAdapter {
 
 
             if(!EffectsActivity.active){
-                int color = ContextCompat.getColor(activity, R.color.light_yellow);
-                android.support.v4.app.NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(mContext)
-                        .setSmallIcon(R.drawable.ic_launcher)
-                        .setContentTitle("Caimera")
-                        .setContentText("Tap to share/try more")
-                        .setColor(color);
-                Intent resultIntent = new Intent(activity, EffectsActivity.class);
-                //Set flags to resume and not create a new instance
-                Notification notification = mBuilder.build();
-                notification.flags = Notification.FLAG_ONGOING_EVENT | Notification.FLAG_NO_CLEAR;
-                resultIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-
-                PendingIntent resultPendingIntent = PendingIntent.getActivity(mContext.getApplicationContext(), (int)System.currentTimeMillis(), resultIntent, 0);
-                mBuilder.setContentIntent(resultPendingIntent);
-
-                // mId allows you to update the notification later on.
-                activity.mNotificationManager.notify(0, mBuilder.build());
+                showNotification();
             }
-
-            //if this effect is used for the first time on this content image.
-            if(Integer.getInteger(styleNum) >= 0) {
-                //cache Effect result
-                File file = new File(activity.getExternalCacheDir(), "results/" + styleNum);
-                OutputStream os = null;
-
-                try {
-                    os = new FileOutputStream(file);
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
-
-                bmp.compress(Bitmap.CompressFormat.PNG, 100, os);
-            }
-
             return 0;
         }
+    }
+
+    private void showNotification(){
+        int color = ContextCompat.getColor(mContext, R.color.light_yellow);
+        android.support.v4.app.NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(mContext)
+                .setSmallIcon(R.drawable.ic_launcher)
+                .setContentTitle("Caimera")
+                .setContentText("Tap to share/try more")
+                .setColor(color);
+        Intent resultIntent = new Intent(mContext, EffectsActivity.class);
+        //Set flags to resume and not create a new instance
+        Notification notification = mBuilder.build();
+        notification.flags = Notification.FLAG_ONGOING_EVENT | Notification.FLAG_NO_CLEAR;
+        resultIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+
+        PendingIntent resultPendingIntent = PendingIntent.getActivity(mContext.getApplicationContext(), (int)System.currentTimeMillis(), resultIntent, 0);
+        mBuilder.setContentIntent(resultPendingIntent);
+
+        // mId allows you to update the notification later on.
+        mContext.mNotificationManager.notify(0, mBuilder.build());
     }
 }
