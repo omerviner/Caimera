@@ -1,6 +1,7 @@
 package com.example.viner.erosion;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
@@ -60,9 +61,16 @@ public class MainAdapter  extends ImgsAdapter{
                 ImageButton btn = (ImageButton) mContext.findViewById(R.id.next);
                 btn.setVisibility(View.VISIBLE);
 
-                mContext.releaseCameraAndPreview();
+
+                new AsyncTask<Void, Void, Void>() {
+                    @Override
+                    protected Void doInBackground(Void... params) {
+                        mContext.releaseCameraAndPreview();
+                        return null;
+                    }
+                };
                 FrameLayout preview = (FrameLayout) mContext.findViewById(R.id.camera_preview);
-                preview.removeAllViews();
+//                preview.removeAllViews();
 
                 ImageView imgPrev = (ImageView) mContext.findViewById(R.id.main_image_frame);
                 if (imgPrev != null){//TODO: organize better -  code dup, Why do we init the preview on every click?!!!!!!
@@ -72,28 +80,28 @@ public class MainAdapter  extends ImgsAdapter{
                             .override(1000,1000)
                             .into(imgPrev);
                 } else {
-                    imgPrev = new ImageView(mContext);
-                    imgPrev.setId(R.id.main_image_frame);
-
-                    // Set the Drawable displayed
-                    Glide.with(mContext)
-                            .load(imgSrc)
-                            .centerCrop()
-                            .into(imgPrev);
-
-
-                    RelativeLayout.LayoutParams viewParams = new RelativeLayout.LayoutParams(
-                            RelativeLayout.LayoutParams.WRAP_CONTENT,
-                            RelativeLayout.LayoutParams.WRAP_CONTENT);
-                    viewParams.height = mWidthPixels + mStatusBarHeight;
-                    viewParams.width = mWidthPixels;
-                    viewParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-                    imgPrev.setLayoutParams(viewParams);
-                    preview.addView(imgPrev);
-
-                    RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)preview.getLayoutParams();
-                    params.height = mWidthPixels + mStatusBarHeight;
-                    preview.setLayoutParams(viewParams);
+//                    imgPrev = new ImageView(mContext);
+//                    imgPrev.setId(R.id.main_image_frame);
+//
+//                    // Set the Drawable displayed
+//                    Glide.with(mContext)
+//                            .load(imgSrc)
+//                            .centerCrop()
+//                            .into(imgPrev);
+//
+//
+//                    RelativeLayout.LayoutParams viewParams = new RelativeLayout.LayoutParams(
+//                            RelativeLayout.LayoutParams.WRAP_CONTENT,
+//                            RelativeLayout.LayoutParams.WRAP_CONTENT);
+//                    viewParams.height = mWidthPixels + mStatusBarHeight;
+//                    viewParams.width = mWidthPixels;
+//                    viewParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+//                    imgPrev.setLayoutParams(viewParams);
+//                    preview.addView(imgPrev);
+//
+//                    RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)preview.getLayoutParams();
+//                    params.height = mWidthPixels + mStatusBarHeight;
+//                    preview.setLayoutParams(viewParams);
                 }
             }
 

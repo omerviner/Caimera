@@ -95,9 +95,9 @@
             android:src="@drawable/folder"
             android:background="@color/transparent"
             android:id="@+id/folder"
+            android:onClick="onClickChooseImage"
             android:adjustViewBounds="true"
             android:scaleType="centerInside"
-            android:visibility="invisible"
             />
 
         <LinearLayout

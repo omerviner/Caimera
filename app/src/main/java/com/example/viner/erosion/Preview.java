@@ -226,8 +226,6 @@ class Preview extends SurfaceView implements SurfaceHolder.Callback {
                 }
             }
 
-            final int scaledChildHeight = previewHeight * width / previewWidth;
-//            mCameraView.layout(0, height - scaledChildHeight, width, height);
             mCameraView.layout(0, 0, width, height);
 
             ((MainActivity)mContext).setLayout();
@@ -254,25 +252,6 @@ class Preview extends SurfaceView implements SurfaceHolder.Callback {
             parameters.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
             mCamera.setParameters(parameters);
         }
-
-//        Camera.Size result = null;
-
-//        for (int i=0;i<mSupportedPictureSizes.size();i++){
-//            result = mSupportedPictureSizes.get(i);
-//            if (result.width >= 1000 && result.height >= 1000){
-//                Camera.Parameters params = camera.getParameters();
-//                Camera.Size sizePicture = result;
-//                params.setPictureSize(sizePicture.width, sizePicture.height);
-//                break;
-//            }
-//            Log.i("PictureSize", "Supported Size. Width: " + result.width + " Height : " + result.height);
-//        Camera.Parameters params = camera.getParameters();
-//        result = mSupportedPictureSizes.get(mSupportedPictureSizes.size() - 1);
-//        params.setPictureSize(result.width, result.height);
-//        }
-
-
-
 
     }
 

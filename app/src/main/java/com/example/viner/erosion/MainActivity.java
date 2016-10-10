@@ -10,6 +10,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.hardware.Camera;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -25,6 +26,8 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.*;
+
+import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.GlideBitmapDrawable;
 
 import java.io.ByteArrayOutputStream;
@@ -35,10 +38,8 @@ import java.util.concurrent.Callable;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Camera mCamera; // Should I keep an instance of camera object?
+    private Camera mCamera;
     private Preview mPreview;
-
-    // Reference to the containing view.
     private View mCameraView;
     public byte[] imageToSend;
     private Context mContext;
@@ -50,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
     FrameLayout mPreviewFrame;
 
     private static final int REQUEST_CAMERA_PERMISSION = 1;
-
+    static final int CHOOSE_IMAGE_REQUEST = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,10 +99,32 @@ public class MainActivity extends AppCompatActivity {
         rvImgs.addOnItemTouchListener(adapter.getListener());
         initCaptureButton();//the order between the inits is very important(permission handling)//1
         initCamera();//2
-
-
+        initMainImage();
     }
 
+    private void initMainImage(){
+
+        ImageView imgPrev = new ImageView(mContext);
+        imgPrev.setId(R.id.main_image_frame);
+        imgPrev.setImageDrawable(null);
+        imgPrev.bringToFront();
+
+        RelativeLayout.LayoutParams viewParams = new RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.WRAP_CONTENT,
+                RelativeLayout.LayoutParams.WRAP_CONTENT);
+        DisplayMetrics displayMetrics = mContext.getResources().getDisplayMetrics();
+        int mWidthPixels = displayMetrics.widthPixels;
+        viewParams.height = mWidthPixels + mStatusBarHeight;
+        viewParams.width = mWidthPixels;
+        viewParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+        imgPrev.setLayoutParams(viewParams);
+        mPreviewFrame.addView(imgPrev);
+
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)mPreviewFrame.getLayoutParams();
+        params.height = mWidthPixels + mStatusBarHeight;
+        mPreviewFrame.setLayoutParams(viewParams);
+
+    }
     /**
      * Recommended "safe" way to open the camera.
      * @return
@@ -115,8 +138,10 @@ public class MainActivity extends AppCompatActivity {
 
         if(qOpened) {
             mPreview = new Preview(this, mCamera, mCameraView);
-
-            mPreviewFrame.addView(mPreview);
+            mPreview.bringToFront();
+//            mCamera.startPreview();
+//            mPreview.buildDrawingCache();
+//            mPreviewFrame.addView(mPreview);
         }
         Log.v("safeCameraOpenInView", "succ");
 
@@ -132,10 +157,10 @@ public class MainActivity extends AppCompatActivity {
             mCamera.release();
             mCamera = null;
         }
-        if(mPreview != null){
-            mPreview.destroyDrawingCache();
-            mPreview.mCamera = null;
-        }
+//        if(mPreview != null){
+//            mPreview.destroyDrawingCache();
+//            mPreview.mCamera = null;
+//        }
     }
 
     /**
@@ -152,17 +177,52 @@ public class MainActivity extends AppCompatActivity {
             // Omer: data is what should be sent to SaveTempImage
             //  set imageToSend as data variable
             imageToSend = data;
-
+            ImageView image = (ImageView)findViewById(R.id.main_image_frame);
+            image.setImageDrawable(null);
             // Omer: original capture
 //            imageToSend = FileUtils.getCapturedData(mContext, data, mPreview.rotation);
 
             Log.v("PictureCallback", "Sending files");
 
             // Close camera
-            ((MainActivity) mContext).releaseCameraAndPreview();
+            new AsyncTask<Void, Void, Void>() {
+                @Override
+                protected Void doInBackground(Void... params) {
+                    releaseCameraAndPreview();
+                    return null;
+                }
+            };
 
         }
     };
+
+    public void onClickChooseImage(View view) {
+        Intent intent = new Intent(this, ChooseImageActivity.class);
+        startActivityForResult(intent, CHOOSE_IMAGE_REQUEST);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == CHOOSE_IMAGE_REQUEST) {
+            if (resultCode == Activity.RESULT_OK) {
+                String imgUrl = data.getStringExtra("chosen_image");
+                File chosenImage = new File(imgUrl);
+                ImageView image = (ImageView) this.findViewById(R.id.main_image_frame);
+                image.bringToFront();
+                Glide
+                        .with(this)
+                        .load(chosenImage)
+                        .centerCrop()
+                        .into(image);
+
+                ImageButton btn = (ImageButton)((MainActivity)mContext).findViewById(R.id.next);
+                btn.setVisibility(View.VISIBLE);
+
+                imageToSend = null;
+//                new SaveTempImage(new saveCallback(), this).execute(null, 0, imgUrl);
+            }
+        }
+    }//onActivityResult
 
     public void onClickImageIsChosen(View view){
 
@@ -186,7 +246,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        releaseCameraAndPreview();
+
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+                releaseCameraAndPreview();
+                return null;
+            }
+        };
     }
 
     @Override
@@ -296,6 +363,7 @@ public class MainActivity extends AppCompatActivity {
         }
         else {
             opened = safeCameraOpenInView();
+            mPreviewFrame.addView(mPreview);
             if (!opened) {
                 Log.d("CameraGuide", "Error, Camera failed to open");
                 return;
@@ -330,10 +398,11 @@ public class MainActivity extends AppCompatActivity {
                                     if (mCamera != null) {
                                         // get an image from the camera
                                         mCamera.takePicture(null, null, mPicture);
+
                                     } else {
-                                        if (mPreviewFrame != null) {
-                                            mPreviewFrame.removeAllViews();
-                                        }
+//                                        if (mPreviewFrame != null) {
+//                                            mPreviewFrame.removeAllViews();
+//                                        }
                                         safeCameraOpenInView();
                                     }
                                 }
@@ -364,9 +433,10 @@ public class MainActivity extends AppCompatActivity {
                             // get an image from the camera
                             mCamera.takePicture(null, null, mPicture);
                         } else {
-                            if (mPreviewFrame != null) {
-                                mPreviewFrame.removeAllViews();
-                            }
+
+//                            if (mPreviewFrame != null) {
+//                                mPreviewFrame.removeAllViews();
+//                            }
                             imageToSend = null;
                             safeCameraOpenInView();
                         }
