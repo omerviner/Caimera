@@ -7,7 +7,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.graphics.Bitmap;
 import android.hardware.Camera;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -26,11 +25,8 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.*;
-
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.bitmap.GlideBitmapDrawable;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -44,19 +40,17 @@ public class MainActivity extends AppCompatActivity {
     private View mCameraView;
     public byte[] imageToSend;
     private Context mContext;
-    ArrayList<File> mImgs;
-    String tempImagePath;
     boolean opened;
     int mStatusBarHeight;
     RecyclerView rvImgs;
-    FrameLayout mPreviewFrame;
+    private FrameLayout mPreviewFrame;
+    private File caimera_chosen_temp;
     int mPreviewState;
-
     private static final int REQUEST_CAMERA_PERMISSION = 1;
     private static final int CHOOSE_IMAGE_REQUEST = 2;
     private static final int STATE_FROZEN = 0;
     private static final int STATE_PREVIEW = 1;
-
+    public String imgUrl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,12 +65,12 @@ public class MainActivity extends AppCompatActivity {
         File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES), "Caimera");
 
-        tempImagePath = mediaStorageDir.getPath() + File.separator + "caimera_chosen_temp.jpg";
-        File caimera_chosen_temp = new File(tempImagePath);
+        String tempImagePath = mediaStorageDir.getPath() + File.separator + "caimera_chosen_temp.png";
+        caimera_chosen_temp = new File(tempImagePath);
         caimera_chosen_temp.delete();
 
         // Lookup the recyclerview in activity layout
-        rvImgs = (RecyclerView) findViewById(R.id.imgs);
+        RecyclerView rvImgs = (RecyclerView) findViewById(R.id.imgs);
         rvImgs.setHasFixedSize(true);
 
         if (!mediaStorageDir.exists()) {
@@ -85,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
 
         ArrayList<String> imgsPaths = getAllShownImagesPath(this);//TODO:either ask for permission or cancel this .
 
-        mImgs = new ArrayList<>();
+        ArrayList<File> mImgs = new ArrayList<>();
         for (String imgsPath : imgsPaths) {
             File file = new File(imgsPath);
             if (file.isFile()) {
@@ -211,7 +205,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == CHOOSE_IMAGE_REQUEST) {
             if (resultCode == Activity.RESULT_OK) {
-                String imgUrl = data.getStringExtra("chosen_image");
+                imgUrl = data.getStringExtra("chosen_image");
                 File chosenImage = new File(imgUrl);
                 ImageView image = (ImageView) this.findViewById(R.id.main_image_frame);
                 image.bringToFront();
@@ -225,26 +219,20 @@ public class MainActivity extends AppCompatActivity {
                 btn.setVisibility(View.VISIBLE);
 
                 imageToSend = null;
-//                new SaveTempImage(new saveCallback(), this).execute(null, 0, imgUrl);
             }
         }
     }
 
     public void onClickImageIsChosen(View view){
 
-        // Current Image capture
-        ImageView image = (ImageView) this.findViewById(R.id.main_image_frame);
         if (imageToSend == null){
-            // Get image from ImageView
-            Bitmap screenShot = ((GlideBitmapDrawable)image.getDrawable().getCurrent()).getBitmap();
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            screenShot.compress(Bitmap.CompressFormat.PNG, 100, stream);
-            imageToSend = stream.toByteArray();
+            new SaveTempImage(new saveCallback(), this).execute(null, 0, caimera_chosen_temp, imgUrl);
+        }
+        else{
+            new SaveTempImage(new saveCallback(), this).execute(imageToSend, mPreview.rotation, caimera_chosen_temp);
         }
 
-
         // Async-Saving
-        new SaveTempImage(new saveCallback(), this).execute(imageToSend, mPreview.rotation);
         Intent intent = new Intent(this, EffectsActivity.class);
         startActivity(intent);
     }

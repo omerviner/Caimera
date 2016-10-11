@@ -19,10 +19,12 @@ import android.widget.RelativeLayout;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
 public class EffectsActivity extends AppCompatActivity {
@@ -36,7 +38,9 @@ public class EffectsActivity extends AppCompatActivity {
     public static boolean active;
     public NotificationManager mNotificationManager;
     File cacheDir;
-
+    private String mediaStorageDirPath = Environment.getExternalStoragePublicDirectory(
+            Environment.DIRECTORY_PICTURES).getAbsolutePath();
+    private File mediaStorageDir;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,12 +48,9 @@ public class EffectsActivity extends AppCompatActivity {
         mContext = this;
         mNotificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
 
-        File mediaTempImgStorageDir = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES), "Caimera");
-        mChosenImage = mediaTempImgStorageDir.getPath() + File.separator + "caimera_chosen_temp.jpg";
+        mChosenImage = mediaStorageDirPath + File.separator + "caimera_chosen_temp.jpg";
 
-        File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES), "Caimera" + File.separator + "styles");
+        mediaStorageDir = new File(mediaStorageDirPath, "Caimera" + File.separator + "styles");
 
         if (!mediaStorageDir.exists()) {
             mediaStorageDir.mkdir();
@@ -98,13 +99,16 @@ public class EffectsActivity extends AppCompatActivity {
         if (requestCode == CHOOSE_IMAGE_REQUEST) {
             if (resultCode == Activity.RESULT_OK) {
                 String imgUrl = data.getStringExtra("chosen_image");
-                File newEffect = new File(imgUrl);
-                FileUtils.copyFile(this, newEffect);
-                mAdapter.mImgs.add(newEffect);
-                int effectPos = mAdapter.mImgs.size() - 1;
-                mAdapter.notifyItemInserted(effectPos);
-                mAdapter.notifyDataSetChanged();
-                rvImgs.smoothScrollToPosition(effectPos);
+//                File newEffect = new File(imgUrl);
+                try {
+                    File target = File.createTempFile("custom", ".png", mediaStorageDir);
+                    new SaveTempImage(new  AddCallback(target), this).execute(null, 0, target, imgUrl);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+//                mAdapter.mImgs.add(newEffect);
+//                mAdapter.notifyItemInserted(mAdapter.mImgs.size() - 1);
+//                mAdapter.notifyDataSetChanged();
             }
         }
     }
@@ -173,6 +177,20 @@ public class EffectsActivity extends AppCompatActivity {
         cacheDir.delete();//TODO: is this ok??
     }
 
+class AddCallback  implements Callable<Integer>{
+    private File addFile;
 
+    AddCallback(File addFile){
+        this.addFile = addFile;
+    }
+    @Override
+    public Integer call() throws Exception {
+        mAdapter.mImgs.add(addFile);
+        mAdapter.notifyItemInserted(mAdapter.mImgs.size() - 1);
+        rvImgs.smoothScrollToPosition(mAdapter.mImgs.size() - 1);
+
+        return null;
+    }
+}
 
 }
