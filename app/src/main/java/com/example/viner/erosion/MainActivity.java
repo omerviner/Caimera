@@ -32,6 +32,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
 
+import static com.example.viner.erosion.Preview.getCameraInstance;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -48,9 +50,10 @@ public class MainActivity extends AppCompatActivity {
     int mPreviewState;
     private static final int REQUEST_CAMERA_PERMISSION = 1;
     private static final int CHOOSE_IMAGE_REQUEST = 2;
-    private static final int STATE_FROZEN = 0;
-    private static final int STATE_PREVIEW = 1;
+
     public String imgUrl;
+    private ImageView imgPrev;
+    private boolean startCameraOnResume = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
 
         mCameraView = findViewById(android.R.id.content);
         mContext = this;
-        mPreviewFrame = (FrameLayout) mCameraView.findViewById(R.id.camera_preview);
+        mPreviewFrame = (FrameLayout) findViewById(R.id.camera_preview);
 
         File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES), "Caimera");
@@ -103,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void initMainImage(){
 
-        ImageView imgPrev = new ImageView(mContext);
+        imgPrev = new ImageView(mContext);
         imgPrev.setId(R.id.main_image_frame);
         imgPrev.setImageDrawable(null);
         imgPrev.bringToFront();
@@ -129,17 +132,24 @@ public class MainActivity extends AppCompatActivity {
      */
     private boolean safeCameraOpenInView() {
 
+        startCameraOnResume = true;
         boolean qOpened = false;
         releaseCameraAndPreview();
-        mCamera = Preview.getCameraInstance();
+
         qOpened = (mCamera != null);
 
         if(qOpened) {
-            mPreview = new Preview(this, mCamera, mCameraView);
+
             mPreview.bringToFront();
-//            mCamera.startPreview();
+            mCamera.startPreview();
+            mPreview.buildDrawingCache();
 //            mPreview.buildDrawingCache();
 //            mPreviewFrame.addView(mPreview);
+        } else {
+            mCamera = getCameraInstance();
+            mPreview = new Preview(this, mCamera, mCameraView);
+            mPreviewFrame.addView(mPreview);
+
         }
         Log.v("safeCameraOpenInView", "succ");
 
@@ -155,6 +165,7 @@ public class MainActivity extends AppCompatActivity {
             mCamera.release();
             mCamera = null;
         }
+
         if(mPreview != null){
             mPreview.destroyDrawingCache();
             mPreview.mCamera = null;
@@ -168,22 +179,26 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
-
-            ImageButton btn = (ImageButton)((MainActivity)mContext).findViewById(R.id.next);
-            btn.setVisibility(View.VISIBLE);
-
-            // Omer: data is what should be sent to SaveTempImage
-            //  set imageToSend as data variable
             imageToSend = data;
-            ImageView image = (ImageView)findViewById(R.id.main_image_frame);
-            image.setImageDrawable(null);
+
+            onClickImageIsChosen(null);
+
+            // NEXT REMOVED: dont show next button on capture
+//            ImageButton btn = (ImageButton)((MainActivity)mContext).findViewById(R.id.next);
+//            btn.setVisibility(View.VISIBLE);
+            // NEXT REMOVED: freeze preview is not needed
+//            imgPrev.setImageDrawable(null);
+//            mPreview.destroyDrawingCache();
+
+//            mPreviewFrame.bringToFront();
             // Omer: original capture
 //            imageToSend = FileUtils.getCapturedData(mContext, data, mPreview.rotation);
 
             Log.v("PictureCallback", "Sending files");
 
-            releaseCameraAndPreview();
-//            // Close camera
+            // NEXT REMOVED: release happens in onPause
+//            releaseCameraAndPreview();
+//             Close camera
 //            new AsyncTask<Void, Void, Void>() {
 //                @Override
 //                protected Void doInBackground(Void... params) {
@@ -191,14 +206,24 @@ public class MainActivity extends AppCompatActivity {
 //                    return null;
 //                }
 //            };
-            mPreviewState = STATE_FROZEN;
+
 
         }
     };
 
     public void onClickChooseImage(View view) {
+        startCameraOnResume = false;
         Intent intent = new Intent(this, ChooseImageActivity.class);
         startActivityForResult(intent, CHOOSE_IMAGE_REQUEST);
+
+        // NEXT REMOVED: release happens in onPause
+//        new AsyncTask<Void, Void, Void>() {
+//            @Override
+//            protected Void doInBackground(Void... params) {
+//                releaseCameraAndPreview();
+//                return null;
+//            }
+//        };
     }
 
     @Override
@@ -207,18 +232,21 @@ public class MainActivity extends AppCompatActivity {
             if (resultCode == Activity.RESULT_OK) {
                 imgUrl = data.getStringExtra("chosen_image");
                 File chosenImage = new File(imgUrl);
-                ImageView image = (ImageView) this.findViewById(R.id.main_image_frame);
-                image.bringToFront();
-                Glide
-                        .with(this)
-                        .load(chosenImage)
-                        .centerCrop()
-                        .into(image);
 
-                ImageButton btn = (ImageButton)((MainActivity)mContext).findViewById(R.id.next);
-                btn.setVisibility(View.VISIBLE);
+                // NEXT REMOVED: load image is not needed
+//                imgPrev.bringToFront();
+//                Glide
+//                        .with(this)
+//                        .load(chosenImage)
+//                        .centerCrop()
+//                        .into(imgPrev);
+//
+//                ImageButton btn = (ImageButton)((MainActivity)mContext).findViewById(R.id.next);
+//                btn.setVisibility(View.VISIBLE);
 
                 imageToSend = null;
+
+                onClickImageIsChosen(null);
             }
         }
     }
@@ -232,6 +260,14 @@ public class MainActivity extends AppCompatActivity {
             new SaveTempImage(new saveCallback(), this).execute(imageToSend, mPreview.rotation, caimera_chosen_temp);
         }
 
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+                releaseCameraAndPreview();
+                return null;
+            }
+        };
+
         // Async-Saving
         Intent intent = new Intent(this, EffectsActivity.class);
         startActivity(intent);
@@ -240,7 +276,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... params) {
@@ -254,9 +289,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        if (!opened){
+//        if (!opened && startCameraOnResume){
             initCamera();
-        }
+//        }
     }
     private class saveCallback implements Callable<Integer>{//TODO:the class should be an effects activity nested class and delay the req until the file is saved
 
@@ -354,23 +389,38 @@ public class MainActivity extends AppCompatActivity {
                         REQUEST_CAMERA_PERMISSION);
             }
 
+        } else {
+            safeCameraOpenInView();
         }
-        else {
-            opened = safeCameraOpenInView();
-            mPreviewFrame.addView(mPreview);
-            if (!opened) {
-                Log.d("CameraGuide", "Error, Camera failed to open");
-                return;
-            }
-            final Button captureButton = (Button) mCameraView.findViewById(R.id.button_capture);
-            mPreviewState = STATE_PREVIEW ;
-        }
+    }
+
+    private void initCaptureButton(){
+        final Button captureButton = (Button)findViewById(R.id.big_button_capture);
+        captureButton.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (mCamera != null) {
+                            Log.v("initCaptureButton: ", "camera != null");
+                            // get an image from the camera
+                            mCamera.takePicture(null, null, mPicture);
+
+                        } else {
+                            Log.v("initCaptureButton: ", "camera == null");
+                            imageToSend = null;
+                            initCamera();
+                            mPreview.startCameraPreview();
+
+                        }
+                    }
+                }
+        );
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[], int[] grantResults) {
-        final Button captureButton = (Button) mCameraView.findViewById(R.id.button_capture);
+        final Button captureButton = (Button)findViewById(R.id.big_button_capture);
 
         switch (requestCode) {
             case REQUEST_CAMERA_PERMISSION:
@@ -383,46 +433,11 @@ public class MainActivity extends AppCompatActivity {
                     // contacts-related task you need to do.
                     opened = safeCameraOpenInView();
                     if (!opened) {
-                        Log.d("CameraGuide", "Error, Camera failed to open");
+                        Log.d("onRequestPermissions", "Error, Camera failed to open");
                         return;
                     }
-                    captureButton.setOnClickListener(
-                            new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    if (mCamera != null) {
-                                        // get an image from the camera
-//                                        if (mPreviewState == STATE_PREVIEW){
-                                            mCamera.takePicture(null, null, mPicture);
-//                                        } else {
-//
-//                                            mCamera.startPreview();
-//                                            mPreview.bringToFront();
-//                                            mPreviewState = STATE_PREVIEW;
-//
-//                                        }
 
-
-                                    } else {
-//                                        if (mPreviewFrame != null) {
-//                                            mPreviewFrame.removeAllViews();
-//                                        }
-                                        try {
-                                            mCamera.reconnect();
-                                        } catch (IOException e) {
-                                            e.printStackTrace();
-                                        }
-                                        mCamera.startPreview();
-                                        mCameraView.bringToFront();
-//                                        mPreviewState = STATE_PREVIEW;
-                                        safeCameraOpenInView();
-                                    }
-                                }
-                            }
-                    );
-
-
-
+                    initCaptureButton();
 
                 } else {
                     captureButton.setOnClickListener(new View.OnClickListener(){
@@ -434,27 +449,6 @@ public class MainActivity extends AppCompatActivity {
                 }
         }
 
-        }
-    private void initCaptureButton(){
-        final Button captureButton = (Button) mCameraView.findViewById(R.id.button_capture);
-        captureButton.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (mCamera != null) {
-                            // get an image from the camera
-                            mCamera.takePicture(null, null, mPicture);
-                        } else {
-
-//                            if (mPreviewFrame != null) {
-//                                mPreviewFrame.removeAllViews();
-//                            }
-                            imageToSend = null;
-                            safeCameraOpenInView();
-                        }
-                    }
-                }
-        );
     }
 
     private void showSettingsAlert() {

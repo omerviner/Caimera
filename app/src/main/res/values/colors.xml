@@ -12,5 +12,6 @@
     <color name="medium_purple">#F6D2C7</color>
     <color name="light_yellow">#FFF9DE</color>
     <color name="orange">#FF9D00</color>
+    <color name="light_yellow_shadow">#FDF2DA</color>
 
 </resources>

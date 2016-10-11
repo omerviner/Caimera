@@ -269,6 +269,7 @@ class Preview extends SurfaceView implements SurfaceHolder.Callback {
         }
     }
 
+
     /** A safe way to get an instance of the Camera object. */
     public static Camera getCameraInstance(){
         Camera c = null;

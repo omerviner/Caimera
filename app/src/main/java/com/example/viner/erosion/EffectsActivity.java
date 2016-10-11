@@ -16,6 +16,8 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
+import com.bumptech.glide.Glide;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -41,6 +43,8 @@ public class EffectsActivity extends AppCompatActivity {
     private String mediaStorageDirPath = Environment.getExternalStoragePublicDirectory(
             Environment.DIRECTORY_PICTURES).getAbsolutePath();
     private File mediaStorageDir;
+    private ImageView mImageView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,6 +89,13 @@ public class EffectsActivity extends AppCompatActivity {
         rvImgs.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         // That's all!
         rvImgs.addOnItemTouchListener(mAdapter.getListener());
+
+        mImageView = (ImageView) ((EffectsActivity) mContext).findViewById(R.id.main_image);
+
+        Glide
+                .with(this)
+                .load(mChosenImage)
+                .into(mImageView);
     }
 
     public void onClickChooseEffect(View view) {
@@ -115,7 +126,6 @@ public class EffectsActivity extends AppCompatActivity {
 
     public void onClickShareButton(View v) {
         try {//TODO:Why are we taking a screenshot!?, we should use the cache instead.
-            ImageView mImageView = (ImageView) ((EffectsActivity) mContext).findViewById(R.id.main_image);
             mImageView.buildDrawingCache();
             mImageView.setDrawingCacheEnabled(true);
             Bitmap bmp = mImageView.getDrawingCache();

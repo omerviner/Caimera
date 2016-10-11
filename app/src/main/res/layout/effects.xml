@@ -111,8 +111,12 @@
             android:layout_marginTop="167dp"
             app:SpinKit_Color="@color/colorAccent"
             android:visibility="gone"/>
-<!--<Button android:layout_width="80dp" android:layout_height="80dp"-->
-            <!--android:paddingLeft="300dp"-->
-            <!--android:paddingRight="45dp" android:layout_alignParentTop="true" android:layout_centerHorizontal="true"-->
-            <!--android:layout_marginTop="137dp"/>-->
+
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:background="@color/purple"
+        android:layout_alignParentBottom="true"/>
+
 </RelativeLayout>

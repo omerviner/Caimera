@@ -31,7 +31,6 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true">
 
-
             <Button
                 android:id="@+id/button_capture"
                 android:layout_width="@dimen/capture_button_size"
@@ -42,7 +41,7 @@
                 android:background="@drawable/capture_btn"
                 android:adjustViewBounds="true"
                 android:scaleType="centerInside"
-
+                android:visibility="gone"
                 />
 
         </RelativeLayout>
@@ -87,19 +86,46 @@
         android:gravity="bottom"
         >
 
-        <ImageButton
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
-            android:layout_margin="20dp"
-            android:src="@drawable/folder"
-            android:background="@color/transparent"
-            android:id="@+id/folder"
-            android:onClick="onClickChooseImage"
-            android:adjustViewBounds="true"
-            android:scaleType="centerInside"
-            />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@color/light_yellow_shadow"
+            android:layout_alignParentTop="true">
+
+
+            <ImageButton
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_alignParentLeft="true"
+                android:src="@drawable/folder"
+                android:background="@color/transparent"
+                android:id="@+id/folder"
+                android:onClick="onClickChooseImage"
+                android:adjustViewBounds="true"
+                android:scaleType="centerInside"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="15dp"
+                />
+
+            <ImageButton
+                android:layout_width="@dimen/button_size"
+                android:layout_height="@dimen/button_size"
+                android:layout_alignParentRight="true"
+                android:src="@drawable/next3"
+                android:background="@color/transparent"
+                android:id="@+id/next"
+                android:adjustViewBounds="true"
+                android:scaleType="centerInside"
+                android:onClick="onClickImageIsChosen"
+                android:visibility="invisible"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="15dp"
+                />
+
+        </RelativeLayout>
+
+
+
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -133,22 +159,22 @@
                 android:visibility="invisible"
                 />
 
-            <ImageButton
-                android:layout_width="@dimen/button_size"
-                android:layout_height="@dimen/button_size"
-                android:src="@drawable/next3"
-                android:background="@color/transparent"
-                android:id="@+id/next"
-                android:adjustViewBounds="true"
-                android:scaleType="centerInside"
-                android:onClick="onClickImageIsChosen"
-                android:visibility="invisible"
-                />
 
         </LinearLayout>
 
-
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/big_capture_btn"
+        android:id="@+id/big_button_capture"/>
     </RelativeLayout>
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:background="@color/purple"
+        android:layout_alignParentBottom="true"/>
 
 </RelativeLayout>
