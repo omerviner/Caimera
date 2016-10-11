@@ -32,6 +32,7 @@ import com.bumptech.glide.load.resource.bitmap.GlideBitmapDrawable;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
 
@@ -49,9 +50,13 @@ public class MainActivity extends AppCompatActivity {
     int mStatusBarHeight;
     RecyclerView rvImgs;
     FrameLayout mPreviewFrame;
+    int mPreviewState;
 
     private static final int REQUEST_CAMERA_PERMISSION = 1;
-    static final int CHOOSE_IMAGE_REQUEST = 2;
+    private static final int CHOOSE_IMAGE_REQUEST = 2;
+    private static final int STATE_FROZEN = 0;
+    private static final int STATE_PREVIEW = 1;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,7 +128,6 @@ public class MainActivity extends AppCompatActivity {
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)mPreviewFrame.getLayoutParams();
         params.height = mWidthPixels + mStatusBarHeight;
         mPreviewFrame.setLayoutParams(viewParams);
-
     }
     /**
      * Recommended "safe" way to open the camera.
@@ -157,10 +161,10 @@ public class MainActivity extends AppCompatActivity {
             mCamera.release();
             mCamera = null;
         }
-//        if(mPreview != null){
-//            mPreview.destroyDrawingCache();
-//            mPreview.mCamera = null;
-//        }
+        if(mPreview != null){
+            mPreview.destroyDrawingCache();
+            mPreview.mCamera = null;
+        }
     }
 
     /**
@@ -184,14 +188,16 @@ public class MainActivity extends AppCompatActivity {
 
             Log.v("PictureCallback", "Sending files");
 
-            // Close camera
-            new AsyncTask<Void, Void, Void>() {
-                @Override
-                protected Void doInBackground(Void... params) {
-                    releaseCameraAndPreview();
-                    return null;
-                }
-            };
+            releaseCameraAndPreview();
+//            // Close camera
+//            new AsyncTask<Void, Void, Void>() {
+//                @Override
+//                protected Void doInBackground(Void... params) {
+//                    releaseCameraAndPreview();
+//                    return null;
+//                }
+//            };
+            mPreviewState = STATE_FROZEN;
 
         }
     };
@@ -222,7 +228,7 @@ public class MainActivity extends AppCompatActivity {
 //                new SaveTempImage(new saveCallback(), this).execute(null, 0, imgUrl);
             }
         }
-    }//onActivityResult
+    }
 
     public void onClickImageIsChosen(View view){
 
@@ -369,6 +375,7 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
             final Button captureButton = (Button) mCameraView.findViewById(R.id.button_capture);
+            mPreviewState = STATE_PREVIEW ;
         }
     }
 
@@ -397,12 +404,29 @@ public class MainActivity extends AppCompatActivity {
                                 public void onClick(View v) {
                                     if (mCamera != null) {
                                         // get an image from the camera
-                                        mCamera.takePicture(null, null, mPicture);
+//                                        if (mPreviewState == STATE_PREVIEW){
+                                            mCamera.takePicture(null, null, mPicture);
+//                                        } else {
+//
+//                                            mCamera.startPreview();
+//                                            mPreview.bringToFront();
+//                                            mPreviewState = STATE_PREVIEW;
+//
+//                                        }
+
 
                                     } else {
 //                                        if (mPreviewFrame != null) {
 //                                            mPreviewFrame.removeAllViews();
 //                                        }
+                                        try {
+                                            mCamera.reconnect();
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+                                        }
+                                        mCamera.startPreview();
+                                        mCameraView.bringToFront();
+//                                        mPreviewState = STATE_PREVIEW;
                                         safeCameraOpenInView();
                                     }
                                 }

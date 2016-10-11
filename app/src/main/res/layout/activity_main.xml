@@ -74,6 +74,7 @@
             android:orientation="horizontal"
             app:layoutManager="android.support.v7.widget.LinearLayoutManager"
             android:layout_centerVertical="true"
+            android:visibility="gone"
             />
 
     </RelativeLayout>
