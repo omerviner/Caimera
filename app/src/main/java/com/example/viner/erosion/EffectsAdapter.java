@@ -176,7 +176,7 @@ public class EffectsAdapter extends ImgsAdapter {
                     activity.mProcessingImage = false;
                 }
             });
-
+            //activity.currentPath = styleNum;
 
             if(!EffectsActivity.active){
                 showNotification();
