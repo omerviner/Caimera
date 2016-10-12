@@ -192,7 +192,6 @@ public class MainActivity extends AppCompatActivity {
             // NEXT REMOVED: dont show next button on capture
             ImageButton btn = (ImageButton)((MainActivity)mContext).findViewById(R.id.next);
             btn.setVisibility(View.VISIBLE);
-
         }
     };
 
@@ -217,13 +216,11 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == CHOOSE_IMAGE_REQUEST) {
             if (resultCode == Activity.RESULT_OK) {
                 imgUrl = data.getStringExtra("chosen_image");
-                File chosenImage = new File(imgUrl);
 
-                // NEXT REMOVED: load image is not needed
                 imgPrev.bringToFront();
                 Glide
                         .with(this)
-                        .load(chosenImage)
+                        .load(imgUrl)
                         .centerCrop()
                         .into(imgPrev);
 

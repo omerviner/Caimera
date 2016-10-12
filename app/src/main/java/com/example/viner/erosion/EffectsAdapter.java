@@ -31,7 +31,7 @@ import java.util.List;
 
 public class EffectsAdapter extends ImgsAdapter {
     private static final int QUICK_STYLES_NUM = 8;
-    private SpinKitView loadingIcon;
+    private SpinKitView loadingIcon, longLoadingIcon;
     private List<String> presets = Arrays.asList("/e1", "/e2", "/e3", "/e4", "/e5", "/e6", "/e7", "/e8");
     private EffectsActivity mContext;
     private static HashMap<String, Integer> presetMap = new HashMap<>();
@@ -53,6 +53,7 @@ public class EffectsAdapter extends ImgsAdapter {
         }
         mContext = (EffectsActivity)context;
         loadingIcon = (SpinKitView) mContext.findViewById(R.id.spin_kit);
+        longLoadingIcon = (SpinKitView) mContext.findViewById(R.id.wandering_cubes);
     }
 
     @Override
@@ -79,10 +80,15 @@ public class EffectsAdapter extends ImgsAdapter {
                         e.printStackTrace();
                     }
                     return;
+                } else {
+                    if (!mContext.mProcessingImage){
+                        longLoadingIcon.setVisibility(View.VISIBLE);
+                        ImageView main = (ImageView)mContext.findViewById(R.id.main_image);
+                        Glide.with(mContext).load(R.drawable.screensaver_load).into(main);
+                    }
                 }
                 try {
                     NetInterface.process(new NetCallback(), mContext.mChosenImage, imgSrc, String.valueOf(position), mContext);
-                    loadingIcon.setVisibility(View.VISIBLE);
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -164,6 +170,7 @@ public class EffectsAdapter extends ImgsAdapter {
                     mImageView.setImageBitmap(bmp);
                     //Glide.with(activity).load(bmp).centerCrop().into(mImageView);
                     loadingIcon.setVisibility(View.GONE);
+                    longLoadingIcon.setVisibility(View.GONE);
                     ImageButton btn = (ImageButton)(activity.findViewById(R.id.share));
                     btn.setVisibility(View.VISIBLE);
                     activity.mProcessingImage = false;
