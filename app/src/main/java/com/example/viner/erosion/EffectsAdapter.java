@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.github.ybq.android.spinkit.SpinKitView;
+import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -73,7 +74,7 @@ public class EffectsAdapter extends ImgsAdapter {
                         }
                         Log.d("CHOSSESTYLE","ABOUT TO SEND");
                         loadingIcon.setVisibility(View.VISIBLE);
-                        NetInterface.process(new NetCallback(), mContext.mChosenImage, null, String.valueOf(position));
+                        NetInterface.process(new NetCallback(), mContext.mChosenImage, null, String.valueOf(position), mContext);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -87,7 +88,7 @@ public class EffectsAdapter extends ImgsAdapter {
                 }
 
                 try {
-                    NetInterface.process(new NetCallback(), mContext.mChosenImage, imgSrc, String.valueOf(position));
+                    NetInterface.process(new NetCallback(), mContext.mChosenImage, imgSrc, String.valueOf(position), mContext);
                     loadingIcon.setVisibility(View.VISIBLE);
 
                 } catch (Exception e) {
@@ -166,7 +167,8 @@ public class EffectsAdapter extends ImgsAdapter {
             activity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    Glide.with(activity).load(bmp).centerCrop().into(mImageView);
+                    mImageView.setImageBitmap(bmp);
+                    //Glide.with(activity).load(bmp).centerCrop().into(mImageView);
                     loadingIcon.setVisibility(View.GONE);
                     ImageButton btn = (ImageButton)(activity.findViewById(R.id.share));
                     btn.setVisibility(View.VISIBLE);
