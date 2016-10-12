@@ -91,12 +91,12 @@ public class EffectsActivity extends AppCompatActivity {
         // That's all!
         rvImgs.addOnItemTouchListener(mAdapter.getListener());
 
-        mImageView = (ImageView) ((EffectsActivity) mContext).findViewById(R.id.main_image);
-
-        Glide
-                .with(this)
-                .load(mChosenImage)
-                .into(mImageView);
+//        mImageView = (ImageView) ((EffectsActivity) mContext).findViewById(R.id.main_image);
+//
+//        Glide
+//                .with(this)
+//                .load(mChosenImage)
+//                .into(mImageView);
     }
 
     public void onClickChooseEffect(View view) {

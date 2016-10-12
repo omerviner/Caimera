@@ -2,9 +2,13 @@ package com.example.viner.erosion;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.media.Image;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.util.Log;
+import android.widget.ImageView;
+
+import com.bumptech.glide.Glide;
 import com.google.common.base.Strings;
 import com.google.common.io.Files;
 
@@ -13,6 +17,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.concurrent.Callable;
 
+import static android.R.attr.action;
 import static com.google.common.io.Files.toByteArray;
 
 public class SaveTempImage extends AsyncTask<Object, Integer, Boolean> {
@@ -25,10 +30,11 @@ public class SaveTempImage extends AsyncTask<Object, Integer, Boolean> {
     }
 
     protected Boolean doInBackground(Object... args){
-        byte[] im  = getImage(args);
+        final byte[] im  = getImage(args);
         int rotation = (int)args[ROTATION];
         File target = (File)args[TARGET];
         Bitmap bmp = FileUtils.cropAndRotateImageBytes(mContext, im, rotation);
+
         FileOutputStream out = null;
         try {
             out = new  FileOutputStream(target, false);
@@ -46,6 +52,7 @@ public class SaveTempImage extends AsyncTask<Object, Integer, Boolean> {
         }
         return true;
     }
+
 
     private byte[] getImage(Object[] args) {
         try {
@@ -70,4 +77,6 @@ public class SaveTempImage extends AsyncTask<Object, Integer, Boolean> {
         }
         Log.v("SaveTempImage:", " finished running");
     }
+
+
 }
