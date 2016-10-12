@@ -35,21 +35,6 @@ public class SaveTempImage extends AsyncTask<Object, Integer, Boolean> {
         File target = (File)args[TARGET];
         Bitmap bmp = FileUtils.cropAndRotateImageBytes(mContext, im, rotation);
 
-
-        ((MainActivity)mContext).runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                ImageView imgPrev = (ImageView)((MainActivity)mContext).findViewById(R.id.main_image_frame);
-                Log.v("runOnUi", "true");
-                Glide.with(mContext)
-                        .load(im)
-                        .into(imgPrev);
-            }
-        });
-
-
-
-
         FileOutputStream out = null;
         try {
             out = new  FileOutputStream(target, false);
