@@ -158,8 +158,8 @@ public class MainActivity extends AppCompatActivity {
         }
         Log.v("safeCameraOpenInView", "succ");
 
-        ImageButton btn = (ImageButton)findViewById(R.id.next);
-        btn.setVisibility(View.GONE);
+//        ImageButton btn = (ImageButton)findViewById(R.id.next);
+//        btn.setVisibility(View.GONE);
 
         return qOpened;
     }
