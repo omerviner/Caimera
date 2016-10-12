@@ -52,7 +52,7 @@ public class EffectsActivity extends AppCompatActivity {
         mContext = this;
         mNotificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
 
-        mChosenImage = mediaStorageDirPath + File.separator + "caimera_chosen_temp.jpg";
+        mChosenImage = mediaStorageDirPath + File.separator + "Caimera/caimera_chosen_temp.png";
 
         mediaStorageDir = new File(mediaStorageDirPath, "Caimera" + File.separator + "styles");
 
@@ -169,6 +169,7 @@ public class EffectsActivity extends AppCompatActivity {
     public void onStop() {
         super.onStop();
         active = false;
+        mNotificationManager.cancelAll();
     }
 
     @Override

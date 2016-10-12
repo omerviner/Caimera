@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 
 public class NetInterface {
     private static final String TAG = "NetInterface-------";
-    private static final String BASE_URL = "http://52.54.68.110:3000/api/";//TODO:changed
+    private static final String BASE_URL = "http://54.158.35.104:3000/api/";//TODO:changed
     private static final MediaType MEDIA_TYPE_PNG = MediaType.parse("image/png");
     private static final MediaType MEDIA_TYPE_GIF = MediaType.parse("image/gif");
     private static final String presetExtension = "presets/", newExtension = "process/";
