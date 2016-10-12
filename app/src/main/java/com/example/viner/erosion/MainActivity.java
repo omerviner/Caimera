@@ -147,8 +147,10 @@ public class MainActivity extends AppCompatActivity {
 //            mPreviewFrame.addView(mPreview);
         } else {
             mCamera = getCameraInstance();
-            mPreview = new Preview(this, mCamera, mCameraView);
-            mPreviewFrame.addView(mPreview);
+            if(mCamera != null){
+                mPreview = new Preview(this, mCamera, mCameraView);
+                mPreviewFrame.addView(mPreview);
+            }
 
         }
         Log.v("safeCameraOpenInView", "succ");

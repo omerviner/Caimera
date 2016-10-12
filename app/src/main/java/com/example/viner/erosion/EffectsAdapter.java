@@ -63,15 +63,15 @@ public class EffectsAdapter extends ImgsAdapter {
             @Override public void onItemClick(View view, int position) {
                 String imgSrc = mImgs.get(position).getAbsolutePath();
                 Log.d("CHANGE", String.valueOf(position));
+                if (mContext.mProcessingImage){
+                    return;
+                } else {
+                    mContext.mProcessingImage = true;
+                }
 
                 if (position < QUICK_STYLES_NUM){
                     Log.d("CHOSSESTYLE","PRESET : " + mContext.mProcessingImage);
                     try {
-                        if (mContext.mProcessingImage){
-                            return;
-                        } else {
-                            mContext.mProcessingImage = true;
-                        }
                         Log.d("CHOSSESTYLE","ABOUT TO SEND");
                         loadingIcon.setVisibility(View.VISIBLE);
                         NetInterface.process(new NetCallback(), mContext.mChosenImage, null, String.valueOf(position), mContext);
@@ -80,13 +80,6 @@ public class EffectsAdapter extends ImgsAdapter {
                     }
                     return;
                 }
-
-                if (mContext.mProcessingImage){
-                    return;
-                } else {
-                    mContext.mProcessingImage = true;
-                }
-
                 try {
                     NetInterface.process(new NetCallback(), mContext.mChosenImage, imgSrc, String.valueOf(position), mContext);
                     loadingIcon.setVisibility(View.VISIBLE);
@@ -160,6 +153,7 @@ public class EffectsAdapter extends ImgsAdapter {
                                 .show();
                     }
                 });
+                activity.mProcessingImage = false;
                 return -1;
             }
             final ImageView mImageView = (ImageView)(activity).findViewById(R.id.main_image);
