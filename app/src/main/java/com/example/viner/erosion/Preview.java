@@ -242,6 +242,7 @@ class Preview extends SurfaceView implements SurfaceHolder.Callback {
     {
         // Source: http://stackoverflow.com/questions/7942378/android-camera-will-not-work-startpreview-fails
         mCamera = camera;
+
         mSupportedPreviewSizes = mCamera.getParameters().getSupportedPreviewSizes();
         mSupportedFlashModes = mCamera.getParameters().getSupportedFlashModes();
         mSupportedPictureSizes = mCamera.getParameters().getSupportedPictureSizes();
