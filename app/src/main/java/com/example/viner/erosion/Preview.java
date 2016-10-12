@@ -280,6 +280,7 @@ class Preview extends SurfaceView implements SurfaceHolder.Callback {
         }
         catch (Exception e){
             // Camera is not available (in use or does not exist)
+            Log.d("Ca,eraEx", ""+e.getMessage());
         }
         return c; // returns null if camera is unavailable
     }

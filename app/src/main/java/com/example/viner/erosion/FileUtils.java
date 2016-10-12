@@ -154,7 +154,6 @@ public class FileUtils {
 //        ByteArrayOutputStream bos = new ByteArrayOutputStream();
         Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
         int size = Math.min(bitmap.getWidth(), bitmap.getHeight());
-        size = Math.min(size, MAX_SIZE);
         Matrix matrix = new Matrix();
         if (rotation == 90) {
             matrix.postRotate(90);
@@ -163,6 +162,8 @@ public class FileUtils {
         }
 
         Bitmap cropped = Bitmap.createBitmap(bitmap, 0, 0, size, size, matrix, true);
+        size = Math.min(size, MAX_SIZE);
+        cropped = Bitmap.createScaledBitmap(cropped, size,size, false);
 //        cropped.compress(Bitmap.CompressFormat.JPEG, 100, bos); // 100 (best quality)
 //        byte[] square = bos.toByteArray();
         return cropped;
