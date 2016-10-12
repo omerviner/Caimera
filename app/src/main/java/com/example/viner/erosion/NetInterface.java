@@ -30,7 +30,7 @@ public class NetInterface {
         final String styleNum = (String)args[STYLE_NUM];
         final CallBack callback = (CallBack)args[CALLBACK];
         final Context mContext = (Context)args[CONTEXT];
-        final File resultCacheFile = new File(mContext.getExternalCacheDir(), "results/" + styleNum);
+        final File resultCacheFile = new File(mContext.getExternalCacheDir(), "results/" + styleNum + ".png");
 
         if(resultCacheFile.exists()){
             callback.call(BitmapFactory.decodeFile(resultCacheFile.getPath()), styleNum);
@@ -91,6 +91,7 @@ public class NetInterface {
                 if(im != null) {
                     cacheResult(im, resultCacheFile);
                 }
+                ((EffectsActivity)mContext).currentStyle = resultCacheFile.getPath();
             }
         });
     }

@@ -45,6 +45,7 @@ public class EffectsActivity extends AppCompatActivity {
             Environment.DIRECTORY_PICTURES).getAbsolutePath();
     private File mediaStorageDir;
     private ImageView mImageView;
+    public String currentStyle = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,22 +128,22 @@ public class EffectsActivity extends AppCompatActivity {
 
     public void onClickShareButton(View v) {
         try {//TODO:Why are we taking a screenshot!?, we should use the cache instead.
-            mImageView.buildDrawingCache();
-            mImageView.setDrawingCacheEnabled(true);
-            Bitmap bmp = mImageView.getDrawingCache();
-
-            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-            String filename = "IMG_" + timeStamp;
-            File file = new File(this.getCacheDir(), filename + ".png");
-            FileOutputStream fOut = new FileOutputStream(file);
-            bmp.compress(Bitmap.CompressFormat.PNG, 100, fOut);
-            fOut.flush();
-            fOut.close();
-            mImageView.setDrawingCacheEnabled(false);
-            file.setReadable(true, false);
+//            mImageView.buildDrawingCache();
+//            mImageView.setDrawingCacheEnabled(true);
+//            Bitmap bmp = mImageView.getDrawingCache();
+//
+//            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+//            String filename = "IMG_" + timeStamp;
+//            File file = new File(this.getCacheDir(), filename + ".png");
+//            FileOutputStream fOut = new FileOutputStream(file);
+//            bmp.compress(Bitmap.CompressFormat.PNG, 100, fOut);
+//            fOut.flush();
+//            fOut.close();
+//            mImageView.setDrawingCacheEnabled(false);
+//            file.setReadable(true, false);
             final Intent intent = new Intent(android.content.Intent.ACTION_SEND);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
+            intent.putExtra(Intent.EXTRA_STREAM, Uri.parse(currentStyle));
             intent.setType("image/png");
             startActivity(intent);
         } catch (Exception e) {
@@ -156,6 +157,7 @@ public class EffectsActivity extends AppCompatActivity {
     public void onStart() {
         super.onStart();
         active = true;
+        cleanCache();
     }
 
     @Override
@@ -182,14 +184,17 @@ public class EffectsActivity extends AppCompatActivity {
     @Override
     public void onDestroy(){
         super.onDestroy();
+        cleanCache();
+    }
+
+    private void cleanCache() {
         String[] children = cacheDir.list();
         for (String aChildren : children) {
             Log.d("deleteCache", "" + new File(cacheDir, aChildren).delete());
         }
-        cacheDir.delete();//TODO: is this ok??
     }
 
-class AddCallback  implements Callable<Integer>{
+    class AddCallback  implements Callable<Integer>{
     private File addFile;
 
     AddCallback(File addFile){
