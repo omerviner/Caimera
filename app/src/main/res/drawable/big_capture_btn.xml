@@ -18,5 +18,19 @@
 
         </shape>
     </item>
+    <item android:top="13dp" android:right="13dp" android:left="13dp" android:bottom="13dp">
+        <shape
+            android:shape="oval">
+            <solid android:color="@color/light_purple" />
+
+        </shape>
+    </item>
+    <item android:drawable="@drawable/resume_preview"
+        android:id="@+id/resume_preview"
+        android:top="5dp"
+        android:bottom="5dp"
+        android:right="5dp"
+        android:left="5dp"
+        />
 </layer-list>
 

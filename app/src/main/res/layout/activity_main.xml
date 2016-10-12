@@ -163,12 +163,15 @@
         </LinearLayout>
 
     <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="110dp"
+        android:layout_height="110dp"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
-        android:background="@drawable/big_capture_btn"
-        android:id="@+id/big_button_capture"/>
+        android:background="@drawable/capture_img"
+        android:id="@+id/big_button_capture"
+        android:elevation="5dp" />
+
+
     </RelativeLayout>
 
     <View
