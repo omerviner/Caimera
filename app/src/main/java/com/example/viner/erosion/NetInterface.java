@@ -66,7 +66,7 @@ public class NetInterface {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                Log.d(TAG, e.getMessage());
+                if(e.getMessage() != null) Log.d(TAG, e.getMessage());
                 callback.call(null, null);
 
             }

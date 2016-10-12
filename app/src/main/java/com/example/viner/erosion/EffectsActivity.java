@@ -12,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -183,7 +184,7 @@ public class EffectsActivity extends AppCompatActivity {
         super.onDestroy();
         String[] children = cacheDir.list();
         for (String aChildren : children) {
-            new File(cacheDir, aChildren).delete();
+            Log.d("deleteCache", "" + new File(cacheDir, aChildren).delete());
         }
         cacheDir.delete();//TODO: is this ok??
     }

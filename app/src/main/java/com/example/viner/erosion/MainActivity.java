@@ -156,8 +156,10 @@ public class MainActivity extends AppCompatActivity {
         } else {
             Log.v("safeCameraOpenInView", "here2");
             mCamera = getCameraInstance();
-            mPreview = new Preview(this, mCamera, mCameraView);
-            mPreviewFrame.addView(mPreview);
+            if(mCamera != null){
+                mPreview = new Preview(this, mCamera, mCameraView);
+                mPreviewFrame.addView(mPreview);
+            }
 
         }
         Log.v("safeCameraOpenInView", "succ");
@@ -185,9 +187,8 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
-            imageToSend = data;
-
             mPreview.destroyDrawingCache();
+            imageToSend = data;
             // NEXT REMOVED: dont show next button on capture
             ImageButton btn = (ImageButton)((MainActivity)mContext).findViewById(R.id.next);
             btn.setVisibility(View.VISIBLE);
@@ -348,7 +349,7 @@ public class MainActivity extends AppCompatActivity {
             // Should we show an explanation?
             if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                     Manifest.permission.CAMERA)) {
-
+                showSettingsAlert();//could do better
                 // Show an expanation to the user *asynchronously* -- don't block
                 // this thread waiting for the user's response! After the user
                 // sees the explanation, try again to request the permission.
@@ -411,14 +412,12 @@ public class MainActivity extends AppCompatActivity {
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
-                    // permission was granted, yay! Do the
-                    // contacts-related task you need to do.
+                    // permission was granted
                     opened = safeCameraOpenInView();
                     if (!opened) {
                         Log.d("onRequestPermissions", "Error, Camera failed to open");
                         return;
                     }
-
                     initCaptureButton();
 
                 } else {
