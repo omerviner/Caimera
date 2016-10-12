@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -17,18 +16,11 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
-import com.bumptech.glide.Glide;
-
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 
 public class EffectsActivity extends AppCompatActivity {
 
@@ -45,7 +37,7 @@ public class EffectsActivity extends AppCompatActivity {
             Environment.DIRECTORY_PICTURES).getAbsolutePath();
     private File mediaStorageDir;
     private ImageView mImageView;
-    public String currentStyle = null;
+    public String currentPath = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -143,7 +135,7 @@ public class EffectsActivity extends AppCompatActivity {
 //            file.setReadable(true, false);
             final Intent intent = new Intent(android.content.Intent.ACTION_SEND);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.putExtra(Intent.EXTRA_STREAM, Uri.parse(currentStyle));
+            intent.putExtra(Intent.EXTRA_STREAM, Uri.parse(currentPath));
             intent.setType("image/png");
             startActivity(intent);
         } catch (Exception e) {

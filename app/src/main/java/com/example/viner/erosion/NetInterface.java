@@ -1,10 +1,8 @@
 package com.example.viner.erosion;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.Environment;
 import android.util.Log;
 import okhttp3.*;
 
@@ -91,7 +89,7 @@ public class NetInterface {
                 if(im != null) {
                     cacheResult(im, resultCacheFile);
                 }
-                ((EffectsActivity)mContext).currentStyle = resultCacheFile.getPath();
+                ((EffectsActivity)mContext).currentPath = resultCacheFile.getPath();
             }
         });
     }
