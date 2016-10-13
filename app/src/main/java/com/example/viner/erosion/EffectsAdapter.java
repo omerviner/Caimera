@@ -79,20 +79,18 @@ public class EffectsAdapter extends ImgsAdapter {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                    return;
                 } else {
-                    if (!mContext.mProcessingImage){
-                        longLoadingIcon.setVisibility(View.VISIBLE);
-                        ImageView main = (ImageView)mContext.findViewById(R.id.main_image);
-                        Glide.with(mContext).load(R.drawable.screensaver_load).into(main);
+                    longLoadingIcon.setVisibility(View.VISIBLE);
+                    ImageView main = (ImageView)mContext.findViewById(R.id.main_image);
+                    Glide.with(mContext).load(R.drawable.screensaver_load).into(main);
+                    try {
+                        NetInterface.process(new NetCallback(), mContext.mChosenImage, imgSrc, String.valueOf(position), mContext);
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
                 }
-                try {
-                    NetInterface.process(new NetCallback(), mContext.mChosenImage, imgSrc, String.valueOf(position), mContext);
 
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
 
             }
 
