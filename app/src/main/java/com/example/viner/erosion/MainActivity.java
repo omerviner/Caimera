@@ -80,30 +80,8 @@ public class MainActivity extends AppCompatActivity {
             mediaStorageDir.mkdir();
         }
 
-        // Init RecyclerView
-//        RecyclerView rvImgs = (RecyclerView) findViewById(R.id.imgs);
         mCaptureButton = (Button)findViewById(R.id.big_button_capture);
-//        rvImgs.setHasFixedSize(true);
 
-//        ArrayList<String> imgsPaths = getAllShownImagesPath(this);//TODO:either ask for permission or cancel this .
-
-//        ArrayList<File> mImgs = new ArrayList<>();
-//        for (String imgsPath : imgsPaths) {
-//            File file = new File(imgsPath);
-//            if (file.isFile()) {
-//                mImgs.add(0, file);
-//            }
-//        }
-
-        // Create adapter passing in the sample user data
-//        ImgsAdapter adapter = new MainAdapter(this, mImgs, rvImgs);
-
-        // Attach the adapter to the recyclerview to populate items
-//        rvImgs.setAdapter(adapter);
-        // Set layout manager to position the items
-//        rvImgs.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-
-//        rvImgs.addOnItemTouchListener(adapter.getListener());
         initCaptureButton();//the order between the inits is very important(permission handling)//1
         initCamera();//2
         initMainImage();
