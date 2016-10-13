@@ -69,6 +69,7 @@
                 android:adjustViewBounds="true"
                 android:scaleType="centerInside"
                 android:visibility="invisible"
+                android:layout_marginRight="20dp"
                 />
 
             <ImageButton
