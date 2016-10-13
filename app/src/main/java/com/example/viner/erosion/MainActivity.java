@@ -268,6 +268,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (startCameraOnResume){
             initCamera();
+            mCaptureButton.setBackgroundResource(R.drawable.capture_img);
         }
     }
     private class saveCallback implements Callable<Integer>{//TODO:the class should be an effects activity nested class and delay the req until the file is saved
