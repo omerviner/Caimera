@@ -56,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
     public String imgUrl;
     private ImageView imgPrev;
     private boolean startCameraOnResume = true;
+    private Button mCaptureButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +78,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Lookup the recyclerview in activity layout
         RecyclerView rvImgs = (RecyclerView) findViewById(R.id.imgs);
+        mCaptureButton = (Button)findViewById(R.id.big_button_capture);
         rvImgs.setHasFixedSize(true);
 
         if (!mediaStorageDir.exists()) {
@@ -226,9 +228,10 @@ public class MainActivity extends AppCompatActivity {
 
                 ImageButton btn = (ImageButton)((MainActivity)mContext).findViewById(R.id.next);
                 btn.setVisibility(View.VISIBLE);
+                mCaptureButton.setBackgroundResource(R.drawable.capture_resume);
 
                 imageToSend = null;
-
+//                startCameraOnResume = true;
             }
         }
     }
@@ -369,8 +372,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initCaptureButton(){
-        final Button captureButton = (Button)findViewById(R.id.big_button_capture);
-        captureButton.setOnClickListener(
+        mCaptureButton.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -385,6 +387,7 @@ public class MainActivity extends AppCompatActivity {
 //                            };
                             ImageButton btn = (ImageButton)findViewById(R.id.next);
                             btn.setVisibility(View.GONE);
+                            mCaptureButton.setBackgroundResource(R.drawable.capture_img);
                             mAfterTakeImage = false;
                             mBackFromChoose = false;
                             imageToSend = null;
@@ -394,6 +397,7 @@ public class MainActivity extends AppCompatActivity {
                         } else {
                             mCamera.takePicture(null, null, mPicture);
                             mAfterTakeImage = true;
+                            mCaptureButton.setBackgroundResource(R.drawable.capture_resume);
                         }
                     }
                 }
@@ -403,7 +407,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[], int[] grantResults) {
-        final Button captureButton = (Button)findViewById(R.id.big_button_capture);
 
         switch (requestCode) {
             case REQUEST_CAMERA_PERMISSION:
@@ -421,7 +424,7 @@ public class MainActivity extends AppCompatActivity {
                     initCaptureButton();
 
                 } else {
-                    captureButton.setOnClickListener(new View.OnClickListener(){
+                    mCaptureButton.setOnClickListener(new View.OnClickListener(){
                         @Override
                         public void onClick(View v) {
                             showSettingsAlert();
@@ -452,4 +455,8 @@ public class MainActivity extends AppCompatActivity {
         alertDialog.show();
     }
 
+    @Override
+    protected void onDestroy() {
+        releaseCameraAndPreview();
+    }
 }
