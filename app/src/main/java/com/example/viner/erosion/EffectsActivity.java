@@ -69,27 +69,12 @@ public class EffectsActivity extends AppCompatActivity {
         View effect_buttons = findViewById(R.id.btnsRelativeLayout);
         effect_buttons.setLayoutParams(params);
 
-        // Lookup the recyclerview in activity layout
         rvImgs = (RecyclerView) findViewById(R.id.effects);
-
         rvImgs.setHasFixedSize(true);
-
-        // Create adapter passing in the user data
         mAdapter = new EffectsAdapter(this, new ArrayList<>(Arrays.asList(mediaStorageDir.listFiles())), rvImgs);
-
-        // Attach the adapter to the recyclerview to populate items
         rvImgs.setAdapter(mAdapter);
-        // Set layout manager to position the items
         rvImgs.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        // That's all!
         rvImgs.addOnItemTouchListener(mAdapter.getListener());
-
-//        mImageView = (ImageView) ((EffectsActivity) mContext).findViewById(R.id.main_image);
-//
-//        Glide
-//                .with(this)
-//                .load(mChosenImage)
-//                .into(mImageView);
     }
 
     public void onClickChooseEffect(View view) {
@@ -97,42 +82,24 @@ public class EffectsActivity extends AppCompatActivity {
         startActivityForResult(intent, CHOOSE_IMAGE_REQUEST);
     }
 
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
         if (requestCode == CHOOSE_IMAGE_REQUEST) {
             if (resultCode == Activity.RESULT_OK) {
                 String imgUrl = data.getStringExtra("chosen_image");
-//                File newEffect = new File(imgUrl);
                 try {
                     File target = File.createTempFile("custom", ".png", mediaStorageDir);
                     new SaveTempImage(new  AddCallback(target), this).execute(null, 0, target, imgUrl);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-//                mAdapter.mImgs.add(newEffect);
-//                mAdapter.notifyItemInserted(mAdapter.mImgs.size() - 1);
-//                mAdapter.notifyDataSetChanged();
             }
         }
     }
 
     public void onClickShareButton(View v) {
-        try {//TODO:Why are we taking a screenshot!?, we should use the cache instead.
-//            mImageView.buildDrawingCache();
-//            mImageView.setDrawingCacheEnabled(true);
-//            Bitmap bmp = mImageView.getDrawingCache();
-//
-//            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-//            String filename = "IMG_" + timeStamp;
-//            File file = new File(this.getCacheDir(), filename + ".png");
-//            FileOutputStream fOut = new FileOutputStream(file);
-//            bmp.compress(Bitmap.CompressFormat.PNG, 100, fOut);
-//            fOut.flush();
-//            fOut.close();
-//            mImageView.setDrawingCacheEnabled(false);
-//            file.setReadable(true, false);
+        try {
             final Intent intent = new Intent(android.content.Intent.ACTION_SEND);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.putExtra(Intent.EXTRA_STREAM, Uri.parse(currentPath));
@@ -141,9 +108,7 @@ public class EffectsActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
-
 
     @Override
     public void onStart() {
@@ -157,7 +122,6 @@ public class EffectsActivity extends AppCompatActivity {
         super.onResume();
         active = true;
         mNotificationManager.cancelAll();
-
     }
 
     @Override
@@ -187,19 +151,18 @@ public class EffectsActivity extends AppCompatActivity {
     }
 
     class AddCallback  implements Callable<Integer>{
-    private File addFile;
+        private File addFile;
 
-    AddCallback(File addFile){
-        this.addFile = addFile;
+        AddCallback(File addFile){
+            this.addFile = addFile;
+        }
+        @Override
+        public Integer call() throws Exception {
+            mAdapter.mImgs.add(addFile);
+            mAdapter.notifyItemInserted(mAdapter.mImgs.size() - 1);
+            rvImgs.smoothScrollToPosition(mAdapter.mImgs.size() - 1);
+            return null;
+        }
     }
-    @Override
-    public Integer call() throws Exception {
-        mAdapter.mImgs.add(addFile);
-        mAdapter.notifyItemInserted(mAdapter.mImgs.size() - 1);
-        rvImgs.smoothScrollToPosition(mAdapter.mImgs.size() - 1);
-
-        return null;
-    }
-}
 
 }
