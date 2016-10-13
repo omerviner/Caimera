@@ -65,7 +65,7 @@
                 android:layout_height="25dp"
                 android:src="@drawable/save"
                 android:background="@color/transparent"
-                android:id="@+id/next"
+                android:id="@+id/save"
                 android:adjustViewBounds="true"
                 android:scaleType="centerInside"
                 android:visibility="invisible"
