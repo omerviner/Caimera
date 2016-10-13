@@ -40,16 +40,10 @@ abstract class ImgsAdapter extends
 
     }
 
-//    @Override
-//    public void onBindViewHolder(final RecyclerView.ViewHolder viewHolder, final int position){};
-
-
-
     @Override
     public int getItemCount() {
         return mImgs.size();
     }
-
 
     // Pass in the contact array into the constructor
     public ImgsAdapter(Context context, ArrayList<File> imgs, RecyclerView recyclerView) {

@@ -53,17 +53,13 @@ class Preview extends SurfaceView implements SurfaceHolder.Callback {
         mContext = context;
         mCameraView = cameraView;
 
-//        mSurfaceView = new SurfaceView(context);
-//        addView(mSurfaceView);
 
         // Install a SurfaceHolder.Callback so we get notified when the
         // underlying surface is created and destroyed.
         mHolder = getHolder();
-//        mHolder = mSurfaceView.getHolder();
         mHolder.addCallback(this);
         mHolder.setKeepScreenOn(true);
         mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
-//        mHolder.set
     }
 
     @Override
@@ -94,8 +90,6 @@ class Preview extends SurfaceView implements SurfaceHolder.Callback {
      * @param h
      */
     public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
-        // If your preview can change or rotate, take care of those events here.
-        // Make sure to stop the preview before resizing or reformatting it.
 
         if (mHolder.getSurface() == null){
             // preview surface does not exist
@@ -174,7 +168,6 @@ class Preview extends SurfaceView implements SurfaceHolder.Callback {
                 }
             }
         }
-
         return optimalSize;
     }
 
@@ -190,7 +183,6 @@ class Preview extends SurfaceView implements SurfaceHolder.Callback {
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom)
     {
-        // Source: http://stackoverflow.com/questions/7942378/android-camera-will-not-work-startpreview-fails
         if (changed) {
             final int width = right - left;
             final int height = bottom - top;
@@ -240,7 +232,6 @@ class Preview extends SurfaceView implements SurfaceHolder.Callback {
      */
     private void setCamera(Camera camera)
     {
-        // Source: http://stackoverflow.com/questions/7942378/android-camera-will-not-work-startpreview-fails
         mCamera = camera;
 
         mSupportedPreviewSizes = mCamera.getParameters().getSupportedPreviewSizes();

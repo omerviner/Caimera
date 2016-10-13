@@ -95,7 +95,6 @@ public class EffectsAdapter extends ImgsAdapter {
             }
 
             @Override public void onLongItemClick(View view, int position) {
-
                 Log.v("effect long clicked: ", Integer.toString(position));
 
                 if (position >= QUICK_STYLES_NUM){
@@ -112,7 +111,6 @@ public class EffectsAdapter extends ImgsAdapter {
     public void onBindViewHolder(final ViewHolder viewHolder, final int position) {
         // Get the data model based on position
         File img = mImgs.get(position);
-
 
         // Set item views based on your views and data model
         ImageButton curImg = viewHolder.img;
@@ -166,7 +164,6 @@ public class EffectsAdapter extends ImgsAdapter {
                 @Override
                 public void run() {
                     mImageView.setImageBitmap(bmp);
-                    //Glide.with(activity).load(bmp).centerCrop().into(mImageView);
                     loadingIcon.setVisibility(View.GONE);
                     longLoadingIcon.setVisibility(View.GONE);
                     ImageButton btn = (ImageButton)(activity.findViewById(R.id.share));
@@ -174,7 +171,6 @@ public class EffectsAdapter extends ImgsAdapter {
                     activity.mProcessingImage = false;
                 }
             });
-            //activity.currentPath = styleNum;
 
             if(!EffectsActivity.active){
                 showNotification();
