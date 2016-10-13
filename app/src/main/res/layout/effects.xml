@@ -61,14 +61,13 @@
             >
 
             <ImageButton
-                android:layout_width="@dimen/button_size"
-                android:layout_height="@dimen/button_size"
-                android:src="@drawable/next3"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:src="@drawable/save"
                 android:background="@color/transparent"
                 android:id="@+id/next"
                 android:adjustViewBounds="true"
                 android:scaleType="centerInside"
-                android:onClick="onClickImageIsChosen"
                 android:visibility="invisible"
                 />
 
@@ -83,6 +82,7 @@
                 android:onClick="onClickShareButton"
                 android:visibility="invisible"
                 />
+
         </LinearLayout>
 
         <ImageButton
