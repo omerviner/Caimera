@@ -444,7 +444,6 @@ public class MainActivity extends AppCompatActivity {
         mFolderButton.setVisibility(View.VISIBLE);
         initCaptureButton();
         initCamera();
-
     }
 
     public void unlockApp(View v){
@@ -469,6 +468,7 @@ public class MainActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
                         startInstalledAppDetailsActivity((MainActivity)mContext);
+                        finish();
                     }
                 });
         alertDialog.show();
