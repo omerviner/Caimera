@@ -82,13 +82,13 @@ public class MainActivity extends AppCompatActivity {
         mCaptureButton = (Button)findViewById(R.id.big_button_capture);
         mFolderButton = (ImageButton)findViewById(R.id.folder);
         unlock = (Button)findViewById(R.id.lock_button);
+        imgPrev = new ImageView(mContext);
+
 
         getPermissionsAndInit();
     }
 
     private void initMainImage(){
-
-        imgPrev = new ImageView(mContext);
         imgPrev.setId(R.id.main_image_frame);
         imgPrev.setImageDrawable(null);
         imgPrev.bringToFront();
@@ -432,7 +432,7 @@ public class MainActivity extends AppCompatActivity {
         mFolderButton.setEnabled(false);
         //load picture and button
         unlock.setVisibility(View.VISIBLE);
-//        Glide.with(this).load(R.drawable.permission).centerCrop().into(imgPrev);
+        Glide.with(mContext).load(R.drawable.permission).centerCrop().into(imgPrev);
         mFolderButton.setVisibility(View.GONE);
     }
 
