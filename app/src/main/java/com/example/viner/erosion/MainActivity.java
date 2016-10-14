@@ -54,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
     private Button mCaptureButton;
     private ImageButton mFolderButton;
     private Button unlock;
+    private boolean cameraPermission = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +81,8 @@ public class MainActivity extends AppCompatActivity {
         mCaptureButton = (Button)findViewById(R.id.big_button_capture);
         mFolderButton = (ImageButton)findViewById(R.id.folder);
         unlock = (Button)findViewById(R.id.lock_button);
+
+        getPermissionsAndInit();
     }
 
     private void initMainImage(){
@@ -240,10 +243,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        Log.d("FUCK", "onresume");
 
-        if (startCameraOnResume){
-            getPermissionsAndInit();
+        if (startCameraOnResume && cameraPermission){
+            initCamera();
             mCaptureButton.setBackgroundResource(R.drawable.capture_img);
         }
     }
@@ -334,6 +336,8 @@ public class MainActivity extends AppCompatActivity {
                     REQUEST_CAMERA_PERMISSION);
         } else {
             safeCameraOpenInView();
+            cameraPermission = true;
+
         }
     }
 
@@ -395,6 +399,7 @@ public class MainActivity extends AppCompatActivity {
                         return;
                     }
                     initCaptureButton();
+                    cameraPermission = true;
 
                 } else {
                     mCaptureButton.setOnClickListener(new View.OnClickListener(){
@@ -424,13 +429,14 @@ public class MainActivity extends AppCompatActivity {
         //load picture and button
         unlock.setVisibility(View.VISIBLE);
 //        Glide.with(this).load(R.drawable.permission).centerCrop().into(imgPrev);
+        mFolderButton.setVisibility(View.GONE);
     }
 
     private void enableApp() {
         unlock.setVisibility(View.GONE);
         //unload picture and button
         mCaptureButton.setEnabled(true);
-        mFolderButton.setEnabled(true);
+        mFolderButton.setVisibility(View.VISIBLE);
         initCaptureButton();
         initCamera();
         initMainImage();
