@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,6 +16,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
@@ -53,9 +55,14 @@ public class EffectsActivity extends AppCompatActivity {
         if (!mediaStorageDir.exists()) {
             mediaStorageDir.mkdir();
         }
+
         cacheDir = new File(getExternalCacheDir() ,"results/");
         if (!cacheDir.exists()) {
             cacheDir.mkdir();
+        }
+        else{
+            cleanCache();
+
         }
 
         DisplayMetrics displayMetrics = this.getResources().getDisplayMetrics();
@@ -119,20 +126,7 @@ public class EffectsActivity extends AppCompatActivity {
     }
 
     public void onClickShareButton(View v) {
-        try {//TODO:Why are we taking a screenshot!?, we should use the cache instead.
-//            mImageView.buildDrawingCache();
-//            mImageView.setDrawingCacheEnabled(true);
-//            Bitmap bmp = mImageView.getDrawingCache();
-//
-//            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-//            String filename = "IMG_" + timeStamp;
-//            File file = new File(this.getCacheDir(), filename + ".png");
-//            FileOutputStream fOut = new FileOutputStream(file);
-//            bmp.compress(Bitmap.CompressFormat.PNG, 100, fOut);
-//            fOut.flush();
-//            fOut.close();
-//            mImageView.setDrawingCacheEnabled(false);
-//            file.setReadable(true, false);
+        try {
             final Intent intent = new Intent(android.content.Intent.ACTION_SEND);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.putExtra(Intent.EXTRA_STREAM, Uri.parse(currentPath));
@@ -144,12 +138,25 @@ public class EffectsActivity extends AppCompatActivity {
 
     }
 
+    public void onSave(View v){
+        File saveDir =  new File(mediaStorageDirPath , "saved");
+        if(!saveDir.exists()) saveDir.mkdir();
+        File out = null;
+        try {
+            out = File.createTempFile("Caimera", ".png",  saveDir);
+        } catch (IOException e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Couldn't save try again later",Toast.LENGTH_SHORT).show();
+        }
+        new SaveTempImage(new SaveCallback(), this).execute(null, 270, out);
+
+    }
+
 
     @Override
     public void onStart() {
         super.onStart();
         active = true;
-        cleanCache();
     }
 
     @Override
@@ -186,6 +193,8 @@ public class EffectsActivity extends AppCompatActivity {
         }
     }
 
+
+
     class AddCallback  implements Callable<Integer>{
     private File addFile;
 
@@ -201,5 +210,14 @@ public class EffectsActivity extends AppCompatActivity {
         return null;
     }
 }
+
+    class SaveCallback  implements Callable<Integer>{
+
+        @Override
+        public Integer call() throws Exception {
+
+            return null;
+        }
+    }
 
 }

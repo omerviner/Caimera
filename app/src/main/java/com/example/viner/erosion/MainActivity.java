@@ -239,7 +239,7 @@ public class MainActivity extends AppCompatActivity {
     public void onClickImageIsChosen(View view){
 
         if (imageToSend == null){
-            new SaveTempImage(new saveCallback(), this).execute(null, 0, caimera_chosen_temp, imgUrl);
+            new SaveTempImage(new saveCallback(), this).execute(null, 270, caimera_chosen_temp, imgUrl);
         }
         else{
             new SaveTempImage(new saveCallback(), this).execute(imageToSend, mPreview.rotation, caimera_chosen_temp);

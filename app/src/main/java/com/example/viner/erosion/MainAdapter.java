@@ -79,29 +79,6 @@ public class MainAdapter  extends ImgsAdapter{
                             .centerCrop()
                             .override(1000,1000)
                             .into(imgPrev);
-                } else {
-//                    imgPrev = new ImageView(mContext);
-//                    imgPrev.setId(R.id.main_image_frame);
-//
-//                    // Set the Drawable displayed
-//                    Glide.with(mContext)
-//                            .load(imgSrc)
-//                            .centerCrop()
-//                            .into(imgPrev);
-//
-//
-//                    RelativeLayout.LayoutParams viewParams = new RelativeLayout.LayoutParams(
-//                            RelativeLayout.LayoutParams.WRAP_CONTENT,
-//                            RelativeLayout.LayoutParams.WRAP_CONTENT);
-//                    viewParams.height = mWidthPixels + mStatusBarHeight;
-//                    viewParams.width = mWidthPixels;
-//                    viewParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-//                    imgPrev.setLayoutParams(viewParams);
-//                    preview.addView(imgPrev);
-//
-//                    RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)preview.getLayoutParams();
-//                    params.height = mWidthPixels + mStatusBarHeight;
-//                    preview.setLayoutParams(viewParams);
                 }
             }
 

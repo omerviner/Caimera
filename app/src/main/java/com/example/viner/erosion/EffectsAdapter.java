@@ -31,6 +31,7 @@ import java.util.List;
 
 public class EffectsAdapter extends ImgsAdapter {
     private static final int QUICK_STYLES_NUM = 8;
+    private ImageButton shareButton, saveButton;
     private SpinKitView loadingIcon, longLoadingIcon;
     private List<String> presets = Arrays.asList("/e1", "/e2", "/e3", "/e4", "/e5", "/e6", "/e7", "/e8");
     private EffectsActivity mContext;
@@ -54,6 +55,8 @@ public class EffectsAdapter extends ImgsAdapter {
         mContext = (EffectsActivity)context;
         loadingIcon = (SpinKitView) mContext.findViewById(R.id.spin_kit);
         longLoadingIcon = (SpinKitView) mContext.findViewById(R.id.wandering_cubes);
+        shareButton =  (ImageButton)(mContext.findViewById(R.id.share));
+        saveButton = (ImageButton)(mContext.findViewById(R.id.save));
     }
 
     @Override
@@ -68,6 +71,8 @@ public class EffectsAdapter extends ImgsAdapter {
                     return;
                 } else {
                     mContext.mProcessingImage = true;
+                    shareButton.setVisibility(View.INVISIBLE);
+                    saveButton.setVisibility(View.INVISIBLE);
                 }
 
                 if (position < QUICK_STYLES_NUM){
@@ -90,6 +95,7 @@ public class EffectsAdapter extends ImgsAdapter {
                         e.printStackTrace();
                     }
                 }
+
 
 
             }
@@ -169,8 +175,8 @@ public class EffectsAdapter extends ImgsAdapter {
                     //Glide.with(activity).load(bmp).centerCrop().into(mImageView);
                     loadingIcon.setVisibility(View.GONE);
                     longLoadingIcon.setVisibility(View.GONE);
-                    ImageButton btn = (ImageButton)(activity.findViewById(R.id.share));
-                    btn.setVisibility(View.VISIBLE);
+                    shareButton.setVisibility(View.VISIBLE);
+                    saveButton.setVisibility(View.VISIBLE);
                     activity.mProcessingImage = false;
                 }
             });
