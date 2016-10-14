@@ -21,6 +21,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.locks.Lock;
 
 /**
@@ -69,9 +70,26 @@ public class FileUtils {
 
     public static Bitmap cropAndRotateImageBytes(Context mContext, byte[] data, int rotation) {
 
+        Bitmap bitmap = null;
+        try {
+            bitmap = Glide
+                    .with(mContext)
+                    .load(data)
+                    .asBitmap()
+                    .centerCrop()
+                    .override(MAX_SIZE,MAX_SIZE)
+                    .into(MAX_SIZE,MAX_SIZE)
+                    .get();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 //        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
-        int size = Math.min(bitmap.getWidth(), bitmap.getHeight());
+//        Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
+//        int size = Math.min(bitmap.getWidth(), bitmap.getHeight());
+        if (rotation == 0){
+            return bitmap;
+        }
+
         Matrix matrix = new Matrix();
         if (rotation == 90) {
             matrix.postRotate(90);
@@ -79,10 +97,12 @@ public class FileUtils {
             matrix.postRotate(270);
         }
 
-        Bitmap cropped = Bitmap.createBitmap(bitmap, 0, 0, size, size, matrix, true);
-        size = Math.min(size, MAX_SIZE);
-        cropped = Bitmap.createScaledBitmap(cropped, size,size, false);
-        return cropped;
+//        Bitmap cropped = Bitmap.createBitmap(bitmap, 0, 0, size, size, matrix, true);
+//        size = Math.min(size, MAX_SIZE);
+//        cropped = Bitmap.createScaledBitmap(cropped, size,size, false);
+
+        Bitmap rotated = Bitmap.createBitmap(bitmap, 0, 0, MAX_SIZE, MAX_SIZE, matrix, true);
+        return rotated;
     }
 
 
