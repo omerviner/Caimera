@@ -83,9 +83,7 @@ public class FileUtils {
         } catch (Exception e) {
             e.printStackTrace();
         }
-//        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-//        Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
-//        int size = Math.min(bitmap.getWidth(), bitmap.getHeight());
+
         if (rotation == 0){
             return bitmap;
         }
@@ -96,10 +94,6 @@ public class FileUtils {
         } else if (rotation == 270) {
             matrix.postRotate(270);
         }
-
-//        Bitmap cropped = Bitmap.createBitmap(bitmap, 0, 0, size, size, matrix, true);
-//        size = Math.min(size, MAX_SIZE);
-//        cropped = Bitmap.createScaledBitmap(cropped, size,size, false);
 
         Bitmap rotated = Bitmap.createBitmap(bitmap, 0, 0, MAX_SIZE, MAX_SIZE, matrix, true);
         return rotated;

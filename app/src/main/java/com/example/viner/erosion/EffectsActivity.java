@@ -187,6 +187,14 @@ public class EffectsActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        if (!mProcessingImage){
+            super.onBackPressed();
+        } else {
+            Toast.makeText(mContext,"It's too late to back up now", Toast.LENGTH_SHORT).show();
+        }
+    }
 }
 
     class SaveCallback  implements Callable<Integer>{
