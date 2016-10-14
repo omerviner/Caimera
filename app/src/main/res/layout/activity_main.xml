@@ -179,7 +179,9 @@
             android:background="@drawable/capture_lock"
             android:id="@+id/lock_button"
             android:elevation="5dp"
-            android:visibility="gone"/>
+            android:visibility="gone"
+            android:onClick="unlockApp"/>
+
 
     </RelativeLayout>
 

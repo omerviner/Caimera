@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
@@ -53,9 +54,14 @@ public class EffectsActivity extends AppCompatActivity {
         if (!mediaStorageDir.exists()) {
             mediaStorageDir.mkdir();
         }
+
         cacheDir = new File(getExternalCacheDir() ,"results/");
         if (!cacheDir.exists()) {
             cacheDir.mkdir();
+        }
+        else{
+            cleanCache();
+
         }
 
         DisplayMetrics displayMetrics = this.getResources().getDisplayMetrics();
@@ -110,11 +116,25 @@ public class EffectsActivity extends AppCompatActivity {
         }
     }
 
+    public void onSave(View v){
+        File saveDir =  new File(mediaStorageDirPath , "saved");
+        if(!saveDir.exists()) saveDir.mkdir();
+        File out = null;
+        try {
+            out = File.createTempFile("Caimera", ".png",  saveDir);
+        } catch (IOException e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Couldn't save try again later",Toast.LENGTH_SHORT).show();
+        }
+        new SaveTempImage(new SaveCallback(), this).execute(null, 270, out);
+
+    }
+
+
     @Override
     public void onStart() {
         super.onStart();
         active = true;
-        cleanCache();
     }
 
     @Override
@@ -150,6 +170,8 @@ public class EffectsActivity extends AppCompatActivity {
         }
     }
 
+
+
     class AddCallback  implements Callable<Integer>{
         private File addFile;
 
@@ -161,6 +183,27 @@ public class EffectsActivity extends AppCompatActivity {
             mAdapter.mImgs.add(addFile);
             mAdapter.notifyItemInserted(mAdapter.mImgs.size() - 1);
             rvImgs.smoothScrollToPosition(mAdapter.mImgs.size() - 1);
+            return null;
+        }
+    }
+    AddCallback(File addFile){
+        this.addFile = addFile;
+    }
+    @Override
+    public Integer call() throws Exception {
+        mAdapter.mImgs.add(addFile);
+        mAdapter.notifyItemInserted(mAdapter.mImgs.size() - 1);
+        rvImgs.smoothScrollToPosition(mAdapter.mImgs.size() - 1);
+
+        return null;
+    }
+}
+
+    class SaveCallback  implements Callable<Integer>{
+
+        @Override
+        public Integer call() throws Exception {
+
             return null;
         }
     }

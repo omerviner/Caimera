@@ -7,7 +7,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.graphics.Matrix;
 import android.hardware.Camera;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -19,8 +18,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
@@ -29,7 +26,6 @@ import android.widget.*;
 import com.bumptech.glide.Glide;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
 
@@ -38,6 +34,7 @@ import static com.example.viner.erosion.Preview.getCameraInstance;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final int REQUEST_STORAGE_PERMISSION = 4;
     private Camera mCamera;
     private Preview mPreview;
     private View mCameraView;
@@ -45,10 +42,8 @@ public class MainActivity extends AppCompatActivity {
     private Context mContext;
     boolean opened;
     int mStatusBarHeight;
-    RecyclerView rvImgs;
     private FrameLayout mPreviewFrame;
     private File caimera_chosen_temp;
-    int mPreviewState;
     private static final int REQUEST_CAMERA_PERMISSION = 1;
     private static final int CHOOSE_IMAGE_REQUEST = 2;
     private boolean mAfterTakeImage;
@@ -57,6 +52,8 @@ public class MainActivity extends AppCompatActivity {
     private ImageView imgPrev;
     private boolean startCameraOnResume = true;
     private Button mCaptureButton;
+    private ImageButton mFolderButton;
+    private Button unlock;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,10 +78,9 @@ public class MainActivity extends AppCompatActivity {
         }
 
         mCaptureButton = (Button)findViewById(R.id.big_button_capture);
+        mFolderButton = (ImageButton)findViewById(R.id.folder);
 
-        initCaptureButton();//the order between the inits is very important(permission handling)//1
-        initCamera();//2
-        initMainImage();
+        getPermissionsAndInit();
     }
 
     private void initMainImage(){
@@ -220,7 +216,7 @@ public class MainActivity extends AppCompatActivity {
     public void onClickImageIsChosen(View view){
 
         if (imageToSend == null){
-            new SaveTempImage(new saveCallback(), this).execute(null, 0, caimera_chosen_temp, imgUrl);
+            new SaveTempImage(new saveCallback(), this).execute(null, 270, caimera_chosen_temp, imgUrl);
         }
         else{
             new SaveTempImage(new saveCallback(), this).execute(imageToSend, mPreview.rotation, caimera_chosen_temp);
@@ -333,27 +329,27 @@ public class MainActivity extends AppCompatActivity {
     private void initCamera(){
         if(ContextCompat.checkSelfPermission(this,
                 Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){
-
-            // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    Manifest.permission.CAMERA)) {
-                showSettingsAlert();//could do better
-                // Show an expanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
-
-            } else {
-                //request the permission.
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.CAMERA},
-                        REQUEST_CAMERA_PERMISSION);
-            }
-
+            //request the permission.
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.CAMERA},
+                    REQUEST_CAMERA_PERMISSION);
         } else {
             safeCameraOpenInView();
         }
     }
 
+    private void getPermissionsAndInit(){
+        if(ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
+            //request the permission.
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    REQUEST_STORAGE_PERMISSION);
+
+        } else {
+            enableApp();
+        }
+    }
     /*
     Init capture & resume camera button.
      */
@@ -383,7 +379,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode,
+    public void onRequestPermissionsResult(final int requestCode,
                                            String permissions[], int[] grantResults) {
 
         switch (requestCode) {
@@ -405,18 +401,54 @@ public class MainActivity extends AppCompatActivity {
                     mCaptureButton.setOnClickListener(new View.OnClickListener(){
                         @Override
                         public void onClick(View v) {
-                            showSettingsAlert();
+                            showSettingsAlert(requestCode);
                         }
                     });
                 }
+            case REQUEST_STORAGE_PERMISSION:
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    enableApp();
+
+                } else {
+                    disableApp();
+                }
+
         }
 
     }
 
-    private void showSettingsAlert() {
+    private void disableApp() {
+        mCaptureButton.setEnabled(false);
+        mFolderButton.setEnabled(false);
+        //load picture and button
+        unlock = (Button)findViewById(R.id.lock_button);
+        unlock.setVisibility(View.VISIBLE);
+        Glide.with(this).load(R.drawable.permission).centerCrop().into(imgPrev);
+    }
+
+    private void enableApp() {
+        unlock.setVisibility(View.GONE);
+        //unload picture and button
+        mCaptureButton.setEnabled(true);
+        mFolderButton.setEnabled(true);
+        initCaptureButton();
+        initCamera();
+        initMainImage();
+
+    }
+
+    public void unlockApp(View v){
+        showSettingsAlert(REQUEST_STORAGE_PERMISSION);
+    }
+    
+    private void showSettingsAlert(int request) {
+        final String cameraMessage = "App needs to access the Camera to take pictures.";
+        final String storageMessage = "Please Enable External Storage permission";
+        String message = request == REQUEST_CAMERA_PERMISSION ? cameraMessage: storageMessage;
         AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
         alertDialog.setTitle("Alert");
-        alertDialog.setMessage("App needs to access the Camera to take pictures.");
+        alertDialog.setMessage(message);
         alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "DONT ALLOW",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
