@@ -79,8 +79,7 @@ public class MainActivity extends AppCompatActivity {
 
         mCaptureButton = (Button)findViewById(R.id.big_button_capture);
         mFolderButton = (ImageButton)findViewById(R.id.folder);
-
-        getPermissionsAndInit();
+        unlock = (Button)findViewById(R.id.lock_button);
     }
 
     private void initMainImage(){
@@ -241,9 +240,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        Log.d("FUCK", "onresume");
 
         if (startCameraOnResume){
-            initCamera();
+            getPermissionsAndInit();
             mCaptureButton.setBackgroundResource(R.drawable.capture_img);
         }
     }
@@ -400,10 +400,11 @@ public class MainActivity extends AppCompatActivity {
                     mCaptureButton.setOnClickListener(new View.OnClickListener(){
                         @Override
                         public void onClick(View v) {
-                            showSettingsAlert(requestCode);
+                            showSettingsAlert(REQUEST_CAMERA_PERMISSION);
                         }
                     });
                 }
+                break;
             case REQUEST_STORAGE_PERMISSION:
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -421,9 +422,8 @@ public class MainActivity extends AppCompatActivity {
         mCaptureButton.setEnabled(false);
         mFolderButton.setEnabled(false);
         //load picture and button
-        unlock = (Button)findViewById(R.id.lock_button);
         unlock.setVisibility(View.VISIBLE);
-        Glide.with(this).load(R.drawable.permission).centerCrop().into(imgPrev);
+//        Glide.with(this).load(R.drawable.permission).centerCrop().into(imgPrev);
     }
 
     private void enableApp() {
@@ -440,7 +440,7 @@ public class MainActivity extends AppCompatActivity {
     public void unlockApp(View v){
         showSettingsAlert(REQUEST_STORAGE_PERMISSION);
     }
-    
+
     private void showSettingsAlert(int request) {
         final String cameraMessage = "App needs to access the Camera to take pictures.";
         final String storageMessage = "Please Enable External Storage permission";
@@ -466,6 +466,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+        super.onDestroy();
         releaseCameraAndPreview();
     }
 }

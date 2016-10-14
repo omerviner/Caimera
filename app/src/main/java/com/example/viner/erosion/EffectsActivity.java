@@ -186,17 +186,7 @@ public class EffectsActivity extends AppCompatActivity {
             return null;
         }
     }
-    AddCallback(File addFile){
-        this.addFile = addFile;
-    }
-    @Override
-    public Integer call() throws Exception {
-        mAdapter.mImgs.add(addFile);
-        mAdapter.notifyItemInserted(mAdapter.mImgs.size() - 1);
-        rvImgs.smoothScrollToPosition(mAdapter.mImgs.size() - 1);
 
-        return null;
-    }
 }
 
     class SaveCallback  implements Callable<Integer>{
@@ -207,5 +197,3 @@ public class EffectsActivity extends AppCompatActivity {
             return null;
         }
     }
-
-}
