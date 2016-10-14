@@ -40,7 +40,6 @@ public class ChooseImageActivity extends AppCompatActivity{
         final RecyclerView rvImgs = (RecyclerView) findViewById(R.id.imgs);
         rvImgs.setHasFixedSize(true);
 
-
         ArrayList<String> imgsPaths = MainActivity.getAllShownImagesPath(this);
         ArrayList<File> mImgs = new ArrayList<File>();
         for (int i = 0; i < imgsPaths.size(); i++){
@@ -50,19 +49,9 @@ public class ChooseImageActivity extends AppCompatActivity{
             }
         }
 
-
-        // Create adapter passing in the sample user data
         ChooseAdapter adapter = new ChooseAdapter(this, mImgs, rvImgs);
-
-        // Attach the adapter to the recyclerview to populate items
         rvImgs.setAdapter(adapter);
-        // Set layout manager to position the items
         rvImgs.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        // That's all!
-
     }
-
-
-
 
 }

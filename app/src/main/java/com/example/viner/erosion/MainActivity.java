@@ -69,41 +69,19 @@ public class MainActivity extends AppCompatActivity {
         mPreviewFrame = (FrameLayout) findViewById(R.id.camera_preview);
         mAfterTakeImage = false;
         mBackFromChoose = false;
+
+        // Init temp file saving location
         File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES), "Caimera");
-
         String tempImagePath = mediaStorageDir.getPath() + File.separator + "caimera_chosen_temp.png";
         caimera_chosen_temp = new File(tempImagePath);
         caimera_chosen_temp.delete();
-
-        // Lookup the recyclerview in activity layout
-        RecyclerView rvImgs = (RecyclerView) findViewById(R.id.imgs);
-        mCaptureButton = (Button)findViewById(R.id.big_button_capture);
-        rvImgs.setHasFixedSize(true);
-
         if (!mediaStorageDir.exists()) {
             mediaStorageDir.mkdir();
         }
 
-        ArrayList<String> imgsPaths = getAllShownImagesPath(this);//TODO:either ask for permission or cancel this .
+        mCaptureButton = (Button)findViewById(R.id.big_button_capture);
 
-        ArrayList<File> mImgs = new ArrayList<>();
-        for (String imgsPath : imgsPaths) {
-            File file = new File(imgsPath);
-            if (file.isFile()) {
-                mImgs.add(0, file);
-            }
-        }
-
-        // Create adapter passing in the sample user data
-        ImgsAdapter adapter = new MainAdapter(this, mImgs, rvImgs);
-
-        // Attach the adapter to the recyclerview to populate items
-        rvImgs.setAdapter(adapter);
-        // Set layout manager to position the items
-        rvImgs.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-
-        rvImgs.addOnItemTouchListener(adapter.getListener());
         initCaptureButton();//the order between the inits is very important(permission handling)//1
         initCamera();//2
         initMainImage();
@@ -132,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
         mPreviewFrame.setLayoutParams(viewParams);
     }
     /**
-     * Recommended "safe" way to open the camera.
+     * Safe way to open the camera.
      * @return
      */
     private boolean safeCameraOpenInView() {
@@ -149,14 +127,10 @@ public class MainActivity extends AppCompatActivity {
         qOpened = (mCamera != null);
 
         if(qOpened) {
-            Log.v("safeCameraOpenInView", "here");
             mPreview.bringToFront();
             mCamera.startPreview();
             mPreview.buildDrawingCache();
-//            mPreview.buildDrawingCache();
-//            mPreviewFrame.addView(mPreview);
         } else {
-            Log.v("safeCameraOpenInView", "here2");
             mCamera = getCameraInstance();
             if(mCamera != null){
                 mPreview = new Preview(this, mCamera, mCameraView);
@@ -164,11 +138,14 @@ public class MainActivity extends AppCompatActivity {
             }
 
         }
-        Log.v("safeCameraOpenInView", "succ");
+        Log.v("safeCameraOpenInView", "success");
 
         return qOpened;
     }
 
+    /*
+    Release camera function
+     */
     public void releaseCameraAndPreview() {
         if (mCamera != null) {
             mCamera.stopPreview();
@@ -215,6 +192,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // Get image url from ChooseActivity
         if (requestCode == CHOOSE_IMAGE_REQUEST) {
             if (resultCode == Activity.RESULT_OK) {
                 imgUrl = data.getStringExtra("chosen_image");
@@ -231,11 +209,13 @@ public class MainActivity extends AppCompatActivity {
                 mCaptureButton.setBackgroundResource(R.drawable.capture_resume);
 
                 imageToSend = null;
-//                startCameraOnResume = true;
             }
         }
     }
 
+    /*
+    click on Next button. Send chosen/captured image to EffectsActivity
+     */
     public void onClickImageIsChosen(View view){
 
         if (imageToSend == null){
@@ -271,8 +251,8 @@ public class MainActivity extends AppCompatActivity {
             mCaptureButton.setBackgroundResource(R.drawable.capture_img);
         }
     }
-    private class saveCallback implements Callable<Integer>{//TODO:the class should be an effects activity nested class and delay the req until the file is saved
 
+    private class saveCallback implements Callable<Integer>{//TODO:the class should be an effects activity nested class and delay the req until the file is saved
         @Override
         public Integer call() throws Exception {
             return null;
@@ -280,7 +260,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * Getting All Images Path
+     * Get All Images Path
      *
      * @param activity
      * @return ArrayList with images Path
@@ -346,6 +326,9 @@ public class MainActivity extends AppCompatActivity {
         return 0;
     }
 
+    /*
+    Init camera function.
+     */
     private void initCamera(){
         if(ContextCompat.checkSelfPermission(this,
                 Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){
@@ -359,9 +342,7 @@ public class MainActivity extends AppCompatActivity {
                 // sees the explanation, try again to request the permission.
 
             } else {
-
                 //request the permission.
-
                 ActivityCompat.requestPermissions(this,
                         new String[]{Manifest.permission.CAMERA},
                         REQUEST_CAMERA_PERMISSION);
@@ -372,27 +353,22 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /*
+    Init capture & resume camera button.
+     */
     private void initCaptureButton(){
         mCaptureButton.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         if (mAfterTakeImage || mBackFromChoose){
-//                            new AsyncTask<Void, Void, Void>() {
-//                                @Override
-//                                protected Void doInBackground(Void... params) {
-//                                    releaseCameraAndPreview();
-//                                    mCamera = null;
-//                                    return null;
-//                                }
-//                            };
+
                             ImageButton btn = (ImageButton)findViewById(R.id.next);
                             btn.setVisibility(View.GONE);
                             mCaptureButton.setBackgroundResource(R.drawable.capture_img);
                             mAfterTakeImage = false;
                             mBackFromChoose = false;
                             imageToSend = null;
-
 
                             initCamera();
                         } else {

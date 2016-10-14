@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -76,27 +75,12 @@ public class EffectsActivity extends AppCompatActivity {
         View effect_buttons = findViewById(R.id.btnsRelativeLayout);
         effect_buttons.setLayoutParams(params);
 
-        // Lookup the recyclerview in activity layout
         rvImgs = (RecyclerView) findViewById(R.id.effects);
-
         rvImgs.setHasFixedSize(true);
-
-        // Create adapter passing in the user data
         mAdapter = new EffectsAdapter(this, new ArrayList<>(Arrays.asList(mediaStorageDir.listFiles())), rvImgs);
-
-        // Attach the adapter to the recyclerview to populate items
         rvImgs.setAdapter(mAdapter);
-        // Set layout manager to position the items
         rvImgs.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        // That's all!
         rvImgs.addOnItemTouchListener(mAdapter.getListener());
-
-//        mImageView = (ImageView) ((EffectsActivity) mContext).findViewById(R.id.main_image);
-//
-//        Glide
-//                .with(this)
-//                .load(mChosenImage)
-//                .into(mImageView);
     }
 
     public void onClickChooseEffect(View view) {
@@ -104,23 +88,18 @@ public class EffectsActivity extends AppCompatActivity {
         startActivityForResult(intent, CHOOSE_IMAGE_REQUEST);
     }
 
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
         if (requestCode == CHOOSE_IMAGE_REQUEST) {
             if (resultCode == Activity.RESULT_OK) {
                 String imgUrl = data.getStringExtra("chosen_image");
-//                File newEffect = new File(imgUrl);
                 try {
                     File target = File.createTempFile("custom", ".png", mediaStorageDir);
                     new SaveTempImage(new  AddCallback(target), this).execute(null, 0, target, imgUrl);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-//                mAdapter.mImgs.add(newEffect);
-//                mAdapter.notifyItemInserted(mAdapter.mImgs.size() - 1);
-//                mAdapter.notifyDataSetChanged();
             }
         }
     }
@@ -135,7 +114,6 @@ public class EffectsActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
     public void onSave(View v){
@@ -164,7 +142,6 @@ public class EffectsActivity extends AppCompatActivity {
         super.onResume();
         active = true;
         mNotificationManager.cancelAll();
-
     }
 
     @Override
@@ -196,8 +173,19 @@ public class EffectsActivity extends AppCompatActivity {
 
 
     class AddCallback  implements Callable<Integer>{
-    private File addFile;
+        private File addFile;
 
+        AddCallback(File addFile){
+            this.addFile = addFile;
+        }
+        @Override
+        public Integer call() throws Exception {
+            mAdapter.mImgs.add(addFile);
+            mAdapter.notifyItemInserted(mAdapter.mImgs.size() - 1);
+            rvImgs.smoothScrollToPosition(mAdapter.mImgs.size() - 1);
+            return null;
+        }
+    }
     AddCallback(File addFile){
         this.addFile = addFile;
     }
