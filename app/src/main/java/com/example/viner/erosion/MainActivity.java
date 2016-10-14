@@ -204,6 +204,7 @@ public class MainActivity extends AppCompatActivity {
                         .centerCrop()
                         .into(imgPrev);
 
+
                 ImageButton btn = (ImageButton)((MainActivity)mContext).findViewById(R.id.next);
                 btn.setVisibility(View.VISIBLE);
                 mCaptureButton.setBackgroundResource(R.drawable.capture_resume);
